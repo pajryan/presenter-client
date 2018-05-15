@@ -1,6 +1,6 @@
 {
-  "name": "electron-webpack-quick-start",
-  "version": "0.0.0",
+  "name": "presenter-client",
+  "version": "1.0.3",
   "license": "MIT",
   "scripts": {
     "dev": "electron-webpack dev",
@@ -8,9 +8,11 @@
     "dist": "yarn compile && electron-builder",
     "dist:dir": "yarn dist --dir -c.compression=store -c.mac.identity=null",
     "pack": "electron-builder --dir",
-    "postinstall": "electron-builder install-app-deps"
+    "postinstall": "electron-builder install-app-deps",
+    "publish": "build --mac --win -p always"
   },
   "dependencies": {
+    "electron-log": "^2.2.14",
     "electron-updater": "^2.21.10",
     "source-map-support": "^0.5.5"
   },
@@ -28,10 +30,12 @@
     "mac": {
       "category": "marketing.dci.presenter"
     },
-    "publish": [{
-      "provider": "github",
-      "owner": "pajryan",
-      "repo": "presenter-client"
-    }]
+    "publish": [
+      {
+        "provider": "github",
+        "owner": "pajryan",
+        "repo": "presenter-client"
+      }
+    ]
   }
 }

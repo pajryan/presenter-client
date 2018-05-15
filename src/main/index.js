@@ -4,6 +4,8 @@ import { app, BrowserWindow } from 'electron'
 import * as path from 'path'
 import { format as formatUrl } from 'url'
 
+import { updateCheck } from './updateCheck'
+
 const isDevelopment = process.env.NODE_ENV !== 'production'
 
 // global reference to mainWindow (necessary to prevent window from being garbage collected)
@@ -58,5 +60,6 @@ app.on('activate', () => {
 
 // create main BrowserWindow when electron is ready
 app.on('ready', () => {
+  updateCheck();
   mainWindow = createMainWindow()
 })

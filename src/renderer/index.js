@@ -1,11 +1,9 @@
-import { autoUpdater } from "electron-updater"
-
 
 let dv = document.createElement("div")
-dv.innerHTML = "blah"
+dv.innerHTML = "application version: 1.0.3";
 
-autoUpdater.setFeedURL("http://localhost:3000/autoUpdater")
-autoUpdater.checkForUpdatesAndNotify()
+// autoUpdater.setFeedURL("http://localhost:3000/autoUpdater")
+// autoUpdater.checkForUpdatesAndNotify()
 
 document.getElementById("app").appendChild(dv);
 

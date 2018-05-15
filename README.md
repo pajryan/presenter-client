@@ -17,6 +17,9 @@ Currently using [Vue.js](https://vuejs.org/v2/guide/index.html) as the MVC frame
 # run application in development mode
 yarn dev
 
+# BUILD FOR MAC AND WIN. Push to Github where the app will check for updates automatically.
+npm run publish
+
 # compile source code and create webpack output
 yarn compile
 
@@ -27,10 +30,19 @@ yarn dist
 yarn dist:dir
 ```
 
+## steps to release new build (and notify / update clients)
+ - 1. First be sure to increment the version in package.json
+    - **if you don't increment the version, it won't be published to github**
+ - 2. Run `npm run publish` to create both mac and win versions and post update to github (takes several minutes)
+ - 3. go to `https://github.com/pajryan/presenter-client/releases` and locate the new `draft` release
+ - 4. Click `edit` to the right of the release. Scroll down and click `publish release`
+    - can download the release (e.g. the DMG) from here too.
+ - 5. When you next download the app, it will check for an update and automatically download/update.
+
 
 ## in-scope
  - [ ] notify and install app updates
-     - app updates will be developed locally in project `presenter-updateServer`
+     - app updates will be stored as releases in this gihub project
  - [ ] edit presentation
      - [ ] editing by permission only
      - [ ] flow
@@ -55,4 +67,7 @@ App signing [here](https://help.apple.com/xcode/mac/current/#/dev3a05256b8)
  - Bottom right, click `Manage certificates...`
  - If need to create, click "plus dropdown" at bottom left and choose `Mac Development` (This is where installers, distribution certificates can be created I think)
  - New Certificate shows up in Keychain (under `login`, `My Certificates` should see *Mac Developer: ~appleId~)
- - now Export that certificate by right-clicking in Keychain and choose export. Will be prompted to create a pwd for that (`presenterCert1` for dev)
+ - now Export that certificate by right-clicking in Keychain and choose export. Will be prompted to create a pwd for it
+
+ ### passwords
+ passwords for github, cert signing etc are in `PASSWORDS.md` (not committed to github... duh.)
