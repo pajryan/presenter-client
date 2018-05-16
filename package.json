@@ -1,6 +1,6 @@
 {
-  "name": "presenter-client",
-  "version": "1.0.4",
+  "name": "presenter",
+  "version": "1.0.7",
   "license": "MIT",
   "scripts": {
     "dev": "electron-webpack dev",
