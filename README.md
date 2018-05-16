@@ -3,34 +3,53 @@
 Goal of this is to have a multi-client presentation layer
 
 # Boilerplate
-Starting with electron [electron updater example](https://github.com/iffy/electron-updater-example)
-it has:
+Starting with electron [electron builder](https://github.com/electron-userland/electron-builder)
+Specifically the associated [boilerplate](https://github.com/electron-userland/electron-webpack-quick-start)
  - bundling cross platform (OSX & Win)
- - autoUpdate added in (with [electron-updater](https://www.electron.build/auto-update))
+I then added autoUpdate with [electron-updater](https://www.electron.build/auto-update)
+ - this uses the github repo to create releases, which are then checked by the apps in production
 
+The project structure & what the boilerplate expects is [here](https://webpack.electron.build/project-structure)
 
+Currently using [Vue.js](https://vuejs.org/v2/guide/index.html) as the MVC framework.
 
 ## running
 ```bash
 # run application in development mode
-npm run start
+npm run dev
 
-# BUILD FOR MAC AND WIN. Push to Github where the app will check for updates automatically.
+# build app for local OS. Puts the application in the `dist/mac` folder
+npm run dist
+
+# build for max and win, push to Github where the app will check for updates automatically.
 npm run publish
+
+# other pices I'm not using
+# compile source code and create webpack output
+yarn compile
+
+# `yarn compile` & create build with electron-builder
+yarn dist
+
+# `yarn compile` & create unpacked build with electron-builder
+yarn dist:dir
 ```
 
 ## steps to release new build (and notify / update clients)
  - 1. First be sure to increment the version in package.json
-    - **if you don't increment the version, it will overwrite the previous version in github**
+    - **if you don't increment the version, it won't be published to github**
+    - if you get an error related to `ELECTRON_HMR_SOCKET_PATH ` try:
+        - removing `node_modules` and `yarn.lock` then running `yarn upgrade` (this didn't work for me, but referenced [here](https://github.com/electron-userland/electron-webpack/issues/58))
+        - more importanly, this was finally solved by updating the `publish` script in package.json *from* `build --mac --win -p always` *to* `yarn compile && build --mac --win -p always`.  So basically it was solved by always compiling prior to building.
  - 2. Run `npm run publish` to create both mac and win versions and post update to github (takes several minutes)
  - 3. go to `https://github.com/pajryan/presenter-client/releases` and locate the new `draft` release
  - 4. Click `edit` to the right of the release. Scroll down and click `publish release`
-    - can download the release (e.g. the DMG) and install from here too.
- - 5. When you next run the app, it will check for an update and automatically download/update.
+    - can download the release (e.g. the DMG) from here too.
+ - 5. When you next download the app, it will check for an update and automatically download/update.
 
 
 ## in-scope
- - [ ] notify and install app updates
+ - [x] notify and install app updates
      - app updates will be stored as releases in this gihub project
  - [ ] edit presentation
      - [ ] editing by permission only
@@ -42,8 +61,8 @@ npm run publish
  - [ ] notify and update clients with presentation edits
 
 
-## app updates
-Following this instructions in the boilerplate [here](https://github.com/iffy/electron-updater-example).  Specifically, have a look at `main.js` in that project.
+## details on app updates
+The steps above are modified from [here](https://github.com/iffy/electron-updater-example).  Specifically, have a look at `main.js` in that project.
 App signing [here](https://help.apple.com/xcode/mac/current/#/dev3a05256b8)
 
 
@@ -63,5 +82,5 @@ App signing [here](https://help.apple.com/xcode/mac/current/#/dev3a05256b8)
 
  ### issues
   - setting the GH_TOKEN environment variable seems to only last for the terminal session (?)
-    - `export GH_TOKEN="<GH TOKEN in PASSWORDS.md>`
+    - `export GH_TOKEN="<GH TOKEN in PASSWORDS.md>"`
     - see info on [enironment variables](https://medium.com/@himanshuagarwal1395/setting-up-environment-variables-in-macos-sierra-f5978369b255)
