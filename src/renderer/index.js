@@ -1,6 +1,6 @@
 
 let dv = document.createElement("div")
-dv.innerHTML = "application version: 1.0.3";
+dv.innerHTML = "application version: 1.0.4";
 
 // autoUpdater.setFeedURL("http://localhost:3000/autoUpdater")
 // autoUpdater.checkForUpdatesAndNotify()
