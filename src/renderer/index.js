@@ -1,5 +1,20 @@
-// Initial welcome page. Delete the following line to remove it.
+// Initial home page.
+//  An html page has automatically been created that simply contains <div id="app"></div>.  Everything builds from there
 
+
+// this page serves a few purposes
+//  1. table of contents
+//  2. slideshow
+//  3. admin
+//    3a. update application (via github and autoUpdate)
+//    3b. udpate data
+//    3c. edit slideshow
+//        flow, images, text (mmd)
+
+
+
+
+// allow messages from main to come here
 const {ipcRenderer} = require('electron');
 ipcRenderer.on('message', function(event, text) {
   console.log("got a message from main: ", text)
@@ -10,14 +25,43 @@ ipcRenderer.on('message', function(event, text) {
 })
 
 
-let d = document.getElementById("app");
-d.innerHTML = "hello - new version?";
+// import Admin from './admin/admin.js'
+
+const Admin = require("./admin/admin.js");
+const Slideshow = require("./slideshow/slideshow.js");
+const TOC = require("./toc/toc.js")
+
+let b = document.body;
+
+
+
+//build slideshow
+let s = document.createElement('div'); s.id="slideshow"; b.appendChild(s);
+var slideshow = Slideshow.build().rootElem(s);
+
+//build table of contents
+let t = document.createElement('div'); t.id="toc"; b.appendChild(t);
+var toc = TOC.build().rootElem(t);
+
+//build admin
+let a = document.createElement('div'); a.id="admin"; b.appendChild(a);
+var admin = Admin.build().rootElem(a);
+
+// pass the pieces to each other
+slideshow.admin(admin).toc(toc);
+admin.slideshow(slideshow).toc(toc);
+toc.admin(admin).slideshow(slideshow);
+
+//run each
+admin();
+slideshow();
+toc();
+
+
+
+
+//this is temporary: it allows me to see the version number (and watch the app updates work from github).  But this should be moved inside admin
+
 let m = document.createElement('div');
 m.id = "messages";
-d.appendChild(m)
-
-
-
-
-
-// 'use strict';const styles=document.createElement('style');styles.innerText=`@import url(https://unpkg.com/spectre.css/dist/spectre.min.css);.empty{display:flex;flex-direction:column;justify-content:center;height:100vh;position:relative}.footer{bottom:0;font-size:13px;left:50%;opacity:.9;position:absolute;transform:translateX(-50%);width:100%}`;const vueScript=document.createElement('script');vueScript.setAttribute('type','text/javascript'),vueScript.setAttribute('src','https://unpkg.com/vue'),vueScript.onload=init,document.head.appendChild(vueScript),document.head.appendChild(styles);function init(){Vue.config.devtools=false,Vue.config.productionTip=false,new Vue({data:{versions:{electron:process.versions.electron,electronWebpack:require('electron-webpack/package.json').version}},methods:{open(b){require('electron').shell.openExternal(b)}},template:`<div><div class=empty><p class="empty-title h5">Welcome to your new project!<p class=empty-subtitle>Get started now and take advantage of the great documentation at hand.<div class=empty-action><button @click="open('https://webpack.electron.build')"class="btn btn-primary">Documentation</button> <button @click="open('https://electron.atom.io/docs/')"class="btn btn-primary">Electron</button><br><ul class=breadcrumb><li class=breadcrumb-item>electron-webpack v{{ versions.electronWebpack }}</li><li class=breadcrumb-item>electron v{{ versions.electron }}</li></ul></div><p class=footer>This intitial landing page can be easily removed from <code>src/renderer/index.js</code>.</p></div></div>`}).$mount('#app')}
+b.appendChild(m)
