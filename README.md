@@ -4,8 +4,10 @@ Goal of this is to have a multi-client presentation layer
 
 # Boilerplate
 Starting with electron [electron builder](https://github.com/electron-userland/electron-builder)
+
 Specifically the associated [boilerplate](https://github.com/electron-userland/electron-webpack-quick-start)
  - bundling cross platform (OSX & Win)
+
 I then added autoUpdate with [electron-updater](https://www.electron.build/auto-update)
  - this uses the github repo to create releases, which are then checked by the apps in production
 
@@ -50,7 +52,7 @@ yarn dist:dir
 
 ## in-scope
  - [x] notify and install app updates
-     - app updates will be stored as releases in this gihub project
+     - app updates will be stored as releases in this github project
  - [ ] edit presentation
      - [ ] editing by permission only
      - [ ] flow
