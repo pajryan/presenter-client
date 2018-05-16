@@ -2,7 +2,11 @@
  # presenter-client
 Goal of this is to have a multi-client presentation layer
 
-# Boilerplate
+# installation
+ - clone this repo
+ - `yarn`
+
+# boilerplate
 Starting with electron [electron builder](https://github.com/electron-userland/electron-builder)
 
 Specifically the associated [boilerplate](https://github.com/electron-userland/electron-webpack-quick-start)
@@ -38,16 +42,16 @@ yarn dist:dir
 ```
 
 ## steps to release new build (and notify / update clients)
- - 1. First be sure to increment the version in package.json
+  1. First be sure to increment the version in package.json
     - **if you don't increment the version, it won't be published to github**
     - if you get an error related to `ELECTRON_HMR_SOCKET_PATH ` try:
-        - removing `node_modules` and `yarn.lock` then running `yarn upgrade` (this didn't work for me, but referenced [here](https://github.com/electron-userland/electron-webpack/issues/58))
-        - more importanly, this was finally solved by updating the `publish` script in package.json *from* `build --mac --win -p always` *to* `yarn compile && build --mac --win -p always`.  So basically it was solved by always compiling prior to building.
- - 2. Run `npm run publish` to create both mac and win versions and post update to github (takes several minutes)
- - 3. go to `https://github.com/pajryan/presenter-client/releases` and locate the new `draft` release
- - 4. Click `edit` to the right of the release. Scroll down and click `publish release`
-    - can download the release (e.g. the DMG) from here too.
- - 5. When you next download the app, it will check for an update and automatically download/update.
+      - removing `node_modules` and `yarn.lock` then running `yarn upgrade` (this didn't work for me, but referenced [here](https://github.com/electron-userland/electron-webpack/issues/58))
+      - more importanly, this was finally solved by updating the `publish` script in package.json *from* `build --mac --win -p always` *to* `yarn compile && build --mac --win -p always`.  So basically it was solved by always compiling prior to building.
+ 2. Run `npm run publish` to create both mac and win versions and post update to github (takes several minutes)
+ 3. go to `https://github.com/pajryan/presenter-client/releases` and locate the new `draft` release
+ 4. Click `edit` to the right of the release. Scroll down and click `publish release`
+  - can download the release (e.g. the DMG) from here too.
+ 5. When you next download the app, it will check for an update and automatically download/update.
 
 
 ## in-scope
