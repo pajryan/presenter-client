@@ -1,14 +1,26 @@
 'use strict';
+import Vue from 'vue'
+import AdminUI from './adminUI/AdminUI.vue'
+
 
 export function build(){
   let _rootElem,
       _toc,
-      _slideshow;
+      _slideshow,
+      _state;
 
   
   function admin(){
     let p = document.createElement('p'); p.innerHTML = "admin";
-    _rootElem.appendChild(p)
+    _rootElem.appendChild(p);
+
+
+    //build the admin UI
+    new Vue({
+      el: '#admin',
+      render: h => h(AdminUI)
+    })
+
   }
 
 
@@ -17,6 +29,12 @@ export function build(){
     _rootElem = val;
     return admin;
   }
+
+  admin.state = function(val) {
+    if (!arguments.length) { return _state; }
+    _state = val;
+    return admin;
+  };
 
   admin.slideshow = function(val) {
     if (!arguments.length) { return _slideshow; }

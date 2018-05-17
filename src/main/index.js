@@ -44,9 +44,9 @@ function createMainWindow() {
   })
 
   window.webContents.on('devtools-opened', () => {
-    window.focus()
+    // window.focus()
     setImmediate(() => {
-      window.focus()
+      // window.focus()
     })
   })
 
@@ -111,11 +111,15 @@ autoUpdater.on('update-downloaded', (info) => {
 app.on('ready', () => {
   mainWindow = createMainWindow();
   
-  //once loaded, check for app updates
+  //once loaded, send the appVersion and the appUpdater to the UI so it can be managed from there
   mainWindow.webContents.on('did-finish-load', function() {
+    //pass the version to the window
+    mainWindow.webContents.send('appVersionManagement', {appVersion:appVersion, autoUpdater:autoUpdater});
+
+    //pass the autoUpdater to the window so it can be triggered via admin controls
     sendStatusToWindow("Current application version: " + appVersion)
     mainWindow.show();
-    autoUpdater.checkForUpdatesAndNotify();
+    // autoUpdater.checkForUpdatesAndNotify();
     
   })
 })

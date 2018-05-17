@@ -1,5 +1,5 @@
 {
-  "name": "electron-webpack-quick-start",
+  "name": "presenter",
   "version": "1.0.21",
   "license": "MIT",
   "scripts": {
@@ -10,8 +10,11 @@
     "publish": "yarn compile && build --mac --win -p always"
   },
   "dependencies": {
+    "bootstrap": "^4.1.1",
     "electron-log": "^2.2.14",
     "electron-updater": "^2.21.10",
+    "jquery": "^3.3.1",
+    "popper.js": "^1.14.3",
     "source-map-support": "^0.5.5"
   },
   "devDependencies": {
@@ -19,6 +22,10 @@
     "electron-builder": "^20.11.1",
     "electron-webpack": "^2.0.1",
     "electron-webpack-vue": "^2.1.3",
+    "less": "^3.0.4",
+    "less-loader": "^4.1.0",
+    "node-sass": "^4.9.0",
+    "sass-loader": "^7.0.1",
     "vue": "^2.5.16",
     "webpack": "^4.8.1"
   },

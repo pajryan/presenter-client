@@ -3,11 +3,12 @@
 export function build(){
   let _rootElem,
       _admin,
-      _toc;
+      _toc,
+      _state;
   
   function slideshow(){
-    let p = document.createElement('p'); p.innerHTML = "slidehow";
-    _rootElem.appendChild(p)
+    // let p = document.createElement('p'); p.innerHTML = "slidehow";
+    // _rootElem.appendChild(p)
   }
 
   slideshow.rootElem = function(val){
@@ -15,6 +16,12 @@ export function build(){
     _rootElem = val;
     return slideshow;
   }
+
+  slideshow.state = function(val) {
+    if (!arguments.length) { return _state; }
+    _state = val;
+    return slideshow;
+  };
 
   slideshow.admin = function(val) {
     if (!arguments.length) { return _admin; }
