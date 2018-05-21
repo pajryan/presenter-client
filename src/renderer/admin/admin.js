@@ -2,51 +2,143 @@
 import Vue from 'vue'
 import AdminUI from './adminUI/AdminUI.vue'
 
+const path = require('path');
+const fs = require('fs');
+
+const utils = require ('./../utils.js')
 
 export function build(){
-  let _rootElem,
-      _toc,
-      _slideshow,
-      _state;
+  let _rootElem,    // root html element that the entire admin UI will be appended to
+      _toc,         // like this admin obj, the toc obj.  Creating a reference here will allow toc functions to run from admin (and vice versa)
+      _slideshow,   // like this admin obj, the slideshow obj.  Creating a reference here will allow slideshow functions to run from admin (and vice versa
+      _state;       // global state object
+    
+  let autoUpdater,
+      appConfigPath;
 
-  
+      
   function admin(){
     let p = document.createElement('p'); p.innerHTML = "admin";
     _rootElem.appendChild(p);
 
-
-    //build the admin UI
+     //build the admin UI
     new Vue({
       el: '#admin',
-      render: h => h(AdminUI)
+      render: h => h(AdminUI, {
+        props: {adminObj: admin} //this.adminObj
+      })
     })
+  }
+  
+  /*
+    DATA UPDATE ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  */
+  admin.checkForDataUpdates = function() {
+    return utils.checkIfOnline((isOnline) => {
+      console.log("online?", isOnline)
+      if(!isOnline){return(false, {msg: 'not online'})}
+        // get the date this was last updated
+      appConfigPath = path.join(_state.appPath, _state.appConfigFileName);
+      console.log("checking last update at", appConfigPath);
+      let initializing = false;
 
+      // get the config. If the config doesn't exist, we treat this as an initialization state!
+      if(!fs.existsSync(appConfigPath)){
+        initializing = true;
+        admin.createDefaultAppConfigFile();
+      };
+
+      let appConfig = JSON.parse(fs.readFileSync(appConfigPath));
+      let lastAppDataUpdate = appConfig.lastDataUpdate;
+
+      //
+
+      if(lastAppDataUpdate == null){
+        console.log("init!");
+        return true;
+      }
+
+
+
+    });
+    
+  }
+
+  // create a default config file
+  admin.createDefaultAppConfigFile = function() {
+    const defaultAppConfig = require('./adminUI/defaultAppConfig.json');
+    fs.writeFileSync(appConfigPath, JSON.stringify(defaultAppConfig, null, '\t'), 'utf8');
   }
 
 
+
+
+  /*
+    APPLICATION UPDATE ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  */
+  admin.checkForApplicationUpdates = function(callback){
+    // set the events
+    autoUpdater.on('update-available', (info) => {
+      callback('updateAvailable');
+    })
+    autoUpdater.on('update-not-available', (info) => {
+      callback('updateNotAvailable', _state.appVersion);
+    })
+    autoUpdater.on('error', (err) => {
+      callback('error', err);
+    })
+    autoUpdater.on('download-progress', (progressObj) => {
+      callback('downloadProgress', progressObj);
+    })
+    autoUpdater.on('update-downloaded', (info) => {
+      console.log("update downloaded")
+      callback('updateDownloaded');
+    });
+
+    // call for updates
+    console.log("checking for app update. current version: ", _state.appVersion)
+    autoUpdater.checkForUpdatesAndNotify();
+  }
+
+
+
+  /*
+    GETTERS / SETTERS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  */
+
+
+  // root element
   admin.rootElem = function(val){
     if (!arguments.length) { return _rootElem; }
     _rootElem = val;
     return admin;
   }
 
+  // state and other parts of the app
   admin.state = function(val) {
     if (!arguments.length) { return _state; }
     _state = val;
     return admin;
   };
-
   admin.slideshow = function(val) {
     if (!arguments.length) { return _slideshow; }
     _slideshow = val;
     return admin;
   };
-
   admin.toc = function(val) {
     if (!arguments.length) { return _toc; }
     _toc = val;
     return admin;
   };
+  // autoUpdater
+  admin.autoUpdater = function(val) {
+    if (!arguments.length) { return autoUpdater; }
+    autoUpdater = val;
+    return admin;
+  }
+
+
+  
 
   return admin;
   

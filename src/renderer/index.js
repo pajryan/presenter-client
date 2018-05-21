@@ -10,10 +10,19 @@
 //    3b. udpate data
 //    3c. edit slideshow
 //        flow, images, text (mmd)
+const {ipcRenderer, remote} = require('electron');
+// const main = remote.require('/src/main/index.js');
+// const main = remote.require(__dirname + '/../main/index.js');
+
+let autoUpdater = remote.getGlobal("autoUpdaterPlus");
+
+
 
 require("./styles/main.less");  //note that this main.less file includes bootstrap
 require("./styles/admin.less");
 require("bootstrap");
+
+
 
 // going to store all state here.
 let _state = {};
@@ -27,70 +36,48 @@ meta.content = "width=device-width, initial-scale=1, shrink-to-fit=no";
 document.getElementsByTagName('head')[0].appendChild(meta);
 
 
-// allow messages from main to come here
-const {ipcRenderer} = require('electron');
 //get the passed app version
-ipcRenderer.on('appVersionManagement', function(event, obj) {
-  _state.appUpdateManagement = obj;
-  //have items passed from main.js.  Kick off building the app
-  appInit();
+ipcRenderer.on('appReady', function(event, args) {
+  _state.appVersion = args.appVersion;
+  _state.appPath = args.appPath;
+  _state.appConfigFileName = args.appConfigFileName;
+  appInit();  //have items passed from main.js.  Kick off building the app
 });
-
-
-ipcRenderer.on('message', function(event, text) {
-  console.log("got a message from main: ", text)
-  var container = document.getElementById('messages');
-  var message = document.createElement('div');
-  message.innerHTML = text;
-  container.appendChild(message);
-})
-
-
-
 
 
 
 // do some initialization of the components of the app
+function appInit(){
 
-  function appInit(){
-
-
+  console.log("state is", _state)
   const Admin = require("./admin/admin.js");
   const Slideshow = require("./slideshow/slideshow.js");
   const TOC = require("./toc/toc.js")
 
   let b = document.getElementById("app");
 
-
-
-  //build slideshow
+  // build slideshow
   let s = document.createElement('div'); s.id="slideshow"; b.appendChild(s);
   var slideshow = Slideshow.build().rootElem(s).state(_state);
 
-  //build table of contents
+  // build table of contents
   let t = document.createElement('div'); t.id="toc"; b.appendChild(t);
   var toc = TOC.build().rootElem(t).state(_state);
 
-  //build admin
+  // build admin
   let a = document.createElement('div'); a.id="admin"; a.className="admin"; b.appendChild(a);
   var admin = Admin.build().rootElem(a).state(_state);
+  admin.autoUpdater(autoUpdater); // pass the autoUpdater so the admin can manage update functions
 
   // pass the pieces to each other
   slideshow.admin(admin).toc(toc);
   admin.slideshow(slideshow).toc(toc);
   toc.admin(admin).slideshow(slideshow);
 
-  //run each .
+  // run each .
   admin();
   slideshow();
   toc();
 
 
-
-
-  //this is temporary: it allows me to see the version number (and watch the app updates work from github).  But this should be moved inside admin
-
-  let m = document.createElement('div');
-  m.id = "messages";
-  b.appendChild(m)
 }

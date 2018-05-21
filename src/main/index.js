@@ -1,30 +1,29 @@
 'use strict'
 
-import { app, BrowserWindow } from 'electron'
+import { app, BrowserWindow, Menu } from 'electron'
 import * as path from 'path'
 import { format as formatUrl } from 'url'
 
 const log = require('electron-log');
 const {autoUpdater} = require("electron-updater");
+global.autoUpdaterPlus = autoUpdater; // set globally so I can get it in the admin processes
+
 
 const pj = require('../../package.json')
 const appVersion = pj.version;
 
+const appPath = app.getPath('userData'); // This is where ALL data will be stored (user data as well as data driving pictures)
+const appConfigFileName = "_appConfig.json";
 
-// console.log(JSON.stringify(pj))
 
 let isDevelopment = process.env.NODE_ENV !== 'production'
 
-
-
 // global reference to mainWindow (necessary to prevent window from being garbage collected)
-let mainWindow
+let mainWindow;
+const menuTemplate = getMenuTemplate();
 
 function createMainWindow() {
-  console.log("app version " + pj.version)
-
   const window = new BrowserWindow()
-
   if (isDevelopment) {
     window.webContents.openDevTools()
   }
@@ -44,9 +43,9 @@ function createMainWindow() {
   })
 
   window.webContents.on('devtools-opened', () => {
-    // window.focus()
+    window.focus()
     setImmediate(() => {
-      // window.focus()
+      window.focus()
     })
   })
 
@@ -55,10 +54,7 @@ function createMainWindow() {
 
 // quit application when all windows are closed
 app.on('window-all-closed', () => {
-  // on macOS it is common for applications to stay open until the user explicitly quits
-  if (process.platform !== 'darwin') {
     app.quit()
-  }
 })
 
 app.on('activate', () => {
@@ -69,57 +65,105 @@ app.on('activate', () => {
 })
 
 
-
-
-
-
-
-// start the autoUpdate mechanism
-function sendStatusToWindow(text) {
-  mainWindow.webContents.send('message', text);
-}
-
-
-
-autoUpdater.on('checking-for-update', () => {
-  console.log("checking for update?")
-  sendStatusToWindow('Checking for update...');
-})
-autoUpdater.on('update-available', (info) => {
-  sendStatusToWindow('Update available.');
-})
-autoUpdater.on('update-not-available', (info) => {
-  sendStatusToWindow('Update not available.');
-})
-autoUpdater.on('error', (err) => {
-  console.log("GOT ERROR")
-  sendStatusToWindow('Error in auto-updater. ' + err);
-})
-autoUpdater.on('download-progress', (progressObj) => {
-  let log_message = "Download speed: " + progressObj.bytesPerSecond;
-  log_message = log_message + ' - Downloaded ' + progressObj.percent + '%';
-  log_message = log_message + ' (' + progressObj.transferred + "/" + progressObj.total + ')';
-  sendStatusToWindow(log_message);
-})
-autoUpdater.on('update-downloaded', (info) => {
-  sendStatusToWindow('Update downloaded');
-});
-
-
-
 // create main BrowserWindow when electron is ready
 app.on('ready', () => {
+  const menu = Menu.buildFromTemplate(menuTemplate)
+  Menu.setApplicationMenu(menu)
+  
   mainWindow = createMainWindow();
   
   //once loaded, send the appVersion and the appUpdater to the UI so it can be managed from there
   mainWindow.webContents.on('did-finish-load', function() {
     //pass the version to the window
-    mainWindow.webContents.send('appVersionManagement', {appVersion:appVersion, autoUpdater:autoUpdater});
+    mainWindow.webContents.send('appReady', 
+      {
+        appVersion: appVersion, 
+        appPath: appPath,
+        appConfigFileName: appConfigFileName
+      }
+    );
 
-    //pass the autoUpdater to the window so it can be triggered via admin controls
-    sendStatusToWindow("Current application version: " + appVersion)
     mainWindow.show();
-    // autoUpdater.checkForUpdatesAndNotify();
     
   })
 })
+
+
+
+
+
+function getMenuTemplate(){
+
+  const template = [
+    {
+      label: 'Edit',
+      submenu: [
+        {role: 'undo'},
+        {role: 'redo'},
+        {type: 'separator'},
+        {role: 'cut'},
+        {role: 'copy'},
+        {role: 'paste'},
+        {role: 'selectall'}
+      ]
+    },
+    {
+      label: 'View',
+      submenu: [
+        {role: 'reload'},
+        {role: 'forcereload'},
+        {role: 'toggledevtools'},
+        {type: 'separator'},
+        {role: 'resetzoom'},
+        {role: 'zoomin'},
+        {role: 'zoomout'},
+        {type: 'separator'},
+        {role: 'togglefullscreen'}
+      ]
+    },
+    {
+      role: 'window',
+      submenu: [
+        {role: 'minimize'},
+        {role: 'close'}
+      ]
+    },
+    {
+      role: 'help',
+      submenu: [
+        {
+          label: 'Learn More',
+          click () { require('electron').shell.openExternal('https://electronjs.org') }
+        }
+      ]
+    }
+  ]
+  if (process.platform === 'darwin') {
+    template.unshift({
+      label: app.getName(),
+      submenu: [
+        {role: 'about'},
+        {type: 'separator'},
+        {role: 'services', submenu: []},
+        {type: 'separator'},
+        {role: 'hide'},
+        {role: 'hideothers'},
+        {role: 'unhide'},
+        {type: 'separator'},
+        {role: 'quit'}
+      ]
+    })
+   
+    // Window menu
+    template[3].submenu = [
+      {role: 'close'},
+      {role: 'minimize'},
+      {role: 'zoom'},
+      {type: 'separator'},
+      {role: 'front'}
+    ]
+  }
+  
+  return template;
+
+}
