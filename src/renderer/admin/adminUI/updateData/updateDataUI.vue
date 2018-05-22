@@ -13,11 +13,18 @@
       <div v-if="updateReady === 1" class="updateContainer">
         <p class="text-success">New data is available, click the button below to continue.</p>
         <button type="button" class="btn btn-primary" @click="fetchData">get latest data</button>
+        <br />
+        <p>{{numberOfFilesToUpdateMsg}}</p>
+        <div class="progress">
+          <div class="progress-bar" role="progressbar" :style="{width: updatePercentComplete + '%'}" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100"></div>
+        </div>
       </div>
 
       <div v-if="updateReady === -1" class="updateContainer">
         <p class="text-success">Your data is up to date. Nothing more to do here!</p>
       </div>
+
+      
 
     </div>
 </template>
@@ -36,6 +43,8 @@
         updateButtonDisabled: false,
         isOnline: true,
         updateReady: 0, // 0 = not sure yet, -1 is no update available, 1 = update available
+        numberOfFilesToUpdateMsg: '',
+        updatePercentComplete: 0,
         msg:''
       }
     },
@@ -66,11 +75,21 @@
       },
 
       fetchData(){
-        this.adminObj.getUpdatedData(this.fetchDataResult);
+        this.numberOfFilesToUpdate = 0;
+        this.adminObj.getUpdatedData(this.fetchDataProgress, this.fetchDataResult);
       },
-
-      fetchDataResult(args){
-        console.log('done fetching data', args)
+      fetchDataProgress(percentComplete, totalNumber){ // 0 to 100
+        this.numberOfFilesToUpdateMsg = totalNumber + ' data files to update';
+        this.updatePercentComplete = percentComplete;
+        console.log('in the process of fetching data', percentComplete)
+      },
+      fetchDataResult(arrayOfErrors){
+        if(arrayOfErrors){
+          console.log('done fetching data', arrayOfErrors)
+        }else{
+          console.log('complete, no errors!')
+        }
+        
       }
     }
   }

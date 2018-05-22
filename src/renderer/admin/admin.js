@@ -99,11 +99,53 @@ export function build(){
   }
 
 
-  admin.getUpdatedData = function(callback){
+  admin.getUpdatedData = function(progressCallback, completeCallback){
     console.log('fetching new data:', dataToUpdate);
+    // the following will work, but will need to setInterval or something gross to know when it's done. really need promises here
+    dataToUpdate.forEach((d,i) => { //add some metadata to track
+      d.index = i; d.attempted = false; d.complete = false; d.msg = '';
+    });
     dataToUpdate.forEach((d,i) => {
-      
-    })
+      //fetch the file and copy to the local directory
+      let req = '/requestFile/' + d.file;
+      utils.dataServiceCall(_state.dataUpdateServiceURL, req, (data, error) => {
+        
+        if(error) {// file not found
+          console.error('error fetching file from data service ', error)
+          d.attempted = true;
+          d.msg = error;
+          admin.getUpdatedDataStatus(progressCallback, completeCallback);
+        }else{
+          fs.writeFile(path.join(appDataPath,d.file), JSON.stringify(data, null, '\t'), err => {
+            if(err){
+              console.error('error writing file ' + d.file, err)
+              d.msg = err;
+              d.attempted = true;
+              admin.getUpdatedDataStatus(progressCallback, completeCallback);
+            }else{
+              d.attempted =true;
+              d.complete = true;
+              admin.getUpdatedDataStatus(progressCallback, completeCallback);
+            }
+          });
+        }
+      });
+    });
+  }
+
+  admin.getUpdatedDataStatus = function (progressCallback, completeCallback){
+    let attempted = dataToUpdate.filter(d => d.attempted);
+    let percent = 100 * attempted.length / dataToUpdate.length;
+    progressCallback(percent, dataToUpdate.length)
+
+    if(percent === 100){
+      let incomplete = dataToUpdate.filter(d => !d.complete);
+      if(incomplete.length === 0){
+        completeCallback()
+      }else{
+        completeCallback(incomplete)
+      }
+    }
   }
 
 
