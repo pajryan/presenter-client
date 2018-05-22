@@ -24,6 +24,9 @@ export function build(){
     let p = document.createElement('p'); p.innerHTML = "admin";
     _rootElem.appendChild(p);
 
+    appConfigPath = path.join(_state.appPath, _state.appConfigFileName);
+    appDataPath = path.join(_state.appPath, _state.appDataStorePath);
+
      //build the admin UI
     new Vue({
       el: '#admin',
@@ -38,7 +41,7 @@ export function build(){
   /*
     DATA UPDATE ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   */
-  admin.checkForDataUpdates = function(callback) {
+  admin.checkForDataUpdates = function(callback, dataAfterDate) {
     return utils.checkIfOnline((isOnline) => {
       if(!isOnline){
         callback({isOnline:false, dataAvailable:null, message: msg.msg('no-internet-connection')})
@@ -52,8 +55,6 @@ export function build(){
         }
 
         // get the date this was last updated
-        appConfigPath = path.join(_state.appPath, _state.appConfigFileName);
-        appDataPath = path.join(_state.appPath, _state.appDataStorePath);
         console.log("checking last update at ", appConfigPath);
 
         // get the config. If the config doesn't exist, we treat this as an initialization state!
@@ -64,12 +65,8 @@ export function build(){
         let appConfig = JSON.parse(fs.readFileSync(appConfigPath)); //get the last data update from the config
         let lastAppDataUpdate = appConfig.lastDataUpdate;
 
-    
-        if(lastAppDataUpdate == null){  // this is a brand new user
-          console.log("This user does not have a config file!  Creating one and will prompt to update data.");
-          callback({isOnline:true, dataAvailable: true, message: msg.msg('first-time-fetching-data')});
-          return;
-        }
+        //if a date was passed, we're forcing a data update after the given date
+        if(dataAfterDate){lastAppDataUpdate = dataAfterDate.getTime();}
 
         // now get the data log from the data update service.  The data log is a large object that looks like { dataLog: [timestamp:<timeInMS>, file:<fileName>, timestamp:<timeInMS>, file:<fileName>, ....]}
         //   The <timestamp? is when the source data (<fileName>) was created.  So any timestamps greater than the last udpate time in the config is NEW
@@ -80,7 +77,11 @@ export function build(){
             return;
           }
           dataToUpdate = data.dataLog.filter(d => {return d.timeStamp >= lastAppDataUpdate});
-          callback({isOnline:true, dataAvailable: dataToUpdate.length > 0});
+          if(lastAppDataUpdate==null){  //new user, or data has been deleted
+            callback({isOnline:true, dataAvailable: true, message: msg.msg('first-time-fetching-data')});
+          }else{  //just a normal update
+            callback({isOnline:true, dataAvailable: dataToUpdate.length > 0});
+          }
         })
       });
     });
@@ -135,17 +136,42 @@ export function build(){
 
   admin.getUpdatedDataStatus = function (progressCallback, completeCallback){
     let attempted = dataToUpdate.filter(d => d.attempted);
-    let percent = 100 * attempted.length / dataToUpdate.length;
-    progressCallback(percent, dataToUpdate.length)
+    let attemptedAndComplete = attempted.filter(d => d.complete);
+    let attemptedAndFailed = attempted.filter(d => !d.complete);
+    let percentComplete = 100 * attemptedAndComplete.length / dataToUpdate.length;
+    let percentFailed = 100 * attemptedAndFailed.length / dataToUpdate.length;
+    let percentAttempted = 100 * attempted.length / dataToUpdate.length;
+    progressCallback(percentComplete, percentFailed, dataToUpdate.length)
 
-    if(percent === 100){
+    if(percentAttempted === 100){
       let incomplete = dataToUpdate.filter(d => !d.complete);
       if(incomplete.length === 0){
-        completeCallback()
+        completeCallback();
+        admin.updateConfig("lastDataUpdate", new Date().getTime());
       }else{
         completeCallback(incomplete)
       }
     }
+  }
+
+  admin.deleteData = function(callback){
+    fs.readdir(appDataPath, (err, files) => {
+      if (err){callback(err); return;}
+      for (const file of files) {
+        fs.unlink(path.join(appDataPath, file), err => {
+          if (err){callback(err); return;}
+        });
+      }
+      callback()
+    });
+    //update the config to null date
+    admin.updateConfig("lastDataUpdate", null)
+  }
+
+  admin.updateConfig = function(key, value){
+    let appConfig = JSON.parse(fs.readFileSync(appConfigPath)); 
+    appConfig[key] = value;
+    fs.writeFileSync(appConfigPath, JSON.stringify(appConfig, null, '\t'))
   }
 
 

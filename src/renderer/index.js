@@ -17,7 +17,6 @@ const {ipcRenderer, remote} = require('electron');
 let autoUpdater = remote.getGlobal("autoUpdaterPlus");
 
 
-
 require("./styles/main.less");  //note that this main.less file includes bootstrap
 require("./styles/admin.less");
 require("bootstrap");

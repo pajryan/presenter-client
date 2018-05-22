@@ -58,7 +58,7 @@ module.exports = {
         res.on('data', data => {
           let o=JSON.parse(data);
           if(o.status && o.status === 400){
-            callback(null, {error: data.error})
+            callback(null, {error: o.error})
           }else{
             callback(o);
           }
