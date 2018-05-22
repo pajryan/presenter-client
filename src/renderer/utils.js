@@ -1,13 +1,76 @@
+const http = require('http');
+
 module.exports = {
 
   checkIfOnline: function(callback){
-    require('dns').resolve('www.google.com', function(err) {
+    let dataUrl = 'www.google.com'
+    require('dns').resolve(dataUrl, function(err) {
       if (err) {
+        console.error('trying to connect to internet resulted in', err)
         callback(false)
       } else {
         callback(true)
       }
     })
+  },
+
+
+  checkIfHaveDataConnection: function(dataUrl, callback){
+
+    // the dns.resolve fails on localhost... making local dev difficult...  So if I find localhost, using http.request.  
+    //    But don't want o use http.request generally because it requires me to split out host, port etc.
+    if(dataUrl.indexOf('localhost') != -1){
+
+      let opts = { host: 'localhost', port: '3000', path: '/', method: 'GET'}
+      let request = http.request(opts, res => {
+          res.setEncoding('utf8');
+          res.on('data', data => {
+            let o=JSON.parse(data);
+            if(o.status === 200){ callback(true); }else {callback(false)}
+          });
+      });
+
+      request.on('error', error => {
+        console.log('error connecting to localhost', error);
+        callback(false);
+      });
+
+      request.end();
+
+    }else{
+      require('dns').resolve(dataUrl, function(err) {
+        if (err) {
+          console.error('trying to connect to data service resulted in', err)
+          callback(false)
+        } else {
+          callback(true)
+        }
+      })
+    }
+  },
+
+
+  dataServiceCall: function(dataUrl, endpoint, callback){
+    let opts = { host: dataUrl, path: endpoint, method: 'GET'};
+    if(dataUrl.indexOf('localhost') != -1){opts.port = 3000; opts.host="localhost"}
+    let request = http.request(opts, res => {
+        res.setEncoding('utf8');
+        res.on('data', data => {
+          let o=JSON.parse(data);
+          callback(o);
+        });
+    });
+
+    request.on('error', error => {
+      console.log('error making dataService call', error);
+      callback(null, {error: error});
+    });
+
+    request.end();
   }
+    
+
+
+
   
 }

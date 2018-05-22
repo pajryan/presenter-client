@@ -5,7 +5,8 @@ import AdminUI from './adminUI/AdminUI.vue'
 const path = require('path');
 const fs = require('fs');
 
-const utils = require ('./../utils.js')
+const utils = require ('./../utils.js');
+const msg = require ('./../messages.js');
 
 export function build(){
   let _rootElem,    // root html element that the entire admin UI will be appended to
@@ -14,7 +15,9 @@ export function build(){
       _state;       // global state object
     
   let autoUpdater,
-      appConfigPath;
+      appConfigPath,
+      appDataPath,
+      dataToUpdate = [];
 
       
   function admin(){
@@ -30,44 +33,77 @@ export function build(){
     })
   }
   
+
+
   /*
     DATA UPDATE ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   */
-  admin.checkForDataUpdates = function() {
+  admin.checkForDataUpdates = function(callback) {
     return utils.checkIfOnline((isOnline) => {
-      console.log("online?", isOnline)
-      if(!isOnline){return(false, {msg: 'not online'})}
-        // get the date this was last updated
-      appConfigPath = path.join(_state.appPath, _state.appConfigFileName);
-      console.log("checking last update at", appConfigPath);
-      let initializing = false;
-
-      // get the config. If the config doesn't exist, we treat this as an initialization state!
-      if(!fs.existsSync(appConfigPath)){
-        initializing = true;
-        admin.createDefaultAppConfigFile();
-      };
-
-      let appConfig = JSON.parse(fs.readFileSync(appConfigPath));
-      let lastAppDataUpdate = appConfig.lastDataUpdate;
-
-      //
-
-      if(lastAppDataUpdate == null){
-        console.log("init!");
-        return true;
+      if(!isOnline){
+        callback({isOnline:false, dataAvailable:null, message: msg.msg('no-internet-connection')})
+        return;
       }
 
+      return utils.checkIfHaveDataConnection(_state.dataUpdateServiceURL, (hasDataConnection) => {
+        if(!hasDataConnection){
+          callback({isOnline:false, dataAvailable:null, message: msg.msg('no-data-service-conection')})
+          return;
+        }
 
+        // get the date this was last updated
+        appConfigPath = path.join(_state.appPath, _state.appConfigFileName);
+        appDataPath = path.join(_state.appPath, _state.appDataStorePath);
+        console.log("checking last update at ", appConfigPath);
 
+        // get the config. If the config doesn't exist, we treat this as an initialization state!
+        if(!fs.existsSync(appConfigPath)){
+          admin.createDefaultAppItems();
+        }
+
+        let appConfig = JSON.parse(fs.readFileSync(appConfigPath)); //get the last data update from the config
+        let lastAppDataUpdate = appConfig.lastDataUpdate;
+
+    
+        if(lastAppDataUpdate == null){  // this is a brand new user
+          console.log("This user does not have a config file!  Creating one and will prompt to update data.");
+          callback({isOnline:true, dataAvailable: true, message: msg.msg('first-time-fetching-data')});
+          return;
+        }
+
+        // now get the data log from the data update service.  The data log is a large object that looks like { dataLog: [timestamp:<timeInMS>, file:<fileName>, timestamp:<timeInMS>, file:<fileName>, ....]}
+        //   The <timestamp? is when the source data (<fileName>) was created.  So any timestamps greater than the last udpate time in the config is NEW
+        utils.dataServiceCall(_state.dataUpdateServiceURL, '/dataLog', (data, err) => {
+          if(err){
+            console.error("error calling the data update service: ", err)
+            callback({isOnline: true, dataAvailable: false, messsage:{text:'error: ' + JSON.stringify(err)}});
+            return;
+          }
+          dataToUpdate = data.dataLog.filter(d => {return d.timeStamp >= lastAppDataUpdate});
+          callback({isOnline:true, dataAvailable: dataToUpdate.length > 0});
+        })
+      });
     });
     
   }
 
   // create a default config file
-  admin.createDefaultAppConfigFile = function() {
+  admin.createDefaultAppItems = function() {
     const defaultAppConfig = require('./adminUI/defaultAppConfig.json');
     fs.writeFileSync(appConfigPath, JSON.stringify(defaultAppConfig, null, '\t'), 'utf8');
+
+    //write the _data file too
+    if(!fs.existsSync(appDataPath)){
+      fs.mkdirSync(appDataPath)
+    }
+  }
+
+
+  admin.getUpdatedData = function(callback){
+    console.log('fetching new data:', dataToUpdate);
+    dataToUpdate.forEach((d,i) => {
+      
+    })
   }
 
 

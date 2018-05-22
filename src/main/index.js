@@ -13,7 +13,9 @@ const pj = require('../../package.json')
 const appVersion = pj.version;
 
 const appPath = app.getPath('userData'); // This is where ALL data will be stored (user data as well as data driving pictures)
+const appDataStorePath = "/_data";
 const appConfigFileName = "_appConfig.json";
+const dataUpdateServiceURL = "http://localhost:3000/";
 
 
 let isDevelopment = process.env.NODE_ENV !== 'production'
@@ -76,10 +78,12 @@ app.on('ready', () => {
   mainWindow.webContents.on('did-finish-load', function() {
     //pass the version to the window
     mainWindow.webContents.send('appReady', 
-      {
+      { // pass some things from main to the renderer.  Be sure to set this in _state variable in renderer/index.js 
         appVersion: appVersion, 
         appPath: appPath,
-        appConfigFileName: appConfigFileName
+        appConfigFileName: appConfigFileName,
+        dataUpdateServiceURL: dataUpdateServiceURL,
+        appDataStorePath: appDataStorePath
       }
     );
 

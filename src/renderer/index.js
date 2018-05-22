@@ -41,6 +41,8 @@ ipcRenderer.on('appReady', function(event, args) {
   _state.appVersion = args.appVersion;
   _state.appPath = args.appPath;
   _state.appConfigFileName = args.appConfigFileName;
+  _state.dataUpdateServiceURL = args.dataUpdateServiceURL;
+  _state.appDataStorePath = args.appDataStorePath;
   appInit();  //have items passed from main.js.  Kick off building the app
 });
 
