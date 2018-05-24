@@ -1,0 +1,97 @@
+{
+  "type": "object",
+  "title": " ",
+  "properties": {
+    "metadata": {
+      "type": "object",
+      "title": " ",
+      "properties": {
+        "title":{
+          "type": "string",
+          "default": "DCI"
+        },
+        "version":{
+          "type": "string"
+        },
+        "author":{
+          "type": "string"
+        },
+        "creationDate":{
+          "type": "integer",
+          "title": "creation date"
+        }
+      }
+        
+    },
+    "presentation": {
+      "type": "object",
+      "title": " ",
+      "properties":{
+        "sections":{
+          "type": "array",
+          "minItems": 1,
+          "format": "tabs",
+          "title": " ",
+          "items": {
+            "type": "object",
+            "title": "section",
+            "properties": {
+              "title":{
+                "type": "string",
+                "title": "section title"
+              },
+              "pages":{
+                "type": "array",
+                "minItems": 1,
+                
+                "title": "pages",
+                "items": {
+                  "type": "object",
+                  "title": "page",
+                  "properties": {
+                    "title":{
+                      "type": "string"
+                    },
+                    "pageItems": {
+                      "type": "array",
+                      "minItems": 1,
+                      "format": "table",
+                      "title": "page items",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "percentWidth": {
+                            "type": "integer",
+                            "title": "width (%)",
+                            "default": 100,
+                            "minimum": 0,
+                            "maximum": 100
+                          },
+                          "type": {
+                            "type": "string",
+                            "title": "item type",
+                            "enum": [
+                              "image", "text", "component"
+                            ]
+                          },
+                          "item": {
+                            "type": "string",
+                            "title": "item path (enum!)"
+                          },
+                          "dataSource": {
+                            "type": "string",
+                            "title": "data source (enum!)"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

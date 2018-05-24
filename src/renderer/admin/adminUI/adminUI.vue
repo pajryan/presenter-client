@@ -1,7 +1,7 @@
 <template>
-    <div id="admin"> 
-      <div id="adminCollapsed" v-show="!shown">
-        <a href="#" @click.stop.prevent="toggleShown()">admin</a>
+    <div id="admin" :style="shown?'height:100%':''"> 
+      <div id="adminCollapsed" v-show="!shown" class="navbar fixed-bottom " style="text-align:right">
+        <a href="#" @click.stop.prevent="toggleShown()" style="width:100%"><font-awesome-icon :icon="icon" /></a>
       </div>
 
       <div id="adminShown" v-show="shown">
@@ -39,14 +39,18 @@
   import EditPresentation from './editPresentation/editPresentationUI.vue'
   import UpdateApplication from './updateApplication/updateApplicationUI.vue'
 
+  import FontAwesomeIcon from '@fortawesome/vue-fontawesome'
+  import faCog from '@fortawesome/fontawesome-free-solid/faCog'
+
 
   export default {
     props: ['adminObj'], 
-
+    computed: { icon () { return faCog} },
+    components: { FontAwesomeIcon },
     data () {
       return {
         shown: true,
-        tabIndex: 0,
+        tabIndex: 1,
         tabs: [
           {name: 'update data', index: 0, isActive: true, hasBeenLoaded:false, childId: "adminUpdateData", uiToLoad: UpdateData},
           {name: 'edit presentation', index: 1, isActive: false, hasBeenLoaded:false, childId: "adminEditPresentation", uiToLoad: EditPresentation},
@@ -94,5 +98,11 @@
 </script>
 
 <style scoped lang="less">
-
+  .fa-cog{
+    height: 25px;
+    width: 25px;
+  }
+  .fa-cog path{
+    fill: #666;
+  }
 </style>

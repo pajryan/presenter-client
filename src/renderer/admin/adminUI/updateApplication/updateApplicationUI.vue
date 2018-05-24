@@ -1,6 +1,14 @@
 <template>
     
     <div>
+      <p>Use this section to update the overall presentation application (not the data).</p>
+      <p>It is best to use this functionality when:
+        <ul>
+          <li>you are on to a good, fast, internet connection</li>
+          <li>have a little time to review the presentation to be sure there are no surprises.</li>
+        </ul>
+      </p>
+
       <button type="button" class="btn btn-primary" @click="checkForUpdate" :disabled="updateButtonDisabled">check for application updates</button><!--:disabled="updateButtonDisabled"-->
 
       <div v-if="updateAvailable===1" class="updateContainer">

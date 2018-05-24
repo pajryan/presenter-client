@@ -1,6 +1,6 @@
 {
   "name": "presenter",
-  "version": "1.0.27",
+  "version": "1.0.28",
   "license": "MIT",
   "scripts": {
     "dev": "electron-webpack dev",
@@ -10,6 +10,10 @@
     "publish": "yarn compile && build --mac --win -p always"
   },
   "dependencies": {
+    "@fortawesome/fontawesome": "^1.1.8",
+    "@fortawesome/fontawesome-free-solid": "^5.0.13",
+    "@fortawesome/vue-fontawesome": "^0.0.22",
+    "@json-editor/json-editor": "^1.0.0",
     "bootstrap": "^4.1.1",
     "d3": "^5.4.0",
     "electron-log": "^2.2.14",

@@ -4,6 +4,7 @@ import { app, BrowserWindow, Menu } from 'electron'
 import * as path from 'path'
 import { format as formatUrl } from 'url'
 
+
 const log = require('electron-log');
 const {autoUpdater} = require("electron-updater");
 global.autoUpdaterPlus = autoUpdater; // set globally so I can get it in the admin processes

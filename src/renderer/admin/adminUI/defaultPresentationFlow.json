@@ -1,0 +1,45 @@
+{
+  "metadata": {
+    "author": "Patrick",
+    "creationDate": 1527104358457,
+    "title": "DCI",
+    "version": "1.0"
+  },
+
+  "presentation": {
+    "sections": [
+      {
+        "title": "section1", 
+        "pages": [
+          {
+            "title": "section1, page1",
+            "pageItems": [
+              {"percentWidth": 70, "type": "component", "item": "/components/lineChart.js", "dataSource": "mispricingOverTime" },
+              {"percentWidth": 30, "type": "text", "item": "/text/mispOverTime.mmd", "dataSource": "mispricingOverTime" }
+            ]
+          },
+          {
+            "title": "section1, page2",
+            "pageItems": [
+              {"percentWidth": 70, "type": "component", "item": "/components/scatterChart.js", "dataSource": "mispricingOverTime" },
+              {"percentWidth": 30, "type": "text", "item": "/text/scatterInfo.mmd", "dataSource": "mispricingOverTime" }
+            ]
+          }
+        ]
+      },
+      {
+        "title": "section2", 
+        "pages": [
+          {
+            "title": "section2, page1",
+            "pageItems": [
+              {"percentWidth": 30, "type": "image", "item": "/images/orgChart.png" }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+
+
+}
