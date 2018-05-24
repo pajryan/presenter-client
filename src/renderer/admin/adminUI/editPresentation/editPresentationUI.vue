@@ -54,7 +54,7 @@
 
 <style  lang="less">
   @textColor:#666;
-  @borderColor:#999;
+  @borderColor:#dee2e6;
 
   #presentationEditor h3{
     font-size: 1.1em;
@@ -88,19 +88,28 @@
     font-size: 0.9em;
   }
 
+  #presentationEditor .nav{
+    height: 23px;
+  }
+  #presentationEditor .nav li{
+    border-top: 1px solid @borderColor;
+    border-left: 1px solid @borderColor;
+    border-right: 1px solid @borderColor;
+  }
+  #presentationEditor .nav li a{
+    padding: 2px 6px;
+    background: @borderColor;
+    color: @textColor;
+  }
+  #presentationEditor .nav li a:hover{
+    text-decoration:none;
+  }
+  #presentationEditor .nav li.active a{
+    border-bottom:1px solid #fff;
+    background: #fff;
+    color: #000;
+  }
 
-  #presentationEditor .tabs{
-    float:left;
-    font-size: 1.1em;
-    width:110px;
-  }
-  #presentationEditor .tabs a{
-    border-bottom: 1px solid @borderColor;
-    padding: 0px 4px;
-  }
-  #presentationEditor .tabs .active{
-    background: #bddce8;
-  }
   #presentationEditor .col-md-10{
     margin-left:110px;
   }
