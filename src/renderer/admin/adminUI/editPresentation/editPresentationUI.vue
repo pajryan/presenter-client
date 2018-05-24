@@ -1,7 +1,6 @@
 <template>
     <div>
       <div id="presentationEditor"></div>
-        {{ msg }}&darr;<br />&#10005;<br />&plus;<br />&times;
     </div>
 </template>
 
@@ -56,6 +55,10 @@
   @textColor:#666;
   @borderColor:#dee2e6;
 
+  #presentationEditor{
+    margin-top: -27px;
+  }
+
   #presentationEditor h3{
     font-size: 1.1em;
     margin-top: 15px;
@@ -65,10 +68,6 @@
     padding-right:15px
   }
 
-  #presentationEditor span{
- 
-    
-  }
   #presentationEditor .card{
     border: 0px;
   }
@@ -113,13 +112,25 @@
   #presentationEditor .col-md-10{
     margin-left:110px;
   }
-  #presentationEditor .col-md-10 .card{
-    
+  
+  #presentationEditor div[data-schemapath*="root.metadata"] .control-label{
+    margin-top: 15px;
   }
 
-  #presentationEditor .btn-group{
-    // margin-left:0px !important;
+
+  #presentationEditor div[data-schemapath*=".pages."]{
+    padding-bottom:12px;
+    margin-bottom:22px;
   }
+
+  #presentationEditor div[data-schemapath*=".pages"]{
+    margin-left:12px;
+  }
+
+  #presentationEditor div[data-schemapath*=".pages"] ul.nav{
+    margin-left:12px;
+  }
+
 
   #presentationEditor .btn{
     border-radius: 0.25rem;
@@ -134,6 +145,12 @@
   #presentationEditor .btn:hover{
     background: #bddce8;
   }
+
+  #presentationEditor button.json-editor-btn-add:nth-of-type(1){
+    // background: pink;
+  }
+
+  
 
   // hack to change all the buttons to "icons"
   #presentationEditor .json-editor-btn-add{
@@ -192,6 +209,28 @@
     background: pink;
     display:none;
   }
+
+  //This targets the add ssection button at the very top
+  #presentationEditor h3>div>button.json-editor-btn-add:nth-of-type(1){
+    margin-left:-66px;
+    margin-top: 14px;
+    position: absolute;;
+  }
+
+  //This targets the add buttons for adding items to pages
+  #presentationEditor div[data-schemapath*=".pageItems"]>div>div>button.json-editor-btn-add:nth-of-type(1){
+    margin-top: -20px; 
+    width:40px !important;
+    margin-left:15px !important;
+  }
+  
+  #presentationEditor div[data-schemapath*=".pages"]>div>div>button.json-editor-btn-add:nth-of-type(1){
+    width:80px;
+    margin-left:0%;
+  }
+
+
+
 
   #presentationEditor tbody td:nth-of-type(1) input{
     width: 50px !important;

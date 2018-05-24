@@ -8,6 +8,7 @@
       "properties": {
         "title":{
           "type": "string",
+          "title": "presentation title",
           "default": "DCI"
         },
         "version":{
@@ -43,8 +44,8 @@
               "pages":{
                 "type": "array",
                 "minItems": 1,
-                
-                "title": "pages",
+                "format": "tabs",
+                "title": " ",
                 "items": {
                   "type": "object",
                   "title": "page",
