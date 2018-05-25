@@ -25,7 +25,6 @@ module.exports = {
 
 
   checkIfHaveDataConnection: function(dataUrl, callback){
-
     // the dns.resolve fails on localhost... making local dev difficult...  So if I find localhost, using http.request.  
     //    But don't want o use http.request generally because it requires me to split out host, port etc.
     if(dataUrl.indexOf('localhost') != -1){
@@ -58,7 +57,7 @@ module.exports = {
     }
   },
 
-
+  // fetch data from data service
   dataServiceCall: function(dataUrl, endpoint, callback){
     let opts = { host: dataUrl, port:80, path: endpoint, method: 'GET'};
     if(dataUrl.indexOf('localhost') != -1){opts.port = 3000; opts.host="localhost"};
@@ -80,35 +79,33 @@ module.exports = {
     });
 
     request.end();
+  },
+
+
+
+  publishPresentation: function(dataUrl, endpoint, presentation, callback){
+    let postData = {data:presentation};
+    let opts = { host: dataUrl, port:80, path: endpoint, method: 'POST', headers: {'Content-Type': 'application/json'}};
+    if(dataUrl.indexOf('localhost') != -1){opts.port = 3000; opts.host="localhost"};
+    let request = http.request(opts, res => {
+        res.setEncoding('utf8');
+        res.on('data', data => {
+          let o=JSON.parse(data);
+          if(o.status && o.status === 400){
+            callback(null, {error: o.error})
+          }else{
+            callback(o);
+          }
+        });
+    });
+
+    request.on('error', error => {
+      console.log('error making publishPresentation call', error);
+      callback(null, {error: error});
+    });
+    request.write(JSON.stringify(postData));
+    request.end();
   }
-
-
-  // dataServiceCallAwait: function(dataUrl, endpoint){
-  //   return new Promise(
-  //     function (resolve, reject) {
-  //         let opts = { host: dataUrl, port:80, path: endpoint, method: 'GET'};
-  //         if(dataUrl.indexOf('localhost') != -1){opts.port = 3000; opts.host="localhost"};
-  //         let request = http.request(opts, res => {
-  //             res.setEncoding('utf8');
-  //             res.on('data', data => {
-  //               let o=JSON.parse(data);
-  //               if(o.status && o.status === 400){
-  //                 reject({error: data.error})
-  //               }else{
-  //                 resolve(o);
-  //               }
-  //             });
-  //         });
-
-  //         request.on('error', error => {
-  //           console.log('error making dataService call', error);
-  //           resolve({error: error});
-  //         });
-
-  //         request.end();
-  //   })
-  // }
-    
 
 
 

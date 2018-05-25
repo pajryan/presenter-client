@@ -84,12 +84,15 @@ export function build(){
 
   /*
     PRESENTATION MANAGEMENT ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    For presentations, there are two sources:
+      - the online web-update service (same service as data update, just different endpoints)
+      - the local user storage.  When displaying existing presentations, this is where we pull from
   */
   admin.getPresentations = function(){
     //get a list of all presentations available
     let presentations = []; 
     fs.readdirSync(appPresentationPath).forEach(file => {
-      if(file != _state.appPresentationConfigFileName){ //skip the config file!
+      if(file != _state.appPresentationConfigFileName && file.indexOf('deleted_') == -1){ //skip the config file! and skip deleted files!
         presentations.push(JSON.parse(fs.readFileSync(path.join(appPresentationPath, file))));
       }
     });
@@ -136,6 +139,13 @@ export function build(){
     let newName = path.join(appPresentationPath, "deleted_"+id+".json")
     fs.renameSync(currName, newName)
     // fs.unlinkSync(path.join(appPresentationPath, id + ".json")); //this just deletes
+  }
+
+  admin.publishPresentation = function(id, callback){
+    let presentationToPublish = admin.getPresentationById(id);
+    utils.publishPresentation(_state.dataUpdateServiceURL, '/savePresentation', presentationToPublish, (data, err) => {
+      callback(data);
+    });
   }
 
 

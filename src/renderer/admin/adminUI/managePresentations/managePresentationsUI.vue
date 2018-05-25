@@ -18,7 +18,7 @@
             <td><button type="button" class="btn btn-primary btn-sm" @click="makeActive(presentation.metadata.id)" :disabled="activePresentationId==presentation.metadata.id">make active</button></td>
             <td><button type="button" class="btn btn-primary btn-sm" @click="duplicatePresentation(presentation.metadata.id)">duplicate</button></td>
             <td><button type="button" class="btn btn-primary btn-sm" @click="deletePresentation(presentation.metadata.id)" :disabled="activePresentationId==presentation.metadata.id">delete</button></td>
-            <td>publish for other users</td>
+            <td><button type="button" class="btn btn-primary btn-sm" @click="publishPresentation(presentation.metadata.id)">publish</button></td>
           </tr>
         </tbody>
       </table>
@@ -28,13 +28,10 @@
           list available presentations<br />
 
         presentation specific:
-          make a given presentation active<br />
           publish a given presentation for other clients<br />
-          duplicate a given presentation<br />
         
         global
           download published presentations<br />
-          delete all presentations? (scary)<br />
 
         {{msg}}</div>
     </div>
@@ -83,6 +80,9 @@
       deletePresentation(id){
         this.adminObj.deletePresentation(id);
         this.presentations = this.presentations.filter(f => f.metadata.id!=id); //filter out of UI
+      },
+      publishPresentation(id){
+        this.adminObj.publishPresentation(id, res => console.log('result in managePresentationsUI.vue', res));
       },
       highlightBriefly(idx){
         setTimeout( function(idx){ document.getElementById("presentationTableBody").childNodes[idx].className="table-info"} ,200,idx)
