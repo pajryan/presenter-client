@@ -41,6 +41,10 @@
                 "type": "string",
                 "title": "section title"
               },
+              "thumbnail":{
+                "type": "string",
+                "title": "section thumbnail image"
+              },
               "pages":{
                 "type": "array",
                 "minItems": 1,

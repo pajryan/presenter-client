@@ -9,7 +9,7 @@
         </ul>
       </p>
 
-      <button type="button" class="btn btn-primary" @click="checkForUpdate" :disabled="updateButtonDisabled">check for application updates</button><!--:disabled="updateButtonDisabled"-->
+      <button type="button" class="btn btn-primary" @click="checkForUpdate" :disabled="updateButtonDisabled">check for application updates</button>
 
       <div v-if="updateAvailable===1" class="updateContainer">
         <p>An update is available.<br />Downloading:</p>

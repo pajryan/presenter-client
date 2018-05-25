@@ -2,14 +2,16 @@
   "metadata": {
     "author": "Patrick",
     "creationDate": 1527104358457,
-    "title": "DCI",
-    "version": "1.0"
+    "title": "DCI (default)",
+    "version": "1.0",
+    "id": "ad74a135-2399-4d0d-896d-ca182000c6ab"
   },
 
   "presentation": {
     "sections": [
       {
-        "title": "section1", 
+        "title": "section1",
+        "thumbnail": "/images/thumbnails/section1.png",
         "pages": [
           {
             "title": "section1, page1",
@@ -29,6 +31,7 @@
       },
       {
         "title": "section2", 
+        "thumbnail": "/images/thumbnails/section1.png",
         "pages": [
           {
             "title": "section2, page1",

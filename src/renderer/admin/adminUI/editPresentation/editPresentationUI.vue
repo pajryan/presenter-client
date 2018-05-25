@@ -1,6 +1,11 @@
 <template>
     <div>
+      
       <div id="presentationEditor"></div>
+      <div id="presentationEditorControls">
+        <button type="button" class="btn btn-primary" @click="savePresentation">save</button> <!-- :disabled="updateButtonDisabled" -->
+        <button type="button" class="btn btn-primary" @click="discardChanges">cancel</button> <!-- :disabled="updateButtonDisabled" -->
+      </div>
     </div>
 </template>
 
@@ -23,13 +28,12 @@
       }
     },
     mounted () {
-      console.log("schema", schema)
+      //load the json schema
       let editorElem = document.getElementById("presentationEditor");
       let editorOpts = {
         schema: schema,
         startval: presentationFlow,
         theme: 'bootstrap2',
-        // iconlib: "bootstrap2",
         disable_edit_json: true,
         disable_properties: true,
         disable_collapse: true
@@ -38,12 +42,20 @@
 
       editor.on('ready',function() {
         // Now the api methods will be available
-        let validateResult = editor.validate();
-        console.log("validation result", validateResult);
-
-        // document.getElementsByClassName('json-editor-btn-add')
-
+        let validationErrors = editor.validate();
+        if(validationErrors.length > 0){
+          console.error("error validating presentation flow against schmea", validationErrors);
+          console.error("the schema is", schema);
+        }
       });
+    },
+    methods:{
+      savePresentation(){
+        console.log('saving presentation')
+      },
+      discardChanges(){
+        console.log('discarding changes')
+      }
     }
   }
 
@@ -52,6 +64,18 @@
 </script>
 
 <style  lang="less">
+  #presentationEditorControls{
+    background: #fff;
+    position: fixed;
+    right: 30px;
+    top: 120px;
+    padding:9px 12px;
+    box-shadow: 3px 3px 6px 2px #ccc;
+    border: 1 px solid #ccc;
+  }
+
+
+
   @textColor:#666;
   @borderColor:#dee2e6;
 
@@ -116,7 +140,9 @@
   #presentationEditor div[data-schemapath*="root.metadata"] .control-label{
     margin-top: 15px;
   }
-
+  #presentationEditor div[data-schemapath*=".thumbnail"] .control-label{
+    margin-top: 15px;
+  }
 
   #presentationEditor div[data-schemapath*=".pages."]{
     padding-bottom:12px;

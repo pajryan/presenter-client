@@ -18,6 +18,8 @@ export function build(){
   let autoUpdater,
       appConfigPath,
       appDataPath,
+      appPresentationPath,
+      appPresentationConfig,
       dataToUpdate = [];
 
       
@@ -27,6 +29,14 @@ export function build(){
 
     appConfigPath = path.join(_state.appPath, _state.appConfigFileName);
     appDataPath = path.join(_state.appPath, _state.appDataStorePath);
+    appPresentationPath = path.join(_state.appPath, _state.appPresentationPath);
+    appPresentationConfig = path.join(appPresentationPath, _state.appPresentationConfigFileName)
+
+    //if needed, build the user storage directories, configs etc (on first time running the app)
+    admin.initAppDirectories();
+
+
+    console.log('a uuid ', utils.getUUID())
 
      //build the admin UI
     new Vue({
@@ -37,6 +47,98 @@ export function build(){
     })
   }
   
+ 
+
+
+  // the first time a user launches the application we need the following in the user storage (e.g. /Users/<user>/Library/Application Support/<appName>/:
+  //  a default configuration file
+  //  a _data directory
+  //  a _presentations directory
+  admin.initAppDirectories = function(){
+    // get the config. If the config doesn't exist, we treat this as an initialization state!
+    if(!fs.existsSync(appConfigPath)){
+      console.log("-----------")
+      console.log("THIS IS A NEW INSTALL! Creating config files and directories in the user storage")
+      console.log("-----------")
+      const defaultAppConfig = require('./adminUI/defaultAppConfig.json');
+      const defaultPresentationFlow = require('./adminUI/defaultPresentationFlow.json');  //_state.appDefaultPresentationFileName
+      const defaultPresentationConfig = require('./adminUI/defaultPresentationConfig.json'); 
+      fs.writeFileSync(appConfigPath, JSON.stringify(defaultAppConfig, null, '\t'), 'utf8');
+  
+      //write the _data directory
+      if(!fs.existsSync(appDataPath)){
+        fs.mkdirSync(appDataPath)
+      }
+      //write the _presentation directory
+      if(!fs.existsSync(appPresentationPath)){
+        fs.mkdirSync(appPresentationPath);
+        //write the default presentation flow
+        let appDefaultPresentationFile = path.join(appPresentationPath, defaultPresentationFlow.metadata.id+".json"); //name the default file based on its UUID
+        fs.writeFileSync(appDefaultPresentationFile, JSON.stringify(defaultPresentationFlow, null, '\t'), 'utf8');
+        //write the default presentation config
+        fs.writeFileSync(appPresentationConfig, JSON.stringify(defaultPresentationConfig, null, '\t'), 'utf8');
+        
+      }
+    }
+  }
+
+  /*
+    PRESENTATION MANAGEMENT ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  */
+  admin.getPresentations = function(){
+    //get a list of all presentations available
+    let presentations = []; 
+    fs.readdirSync(appPresentationPath).forEach(file => {
+      if(file != _state.appPresentationConfigFileName){ //skip the config file!
+        presentations.push(JSON.parse(fs.readFileSync(path.join(appPresentationPath, file))));
+      }
+    });
+    return presentations;
+  }
+
+  admin.getActivePresentationId = function(){
+    let presentationConfig = JSON.parse(fs.readFileSync(appPresentationConfig));
+    return presentationConfig.activePresentation;
+  }
+
+  admin.getActivePresentation = function(){
+    let activePresentationId = admin.getActivePresentationId();
+    return JSON.parse(fs.readFileSync(path.join(appPresentationPath, activePresentationId+'.json')));
+  }
+
+  admin.setActivePresentation = function(id){
+    let presentationConfig = JSON.parse(fs.readFileSync(appPresentationConfig));
+    presentationConfig.activePresentation = id;
+    fs.writeFileSync(appPresentationConfig, JSON.stringify(presentationConfig, null, '\t'), 'utf8');
+  }
+
+  admin.getPresentationById = function(id){
+    return JSON.parse(fs.readFileSync(path.join(appPresentationPath, id + ".json")));
+  }
+
+  admin.duplicatePresentation = function(id){
+    let newPresentation = admin.getPresentationById(id);
+    let newPresentationId = utils.getUUID();
+    newPresentation.metadata.title += "(COPY)";
+    newPresentation.metadata.id = newPresentationId;
+    newPresentation.metadata.creationDate = new Date().getTime();
+    admin.writePresentation(newPresentation);
+    return newPresentation;
+  }
+
+  admin.writePresentation = function(presentationObject){
+    let fileName = presentationObject.metadata.id;
+    fs.writeFileSync(path.join(appPresentationPath, fileName + ".json"), JSON.stringify(presentationObject, null, '\t'), 'utf8');
+  }
+
+  admin.deletePresentation = function(id){
+    let currName = path.join(appPresentationPath, id+".json");
+    let newName = path.join(appPresentationPath, "deleted_"+id+".json")
+    fs.renameSync(currName, newName)
+    // fs.unlinkSync(path.join(appPresentationPath, id + ".json")); //this just deletes
+  }
+
+
 
 
   /*
@@ -58,10 +160,7 @@ export function build(){
         // get the date this was last updated
         console.log("checking last update at ", appConfigPath);
 
-        // get the config. If the config doesn't exist, we treat this as an initialization state!
-        if(!fs.existsSync(appConfigPath)){
-          admin.createDefaultAppItems();
-        }
+        
 
         let appConfig = JSON.parse(fs.readFileSync(appConfigPath)); //get the last data update from the config
         let lastAppDataUpdate = appConfig.lastDataUpdate;
@@ -87,17 +186,6 @@ export function build(){
       });
     });
     
-  }
-
-  // create a default config file
-  admin.createDefaultAppItems = function() {
-    const defaultAppConfig = require('./adminUI/defaultAppConfig.json');
-    fs.writeFileSync(appConfigPath, JSON.stringify(defaultAppConfig, null, '\t'), 'utf8');
-
-    //write the _data file too
-    if(!fs.existsSync(appDataPath)){
-      fs.mkdirSync(appDataPath)
-    }
   }
 
 
@@ -210,7 +298,6 @@ export function build(){
   /*
     GETTERS / SETTERS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   */
-
 
   // root element
   admin.rootElem = function(val){

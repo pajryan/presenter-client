@@ -37,6 +37,7 @@
   import Vue from 'vue'
   import UpdateData from './updateData/updateDataUI.vue'
   import EditPresentation from './editPresentation/editPresentationUI.vue'
+  import ManagePresentations from './managePresentations/managePresentationsUI.vue'
   import UpdateApplication from './updateApplication/updateApplicationUI.vue'
 
   import FontAwesomeIcon from '@fortawesome/vue-fontawesome'
@@ -53,8 +54,9 @@
         tabIndex: 1,
         tabs: [
           {name: 'update data', index: 0, isActive: true, hasBeenLoaded:false, childId: "adminUpdateData", uiToLoad: UpdateData},
-          {name: 'edit presentation', index: 1, isActive: false, hasBeenLoaded:false, childId: "adminEditPresentation", uiToLoad: EditPresentation},
-          {name: 'update application', index: 2, isActive: false, hasBeenLoaded:false, childId: "adminUpdateApplication", uiToLoad: UpdateApplication}
+          {name: 'manage presentations', index: 1, isActive: false, hasBeenLoaded:false, childId: "adminManagePresentation", uiToLoad: ManagePresentations},
+          {name: 'edit active presentation', index: 2, isActive: false, hasBeenLoaded:false, childId: "adminEditPresentation", uiToLoad: EditPresentation},
+          {name: 'update application', index: 3, isActive: false, hasBeenLoaded:false, childId: "adminUpdateApplication", uiToLoad: UpdateApplication}
         ]
       }
     },

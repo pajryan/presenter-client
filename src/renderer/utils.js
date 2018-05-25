@@ -2,6 +2,15 @@ const http = require('http');
 
 module.exports = {
 
+  getUUID: function() {
+    //https://stackoverflow.com/questions/105034/create-guid-uuid-in-javascript?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+      var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+      return v.toString(16);
+    });
+  },
+
+
   checkIfOnline: function(callback){
     let dataUrl = 'www.google.com'
     require('dns').resolve(dataUrl, function(err) {

@@ -15,7 +15,11 @@ const appVersion = pj.version;
 
 const appPath = app.getPath('userData'); // This is where ALL data will be stored (user data as well as data driving pictures)
 const appDataStorePath = "/_data";
+const appPresentationPath = "/_presentations";
+const appDefaultPresentationFileName = "_defaultPresentation.json";
+const appPresentationConfigFileName = "_presentationConfig.json";
 const appConfigFileName = "_appConfig.json";
+
 const dataUpdateServiceURL = "http://localhost:3000/";
 
 
@@ -84,7 +88,10 @@ app.on('ready', () => {
         appPath: appPath,
         appConfigFileName: appConfigFileName,
         dataUpdateServiceURL: dataUpdateServiceURL,
-        appDataStorePath: appDataStorePath
+        appDataStorePath: appDataStorePath,
+        appPresentationPath: appPresentationPath,
+        appDefaultPresentationFileName: appDefaultPresentationFileName,
+        appPresentationConfigFileName: appPresentationConfigFileName
       }
     );
 
