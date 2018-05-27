@@ -12,6 +12,19 @@
 
 
 <script>
+/*
+  With every save:
+   - increment the version number 
+    - version number will not be user editable
+   - update the createdAt date (also not user editable)
+   - create an entirely new file (new UUID)
+
+   - this will mean that we never conflict - there is no editing an existing file, only creating a new one
+   
+   - then, can decide what to do with the "old" version
+    - could delete it locally and remotely
+    - could just keep everything and let the user deal with deleting
+*/
   import Vue from 'vue'
 
   require('@json-editor/json-editor') //impacts window object directly (not ideal..), so don't load as module

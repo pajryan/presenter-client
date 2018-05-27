@@ -12,14 +12,31 @@
           "default": "DCI"
         },
         "version":{
-          "type": "string"
+          "type": "string",
+          "readonly": true
         },
         "author":{
-          "type": "string"
+          "type": "string",
+          "readonly": true
         },
         "creationDate":{
           "type": "integer",
-          "title": "creation date"
+          "title": "creation date",
+          "readonly": true,
+          "options": { "hidden": false }
+        },
+        "id":{
+          "type": "string",
+          "title": "presentation id",
+          "readonly": true,
+          "options": { "hidden": false }
+        },
+        "isPublished":{
+          "type": "boolean",
+          "title": "has been published to server?",
+          "format": "checkbox",
+          "readonly": true,
+          "options": { "hidden": false }
         }
       }
         
@@ -77,7 +94,11 @@
                             "title": "item type",
                             "enum": [
                               "image", "text", "component"
-                            ]
+                            ],
+                            "options": {
+                              "enum_titles": ["image", "text", "widget"]
+                            }
+                            
                           },
                           "item": {
                             "type": "string",

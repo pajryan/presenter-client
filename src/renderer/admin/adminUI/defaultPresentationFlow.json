@@ -1,10 +1,13 @@
 {
   "metadata": {
+    "id": "ad74a135-2399-4d0d-896d-ca182000c6ab",
     "author": "Patrick",
     "creationDate": 1527104358457,
-    "title": "DCI (default)",
     "version": "1.0",
-    "id": "ad74a135-2399-4d0d-896d-ca182000c6ab"
+    "isPublished": false,
+
+    "title": "DCI (default)"
+    
   },
 
   "presentation": {

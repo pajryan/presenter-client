@@ -1,3 +1,5 @@
+<script>
+</script>
 <template>
     <div>
       <table class="table table-sm" >
@@ -14,7 +16,7 @@
             <td :title="presentation.metadata.id">{{presentation.metadata.title}}</td>
             <td>{{presentation.metadata.version}}</td>
             <td>{{presentation.metadata.author}}</td>
-            <td>{{new Date(presentation.metadata.creationDate)}}</td>
+            <td>{{formatDt(new Date(presentation.metadata.creationDate))}}</td>
             <td><button type="button" class="btn btn-primary btn-sm" @click="makeActive(presentation.metadata.id)" :disabled="activePresentationId==presentation.metadata.id">make active</button></td>
             <td><button type="button" class="btn btn-primary btn-sm" @click="duplicatePresentation(presentation.metadata.id)">duplicate</button></td>
             <td><button type="button" class="btn btn-primary btn-sm" @click="deletePresentation(presentation.metadata.id)" :disabled="activePresentationId==presentation.metadata.id">delete</button></td>
@@ -41,7 +43,8 @@
 
 <script>
   import Vue from 'vue'
-
+  import * as d3 from 'd3';
+  let formatDate = d3.timeFormat("%m/%d/%y %I:%M%p");
 
 
   export default {
@@ -60,6 +63,9 @@
       console.log("availabel prsentations", this.presentations);
     },
     methods:{
+      formatDt(dt){
+        return formatDate(dt);
+      },
       getPresentations(){
         this.presentations = this.adminObj.getPresentations();
       },
