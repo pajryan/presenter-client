@@ -5,10 +5,14 @@
       <table class="table table-sm" >
         <thead>
           <tr>
-            <th @click="sortTableBy('title')">presentation title</th>
+            <th colspan="8">Presentations</th>
+          </tr>
+          <tr>
+            <th @click="sortTableBy('title')">title</th>
             <th @click="sortTableBy('version')">version</th>
             <th @click="sortTableBy('author')">author</th>
             <th @click="sortTableBy('creationDate')">last update</th>
+            <th colspan="4"></th>
           </tr>
         </thead>
         <tbody id="presentationTableBody">
@@ -19,12 +23,40 @@
             <td>{{formatDt(new Date(presentation.metadata.creationDate))}}</td>
             <td><button type="button" class="btn btn-primary btn-sm" @click="makeActive(presentation.metadata.id)" :disabled="activePresentationId==presentation.metadata.id">make active</button></td>
             <td><button type="button" class="btn btn-primary btn-sm" @click="duplicatePresentation(presentation.metadata.id)">duplicate</button></td>
-            <td><button type="button" class="btn btn-primary btn-sm" @click="deletePresentation(presentation.metadata.id)" :disabled="activePresentationId==presentation.metadata.id">delete</button></td>
+            <td><button type="button" class="btn btn-primary btn-sm" @click="deletePresentation(presentation.metadata.id)" :disabled="activePresentationId==presentation.metadata.id">archive</button></td>
             <td><button type="button" class="btn btn-primary btn-sm" @click="publishPresentation(presentation.metadata.id)">publish</button></td>
           </tr>
         </tbody>
       </table>
       
+      <p style="text-align:right"><a href="#" @click.stop.prevent="showArchived=!showArchived">show/hide archived presentations</a></p>
+      <table class="table table-sm" v-if="showArchived">
+        <thead>
+          <tr>
+            <th colspan="8"><i>Archived Presentations</i></th>
+          </tr>
+          <tr>
+            <th @click="sortArchiveTableBy('title', 'alph')">title</th>
+            <th @click="sortArchiveTableBy('version', 'num')">version</th>
+            <th @click="sortArchiveTableBy('author', 'alph')">author</th>
+            <th @click="sortArchiveTableBy('creationDate', 'num')">last update</th>
+            <th colspan="2"></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="presentation in archivedPresentations" :key="presentation.metadata.id">
+            <td :title="presentation.metadata.id">{{presentation.metadata.title}}</td>
+            <td>{{presentation.metadata.version}}</td>
+            <td>{{presentation.metadata.author}}</td>
+            <td>{{formatDt(new Date(presentation.metadata.creationDate))}}</td>
+            <td><button type="button" class="btn btn-primary btn-sm" @click="unarchivePresentation(presentation.metadata.id)">un-archive</button></td>
+            <td><button type="button" class="btn btn-primary btn-sm" @click="deletePermanently(presentation.metadata.id)">delete forever</button></td>
+          </tr>
+        </tbody>
+      </table>
+    
+
+
       <div>
         default state: 
           list available presentations<br />
@@ -53,21 +85,24 @@
       return {
         msg: 'manage presentations UI',
         presentations: [],
+        showArchived: true,
+        archivedPresentations: [],
         activePresentationId:"",
         currentSortKey:""
       }
     },
     mounted () {
-      this.getActivePresentation();
-      this.getPresentations()
-      console.log("availabel prsentations", this.presentations);
+      this.getPresentations();
     },
     methods:{
       formatDt(dt){
         return formatDate(dt);
       },
       getPresentations(){
+        // Note that this is ALSO called when the tabs are clicked on the admin interface
         this.presentations = this.adminObj.getPresentations();
+        this.archivedPresentations = this.adminObj.getArchivedPresentations()
+        this.getActivePresentation();
       },
       getActivePresentation(){
         this.activePresentationId = this.adminObj.getActivePresentationId();
@@ -81,11 +116,13 @@
         //insert the new presentation immediately after the one copied
         let idx = this.presentations.findIndex(p => p.metadata.id == id);
         this.presentations.splice(idx+1,0,newPresentation);
-        this.highlightBriefly(idx+1)
+        this.highlightBriefly(idx+1);
+        this.getPresentations();  //refresh the list
       },
       deletePresentation(id){
         this.adminObj.deletePresentation(id);
-        this.presentations = this.presentations.filter(f => f.metadata.id!=id); //filter out of UI
+        this.getPresentations();  //refresh the list
+        // this.presentations = this.presentations.filter(f => f.metadata.id!=id); //filter out of UI
       },
       publishPresentation(id){
         this.adminObj.publishPresentation(id, res => console.log('result in managePresentationsUI.vue', res));
@@ -104,6 +141,30 @@
             return a.metadata[key]>b.metadata[key] ? 1 : -1;
           }
         })
+      },
+      sortArchiveTableBy(key, type) {
+        console.log('sorting by ' + key, type)
+        console.log("array start", this.archivedPresentations)
+        this.archivedPresentations = this.archivedPresentations.sort((a,b) => {
+          if(key==this.currentSortKey){
+            this.currentSortKey="";
+            if(type=='alph'){
+              return a.metadata[key]>b.metadata[key] ? -1 : 1;
+            }else{
+              return a.metadata[key]-b.metadata[key]
+            }
+            
+          }else{
+            this.currentSortKey = key;
+            if(type=='alph'){
+              return a.metadata[key]>b.metadata[key] ? 1 : -1;
+            }else{
+              console.log(b.metadata[key] + ", " + a.metadata[key], b.metadata[key]-a.metadata[key])
+              return b.metadata[key]-a.metadata[key]
+            }
+          }
+        });
+        console.log('array after', this.archivedPresentations)
       }
     }
   }

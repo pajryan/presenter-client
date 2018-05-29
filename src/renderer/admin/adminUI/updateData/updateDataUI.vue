@@ -143,6 +143,7 @@
       },
 
       checkForDataUpdatesResult(arg) {
+        console.log("getting to result", arg)
         this.arrayOfErrors = [];
         this.fetchDataComplete = false;
         this.updateButtonDisabled=false;

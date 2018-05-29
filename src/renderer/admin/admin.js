@@ -47,7 +47,9 @@ export function build(){
     })
   }
   
- 
+  admin.getUUID = function(){
+    return utils.getUUID();
+  }
 
 
   // the first time a user launches the application we need the following in the user storage (e.g. /Users/<user>/Library/Application Support/<appName>/:
@@ -92,10 +94,21 @@ export function build(){
     //get a list of all presentations available
     let presentations = []; 
     fs.readdirSync(appPresentationPath).forEach(file => {
-      if(file != _state.appPresentationConfigFileName && file.indexOf('deleted_') == -1){ //skip the config file! and skip deleted files!
+      if(file != _state.appPresentationConfigFileName && file != '.DS_Store' && file.indexOf('deleted_') == -1){ //skip the config file! and skip deleted files!
         presentations.push(JSON.parse(fs.readFileSync(path.join(appPresentationPath, file))));
       }
     });
+    return presentations;
+  }
+
+  admin.getArchivedPresentations = function(){
+    let presentations = []; 
+    fs.readdirSync(appPresentationPath).forEach(file => {
+      if(file.indexOf('deleted_') != -1){ // only included the "deleted_<id>.json" files
+        presentations.push(JSON.parse(fs.readFileSync(path.join(appPresentationPath, file))));
+      }
+    });
+    presentations = presentations.sort((a,b) => b.metadata.creationDate - a.metadata.creationDate)
     return presentations;
   }
 
@@ -160,13 +173,13 @@ export function build(){
         callback({isOnline:false, dataAvailable:null, message: msg.msg('no-internet-connection')})
         return;
       }
-
+      console.log("ONLINE")
       return utils.checkIfHaveDataConnection(_state.dataUpdateServiceURL, (hasDataConnection) => {
         if(!hasDataConnection){
           callback({isOnline:false, dataAvailable:null, message: msg.msg('no-data-service-conection')})
           return;
         }
-
+        
         // get the date this was last updated
         console.log("checking last update at ", appConfigPath);
 

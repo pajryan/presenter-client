@@ -12,7 +12,7 @@
           "default": "DCI"
         },
         "version":{
-          "type": "string",
+          "type": "number",
           "readonly": true
         },
         "author":{

@@ -21,7 +21,7 @@
             <a href="#" class="nav-link" :class="{active:tab.isActive}" @click.stop.prevent="setActive(tab)">{{ tab.name }}</a>
           </li>
         </ul>
-        <div class="tab-content">
+        <div class="tab-content">       
           <div v-for="tab in tabs" :key="tab.index" class="tab-pane" :class="{active:tab.isActive}">
             <div :id="tab.childId">{{tab.childId}}</div>
           </div>
@@ -55,19 +55,17 @@
         tabs: [
           {name: 'update data', index: 0, isActive: true, hasBeenLoaded:false, childId: "adminUpdateData", uiToLoad: UpdateData},
           {name: 'manage presentations', index: 1, isActive: false, hasBeenLoaded:false, childId: "adminManagePresentation", uiToLoad: ManagePresentations},
-          {name: 'edit active presentation', index: 2, isActive: false, hasBeenLoaded:false, childId: "adminEditPresentation", uiToLoad: EditPresentation},
+          {name: 'edit presentation', index: 2, isActive: false, hasBeenLoaded:false, childId: "adminEditPresentation", uiToLoad: EditPresentation},
           {name: 'update application', index: 3, isActive: false, hasBeenLoaded:false, childId: "adminUpdateApplication", uiToLoad: UpdateApplication}
-        ]
+        ],
+        vues:[]
       }
     },
-
     mounted () {
       if(this.shown){
         // this is for debugging purposes so I don't have to open admin every time (when I'm working on it.)
         this.setActive(this.tabs[this.tabIndex]);  
       }
-      //can access the admin object here.
-      // console.log("slideshow's root element:", this.adminObj.slideshow().rootElem())
     },
 
     methods: {
@@ -85,12 +83,16 @@
         //build the tabs on-demand so we dont use resources that are never used.
         if(!tab.hasBeenLoaded){
           tab.hasBeenLoaded = true;
-          new Vue({
+          this.vues[tab.index] = new Vue({
             el: '#'+tab.childId,
-            render: h => h(tab.uiToLoad,{ props: {adminObj: this.adminObj} })
+            render: h => h(tab.uiToLoad, { props: {adminObj: this.adminObj } })
           })
+        }else{
+          // call the child tab's getPresentations function to refresh the list of presentations.  This matters e.g. when a new presentation has been created in "edit presentation", then the user comes back to "manage presentation". We want the new presentation to appear
+          if(this.vues[tab.index].$children[0].getPresentations){
+            this.vues[tab.index].$children[0].getPresentations()
+          }
         }
-        
       }
     }
   }

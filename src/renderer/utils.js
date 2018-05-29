@@ -28,7 +28,6 @@ module.exports = {
     // the dns.resolve fails on localhost... making local dev difficult...  So if I find localhost, using http.request.  
     //    But don't want o use http.request generally because it requires me to split out host, port etc.
     if(dataUrl.indexOf('localhost') != -1){
-
       let opts = { host: 'localhost', port: '3000', path: '/', method: 'GET'}
       let request = http.request(opts, res => {
           res.setEncoding('utf8');

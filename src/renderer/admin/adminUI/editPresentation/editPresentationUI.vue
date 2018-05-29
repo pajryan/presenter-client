@@ -1,10 +1,19 @@
 <template>
     <div>
-      
+      select a presentation to edit: 
+      <select v-model="selectedPresentationId" @change="presentationSelected" class="form-control">
+        <option style="background: red" v-for="presentation in presentations" :key="presentation.metadata.id" :value="presentation.metadata.id" :class="selectedPresentationIsActive?'table-success':''">{{presentation.metadata.title}} (v{{presentation.metadata.version}}) {{presentation.metadata.id===currentActivePresentationId?' -ACTIVE-':''}}</option>
+      </select>
+      <div>
+        <ul>
+          <li v-for="error in validationErrors" :key="error.num">error</li>
+        </ul>
+      </div>
       <div id="presentationEditor"></div>
-      <div id="presentationEditorControls">
-        <button type="button" class="btn btn-primary" @click="savePresentation">save</button> <!-- :disabled="updateButtonDisabled" -->
-        <button type="button" class="btn btn-primary" @click="discardChanges">cancel</button> <!-- :disabled="updateButtonDisabled" -->
+      <div id="presentationEditorControls" v-if="selectedPresentationId!=''">
+        <button type="button" class="btn btn-primary" @click="savePresentation" v-if="!selectedPresentationIsActive">save changes</button> <!-- :disabled="updateButtonDisabled" -->
+        <button type="button" class="btn btn-primary" @click="savePresentation" v-if="selectedPresentationIsActive">save changes and make active</button>
+        <button type="button" class="btn btn-primary" @click="discardChanges">discard changes</button>
       </div>
     </div>
 </template>
@@ -12,62 +21,115 @@
 
 
 <script>
-/*
-  With every save:
-   - increment the version number 
-    - version number will not be user editable
-   - update the createdAt date (also not user editable)
-   - create an entirely new file (new UUID)
 
-   - this will mean that we never conflict - there is no editing an existing file, only creating a new one
-   
-   - then, can decide what to do with the "old" version
-    - could delete it locally and remotely
-    - could just keep everything and let the user deal with deleting
-*/
   import Vue from 'vue'
 
   require('@json-editor/json-editor') //impacts window object directly (not ideal..), so don't load as module
 
   //load the json schema for the presentation, along with the current flow
   const schema = require ('./presentationSchema.json');
-  console.error("currently loading default presentation flow!  WIll need to get this from the user values")
-  const presentationFlow = require('./../defaultPresentationFlow.json')
 
   export default {
+    props: ['adminObj'], 
     data () {
       return {
-        msg: 'edit presentation UI'
+        presentations: [],
+        selectedPresentationId: "",
+        selectedPresentationObject: {},
+        selectedPresentationIsActive: false,
+        currentActivePresentationId: '',
+        editor: null,
+        validationErrors: []
       }
     },
     mounted () {
-      //load the json schema
-      let editorElem = document.getElementById("presentationEditor");
-      let editorOpts = {
-        schema: schema,
-        startval: presentationFlow,
-        theme: 'bootstrap2',
-        disable_edit_json: true,
-        disable_properties: true,
-        disable_collapse: true
-      }
-      var editor = new JSONEditor(editorElem, editorOpts);
-
-      editor.on('ready',function() {
+      //get the available presenations.  
+      this.getPresentations();
+    },
+    methods:{
+      getPresentations(){ // Note that this is ALSO called when the tabs are clicked on the admin interface - to make sure the presentation lists are in sync
+        this.presentations = this.adminObj.getPresentations();
+        this.currentActivePresentationId = this.adminObj.getActivePresentationId();
+      },
+      presentationSelected(){
+        //kill any existing editor
+        if(this.editor){this.editor.destroy();}
+        this.selectedPresentationObject = {};
+        //get the new object and load it up
+        this.selectedPresentationObject = this.adminObj.getPresentationById(this.selectedPresentationId);
+        //see if this presentation (which is being edited) is the active presentation
+        this.selectedPresentationIsActive = this.currentActivePresentationId == this.selectedPresentationId;
+        this.buildEditor(this.selectedPresentationObject);
+      },
+      buildEditor(presenationObj){
+        //load the json schema and load the data file
+        let editorElem = document.getElementById("presentationEditor");
+        let editorOpts = {
+          schema: schema,
+          startval: presenationObj,
+          theme: 'bootstrap2',
+          disable_edit_json: true, disable_properties: true, disable_collapse: true
+        }
+        this.editor = new JSONEditor(editorElem, editorOpts);
+        this.editor.on('ready',this.validateEditor);
+      },
+      validateEditor(){
         // Now the api methods will be available
-        let validationErrors = editor.validate();
-        if(validationErrors.length > 0){
+        this.validationErrors = this.editor.validate();
+        if(this.validationErrors.length > 0){
           console.error("error validating presentation flow against schmea", validationErrors);
           console.error("the schema is", schema);
         }
-      });
-    },
-    methods:{
+        return this.validationErrors.length == 0;
+      },
       savePresentation(){
-        console.log('saving presentation')
+        /*
+          With every save:
+          - increment the version number 
+            - version number will not be user editable
+          - update the createdAt date (also not user editable)
+          - create an entirely new file (new UUID)
+
+          - this will mean that we never conflict - there is no editing an existing file, only creating a new one
+          
+          - then, can decide what to do with the "old" version
+            - could delete it locally and remotely
+            - could just keep everything and let the user deal with deleting
+        */
+        if(this.validateEditor){
+          let newValue = this.editor.getValue();
+          let newUUID = this.adminObj.getUUID();
+          newValue.metadata.version += 1; // increment version #
+          newValue.metadata.creationDate = new Date().getTime();  // update
+          newValue.metadata.id = newUUID;                         // new UUID
+          this.adminObj.writePresentation(newValue);
+
+          //for now, I'm going to delete (archive) the local copy of the "old" presentation
+          // however if the current is active, need to mark the new one as active
+          if(this.selectedPresentationIsActive){
+            //make the new presentation active
+            this.adminObj.setActivePresentation(newUUID);
+          }
+          this.adminObj.deletePresentation(this.selectedPresentationId);
+
+          // update things on this local page
+          this.selectedPresentationObject = newValue;
+          this.selectedPresentationId = newUUID,
+          this.getPresentations();
+          this.presentationSelected();
+
+          
+          
+
+        }
+        
       },
       discardChanges(){
-        console.log('discarding changes')
+        // just kill the existing editor and reload the latest presenation
+        if(window.confirm('Clicking OK will discard any edits you may have made')){
+          if(this.editor){this.editor.destroy();}
+          this.buildEditor(this.selectedPresentationObject);
+        }
       }
     }
   }
@@ -79,21 +141,19 @@
 <style  lang="less">
   #presentationEditorControls{
     background: #fff;
-    position: fixed;
+    position: absolute;
     right: 30px;
-    top: 120px;
-    padding:9px 12px;
-    box-shadow: 3px 3px 6px 2px #ccc;
-    border: 1 px solid #ccc;
+    top: 180px;
+    // box-shadow: 3px 3px 6px 2px #ccc;
+    // border: 1 px solid #ccc;
   }
-
 
 
   @textColor:#666;
   @borderColor:#dee2e6;
 
   #presentationEditor{
-    margin-top: -27px;
+    margin-top: 0px;
   }
 
   #presentationEditor h3{
