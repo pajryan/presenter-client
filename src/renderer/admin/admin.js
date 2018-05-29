@@ -170,6 +170,29 @@ export function build(){
     });
   }
 
+  admin.downloadPresentations = function(callback){
+    // will download all presentations. only want presentations we dont already have, so pass an array of what we have to prevent large, unnecessary downloads
+    let existingPresentations = admin.getArchivedPresentations().concat(admin.getPresentations());
+    let existingPresentationNames = existingPresentations.map(p => p.metadata.id);
+    
+    //make sure we're online and connected to data
+    utils.checkOnlineAndDataConnection(_state.dataUpdateServiceURL, (online, err) => {
+      if(online){
+        // make call to server to get presentations
+        utils.getPresentations(_state.dataUpdateServiceURL, existingPresentationNames, (data, err) => {
+          if(err){
+            callback({status:400, error:err});
+          }else{
+            callback({status:200, data: data});
+          }
+        });
+      }else{
+        console.log('could not connect to data provideer to download presentations', err)
+        callback({status:400, error:err});
+      }
+    })
+  }
+
 
 
 
@@ -182,7 +205,6 @@ export function build(){
         callback({isOnline:false, dataAvailable:null, message: msg.msg('no-internet-connection')})
         return;
       }
-      console.log("ONLINE")
       return utils.checkIfHaveDataConnection(_state.dataUpdateServiceURL, (hasDataConnection) => {
         if(!hasDataConnection){
           callback({isOnline:false, dataAvailable:null, message: msg.msg('no-data-service-conection')})
@@ -191,9 +213,6 @@ export function build(){
         
         // get the date this was last updated
         console.log("checking last update at ", appConfigPath);
-
-        
-
         let appConfig = JSON.parse(fs.readFileSync(appConfigPath)); //get the last data update from the config
         let lastAppDataUpdate = appConfig.lastDataUpdate;
 

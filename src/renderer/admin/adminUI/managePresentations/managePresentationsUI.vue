@@ -27,10 +27,32 @@
             <td><button type="button" class="btn btn-primary btn-sm" @click="publishPresentation(presentation.metadata.id)">publish</button></td>
           </tr>
         </tbody>
+
+        <!-- newly created presentations -->
+        <tfoot id="newlyDownloadedPresentations" v-if="newlyPublishedPresentations.length>0">
+          <tr style="border-bottom:2px solid #ccc;"><th colspan="8" style="height:60px; vertical-align: bottom;">Newly downloaded presentations:</th></tr>
+          <tr><td colspan="8" style="height:10px;"></td></tr>
+          <tr v-for="presentation in newlyPublishedPresentations" :key="presentation.metadata.id" class="bg-warning">
+            <td :title="presentation.metadata.id">{{presentation.metadata.title}}</td>
+            <td>{{presentation.metadata.version}}</td>
+            <td>{{presentation.metadata.author}}</td>
+            <td>{{formatDt(new Date(presentation.metadata.creationDate))}}</td>
+            <td colspan="4"><button type="button" class="btn btn-primary btn-sm" @click="importDownloadedPresentation(presentation.metadata.id)">import</button></td>
+          </tr>
+        </tfoot>
       </table>
+
+
+      <div>
+        <button type="button" class="btn btn-primary btn-sm" @click="downloadPresentations()">download published presentations</button>
+      </div>
       
-      <p style="text-align:right"><a href="#" @click.stop.prevent="showArchived=!showArchived">show/hide archived presentations</a></p>
-      <table class="table table-sm" v-if="showArchived">
+
+
+      <!-- achived presentations -->
+      <p style="text-align:right; margin-top: 30px;"><a href="#" @click.stop.prevent="showArchived=!showArchived">show/hide archived presentations</a></p>
+      <p v-if="showArchived && archivedPresentations.length==0" style="text-align:center">You have no archived presentations</p>
+      <table class="table table-sm" v-if="showArchived && archivedPresentations.length>0">
         <thead>
           <tr>
             <th colspan="8"><i>Archived Presentations</i></th>
@@ -58,16 +80,11 @@
 
 
       <div>
-        default state: 
-          list available presentations<br />
-
-        presentation specific:
-          publish a given presentation for other clients<br />
         
-        global
+        TODO<br />
           download published presentations<br />
 
-        {{msg}}</div>
+      </div>
     </div>
 </template>
 
@@ -83,12 +100,12 @@
     props: ['adminObj'], 
     data () {
       return {
-        msg: 'manage presentations UI',
         presentations: [],
-        showArchived: true,
+        showArchived: false,
         archivedPresentations: [],
         activePresentationId:"",
-        currentSortKey:""
+        currentSortKey:"",
+        newlyPublishedPresentations: []
       }
     },
     mounted () {
@@ -137,6 +154,12 @@
       highlightBriefly(idx){
         setTimeout( function(idx){ document.getElementById("presentationTableBody").childNodes[idx].className="table-info"} ,200,idx)
         setTimeout( function(idx){ document.getElementById("presentationTableBody").childNodes[idx].className=""} ,2200,idx)
+      },
+      downloadPresentations(){
+        this.adminObj.downloadPresentations(this.downloadPresentationsResult);
+      },
+      downloadPresentationsResult(res){
+        this.newlyPublishedPresentations = res.data.presentations;
       },
       sortTableBy(key) {
         this.presentations = this.presentations.sort((a,b) => {
@@ -193,4 +216,6 @@
   th{
     cursor: pointer;
   }
+
+ 
 </style>

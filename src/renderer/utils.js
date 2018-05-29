@@ -56,6 +56,25 @@ module.exports = {
     }
   },
 
+
+  checkOnlineAndDataConnection: function(dataUrl, callback){
+    this.checkIfOnline(online => {
+      if(online){
+        this.checkIfHaveDataConnection(dataUrl, dataConnected => {
+          if(dataConnected){
+            callback(true);
+          }else{
+            callback(false, {error:"It looks like you are online, but the data service provider is not available."});    
+          }
+        })
+      }else{
+        callback(false, {error:"It looks like you are not online."});
+      }
+    })
+
+
+  },
+
   // fetch data from data service
   dataServiceCall: function(dataUrl, endpoint, callback){
     let opts = { host: dataUrl, port:80, path: endpoint, method: 'GET'};
@@ -100,6 +119,30 @@ module.exports = {
 
     request.on('error', error => {
       console.log('error making publishPresentation call', error);
+      callback(null, {error: error});
+    });
+    request.write(JSON.stringify(postData));
+    request.end();
+  },
+
+  getPresentations: function(dataUrl, localPresentationIds, callback){
+    let postData = {data:localPresentationIds};
+    let opts = { host: dataUrl, port:80, path: '/getPresentations', method: 'POST', headers: {'Content-Type': 'application/json'}};
+    if(dataUrl.indexOf('localhost') != -1){opts.port = 3000; opts.host="localhost"};
+    let request = http.request(opts, res => {
+        res.setEncoding('utf8');
+        res.on('data', data => {
+          let o=JSON.parse(data);
+          if(o.status && o.status === 400){
+            callback(null, {error: o.error})
+          }else{
+            callback(o);
+          }
+        });
+    });
+
+    request.on('error', error => {
+      console.log('error making getPresentations call', error);
       callback(null, {error: error});
     });
     request.write(JSON.stringify(postData));

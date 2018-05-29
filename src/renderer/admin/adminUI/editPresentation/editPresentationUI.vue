@@ -11,7 +11,7 @@
       </div>
       <div id="presentationEditor"></div>
       <div id="presentationEditorControls" v-if="selectedPresentationId!=''">
-        <button type="button" class="btn btn-primary" @click="savePresentation" v-if="!selectedPresentationIsActive">save changes</button> <!-- :disabled="updateButtonDisabled" -->
+        <button type="button" class="btn btn-primary" @click="savePresentation" v-if="!selectedPresentationIsActive">save changes</button>
         <button type="button" class="btn btn-primary" @click="savePresentation" v-if="selectedPresentationIsActive">save changes and make active</button>
         <button type="button" class="btn btn-primary" @click="discardChanges">discard changes</button>
       </div>
