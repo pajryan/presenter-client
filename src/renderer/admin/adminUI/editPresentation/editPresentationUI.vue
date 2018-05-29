@@ -2,7 +2,7 @@
     <div>
       select a presentation to edit: 
       <select v-model="selectedPresentationId" @change="presentationSelected" class="form-control">
-        <option style="background: red" v-for="presentation in presentations" :key="presentation.metadata.id" :value="presentation.metadata.id" :class="selectedPresentationIsActive?'table-success':''">{{presentation.metadata.title}} (v{{presentation.metadata.version}}) {{presentation.metadata.id===currentActivePresentationId?' -ACTIVE-':''}}</option>
+        <option style="background: red" v-for="presentation in presentations" :key="presentation.metadata.id" :value="presentation.metadata.id" :class="selectedPresentationIsActive?'table-success':''">{{presentation.metadata.title}}, v{{presentation.metadata.version}} {{presentation.metadata.id===currentActivePresentationId?' (currently active)':''}}</option>
       </select>
       <div>
         <ul>
@@ -100,6 +100,7 @@
           let newValue = this.editor.getValue();
           let newUUID = this.adminObj.getUUID();
           newValue.metadata.version += 1; // increment version #
+          newValue.metadata.isPublished = false;
           newValue.metadata.creationDate = new Date().getTime();  // update
           newValue.metadata.id = newUUID;                         // new UUID
           this.adminObj.writePresentation(newValue);
@@ -245,10 +246,16 @@
     background: #bddce8;
   }
 
-  #presentationEditor button.json-editor-btn-add:nth-of-type(1){
-    // background: pink;
+  
+  #presentationEditor input[name*="root[metadata][version]"]{
+    background:#bddce8;
+    border: 0;
+    width: 40px !important;
+    position: relative;
+    top: -29px;
+    left: 60px;
+    text-align: center;
   }
-
   
 
   // hack to change all the buttons to "icons"

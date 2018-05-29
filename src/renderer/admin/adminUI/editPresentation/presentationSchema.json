@@ -17,26 +17,26 @@
         },
         "author":{
           "type": "string",
-          "readonly": true
+          "readonly": false
         },
         "creationDate":{
           "type": "integer",
           "title": "creation date",
           "readonly": true,
-          "options": { "hidden": false }
+          "options": { "hidden": true }
         },
         "id":{
           "type": "string",
           "title": "presentation id",
           "readonly": true,
-          "options": { "hidden": false }
+          "options": { "hidden": true }
         },
         "isPublished":{
           "type": "boolean",
           "title": "has been published to server?",
           "format": "checkbox",
           "readonly": true,
-          "options": { "hidden": false }
+          "options": { "hidden": true }
         }
       }
         

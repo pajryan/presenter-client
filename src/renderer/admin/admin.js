@@ -137,6 +137,7 @@ export function build(){
     let newPresentationId = utils.getUUID();
     newPresentation.metadata.title += "(COPY)";
     newPresentation.metadata.id = newPresentationId;
+    newPresentation.metadata.isPublished = false;
     newPresentation.metadata.creationDate = new Date().getTime();
     admin.writePresentation(newPresentation);
     return newPresentation;
@@ -166,8 +167,14 @@ export function build(){
   admin.publishPresentation = function(id, callback){
     let presentationToPublish = admin.getPresentationById(id);
     utils.publishPresentation(_state.dataUpdateServiceURL, '/savePresentation', presentationToPublish, (data, err) => {
-      callback(data);
+      callback(data, err);
     });
+  }
+
+  admin.markLocalPresentationAsPublished = function(id){
+    let pres = admin.getPresentationById(id);
+    pres.metadata.isPublished = true;
+    admin.writePresentation(pres);
   }
 
   admin.downloadPresentations = function(callback){
@@ -181,14 +188,14 @@ export function build(){
         // make call to server to get presentations
         utils.getPresentations(_state.dataUpdateServiceURL, existingPresentationNames, (data, err) => {
           if(err){
-            callback({status:400, error:err});
+            callback(null, {error:err});
           }else{
             callback({status:200, data: data});
           }
         });
       }else{
         console.log('could not connect to data provideer to download presentations', err)
-        callback({status:400, error:err});
+        callback(null, {error:err});
       }
     })
   }

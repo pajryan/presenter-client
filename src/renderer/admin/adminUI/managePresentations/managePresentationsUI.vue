@@ -1,50 +1,82 @@
-<script>
-</script>
+<!--
+  A few notes about presentations and their management
+  1. ANY edit to a presentation (or dup of a presentation) results in a BRAND NEW FILE:
+      UUID.json
+  2. In the case of an edit, the original (local) file is deleted thereby replaced by the new UUID.json. 
+
+  This allows me to keep files unique and frequently generated, then just deal with the excess. It also means there's no such thing
+  as simultaneous edits because EVERY edit results in a new file.
+
+  When clicking "make active", the _presentationConfig.json file is update to activePresentation:<appropriateUUID>
+
+  When clicking "duplicate", the object is dup'd with a new ID, new Creation date (eventually a new author) and the file is created UUID.json
+
+  When clicking "archive", the file is simply renamed with the prefix "deleted_". These can be seen and recovered in the "Show/hide archived presentations" section
+
+  When clicking "publish", the file is simply recreated on the server with metadata.isPublished=true
+
+  
+  When clicking "download published presentations", we go to the server and find any files that have been *published* that do not match local files (regular or archived)
+    This works because if an edit is made, a NEW file is created, so there's no such thing as a "new version" of a file. Only new files (though we kind of imitate versions in the UI)
+
+  One side effect of this :(
+      If I publish a presentation, <it goes to the server>
+      Then edit it <the local version is deleted>
+      Then check for published presentations
+      I'll see the old version of the file I just created
+
+      This kind of makes sense (there's a published version I don't have). But maybe weird.
+      
+      If it's too weird, on the downlaoded presentations table, could offere the ability to "delete from server forever" which would at least clean things up.
+-->
 <template>
     <div>
       <table class="table table-sm" >
         <thead>
           <tr>
-            <th colspan="8">Presentations</th>
+            <th colspan="8">Presentations&hellip;</th>
           </tr>
           <tr>
-            <th @click="sortTableBy('title')">title</th>
-            <th @click="sortTableBy('version')">version</th>
-            <th @click="sortTableBy('author')">author</th>
-            <th @click="sortTableBy('creationDate')">last update</th>
+            <th @click="sortTableBy('title', 'alph')">title</th>
+            <th @click="sortTableBy('version', 'num')">version</th>
+            <th @click="sortTableBy('author', 'alph')">author</th>
+            <th @click="sortTableBy('creationDate', 'num')">last update</th>
             <th colspan="4"></th>
           </tr>
         </thead>
         <tbody id="presentationTableBody">
           <tr v-for="presentation in presentations" :key="presentation.metadata.id" :class="activePresentationId==presentation.metadata.id?'table-success':''">
             <td :title="presentation.metadata.id">{{presentation.metadata.title}}</td>
-            <td>{{presentation.metadata.version}}</td>
+            <td class="text-center">{{presentation.metadata.version}}</td>
             <td>{{presentation.metadata.author}}</td>
             <td>{{formatDt(new Date(presentation.metadata.creationDate))}}</td>
             <td><button type="button" class="btn btn-primary btn-sm" @click="makeActive(presentation.metadata.id)" :disabled="activePresentationId==presentation.metadata.id">make active</button></td>
             <td><button type="button" class="btn btn-primary btn-sm" @click="duplicatePresentation(presentation.metadata.id)">duplicate</button></td>
             <td><button type="button" class="btn btn-primary btn-sm" @click="archivePresentation(presentation.metadata.id)" :disabled="activePresentationId==presentation.metadata.id">archive</button></td>
-            <td><button type="button" class="btn btn-primary btn-sm" @click="publishPresentation(presentation.metadata.id)">publish</button></td>
+            <td><button type="button" class="btn btn-primary btn-sm" @click="publishPresentation(presentation.metadata.id)" :disabled="presentation.metadata.isPublished" style="width:67px;">publish</button></td>
           </tr>
         </tbody>
 
         <!-- newly created presentations -->
-        <tfoot id="newlyDownloadedPresentations" v-if="newlyPublishedPresentations.length>0">
-          <tr style="border-bottom:2px solid #ccc;"><th colspan="8" style="height:60px; vertical-align: bottom;">Newly downloaded presentations:</th></tr>
+        <tfoot v-if="newlyPublishedPresentations.length>0">
+          <tr style="border-bottom:2px solid #ccc;">
+            <th colspan="7" style="height:60px; vertical-align: bottom;">Newly downloaded presentations:</th>
+            <td style="text-align:right; vertical-align: bottom;"><button type="button" class="close" aria-label="Close" @click.stop.prevent="newlyPublishedPresentations=[]"><span aria-hidden="true">&times;</span></button></td>
+          </tr>
           <tr><td colspan="8" style="height:10px;"></td></tr>
-          <tr v-for="presentation in newlyPublishedPresentations" :key="presentation.metadata.id" class="bg-warning">
+          <tr v-for="(presentation, idx) in newlyPublishedPresentations" :key="presentation.metadata.id" class="bg-warning">
             <td :title="presentation.metadata.id">{{presentation.metadata.title}}</td>
-            <td>{{presentation.metadata.version}}</td>
+            <td class="text-center">{{presentation.metadata.version}}</td>
             <td>{{presentation.metadata.author}}</td>
             <td>{{formatDt(new Date(presentation.metadata.creationDate))}}</td>
-            <td colspan="4"><button type="button" class="btn btn-primary btn-sm" @click="importDownloadedPresentation(presentation.metadata.id)">import</button></td>
+            <td colspan="4"><button type="button" class="btn btn-primary btn-sm" @click="importDownloadedPresentation(idx)">import</button></td>
           </tr>
         </tfoot>
       </table>
 
 
       <div>
-        <button type="button" class="btn btn-primary btn-sm" @click="downloadPresentations()">download published presentations</button>
+        <button type="button" class="btn btn-primary btn-sm" @click="downloadPresentations()" style="width:260px">download published presentations</button>
       </div>
       
 
@@ -68,7 +100,7 @@
         <tbody>
           <tr v-for="presentation in archivedPresentations" :key="presentation.metadata.id">
             <td :title="presentation.metadata.id">{{presentation.metadata.title}}</td>
-            <td>{{presentation.metadata.version}}</td>
+            <td class="text-center">{{presentation.metadata.version}}</td>
             <td>{{presentation.metadata.author}}</td>
             <td>{{formatDt(new Date(presentation.metadata.creationDate))}}</td>
             <td><button type="button" class="btn btn-primary btn-sm" @click="unarchivePresentation(presentation.metadata.id)">un-archive</button></td>
@@ -78,13 +110,6 @@
       </table>
     
 
-
-      <div>
-        
-        TODO<br />
-          download published presentations<br />
-
-      </div>
     </div>
 </template>
 
@@ -133,7 +158,7 @@
         //insert the new presentation immediately after the one copied
         let idx = this.presentations.findIndex(p => p.metadata.id == id);
         this.presentations.splice(idx+1,0,newPresentation);
-        this.highlightBriefly(idx+1);
+        // this.highlightBriefly(idx+1);
         this.getPresentations();  //refresh the list
       },
       archivePresentation(id){
@@ -149,19 +174,59 @@
         this.getPresentations();  //refresh the list
       },
       publishPresentation(id){
-        this.adminObj.publishPresentation(id, res => console.log('result in managePresentationsUI.vue', res));
+        event.target.className = event.target.className.replace('btn-primary', 'btn-warning');
+        event.target.innerHTML = '…';
+        this.adminObj.publishPresentation(id, this.publishPresentationResult.bind(null, event, id));
+      },
+      publishPresentationResult(event, id, res, err){
+          if(!err && res && res.status == 200){
+            event.target.className = event.target.className.replace('btn-warning', 'btn-success');
+            event.target.className = event.target.className.replace('btn-danger', 'btn-success'); //in case it worked the 2nd time
+            event.target.innerHTML = 'publish';
+            //now update the local file to be published = true
+            this.adminObj.markLocalPresentationAsPublished(id);
+            this.getPresentations(); //refresh the UI
+          }else{
+            console.log('error publishing presentation', res, err);
+            event.target.className = event.target.className.replace('btn-warning', 'btn-danger');
+            event.target.innerHTML = 'error';
+          }
       },
       highlightBriefly(idx){
-        setTimeout( function(idx){ document.getElementById("presentationTableBody").childNodes[idx].className="table-info"} ,200,idx)
+        setTimeout( function(idx){ document.getElementById("presentationTableBody").childNodes[idx].className="table-warning"} ,200,idx)
         setTimeout( function(idx){ document.getElementById("presentationTableBody").childNodes[idx].className=""} ,2200,idx)
       },
       downloadPresentations(){
-        this.adminObj.downloadPresentations(this.downloadPresentationsResult);
+        event.target.className = event.target.className.replace('btn-primary', 'btn-warning');
+        event.target.innerHTML = '…'
+        this.adminObj.downloadPresentations(this.downloadPresentationsResult.bind(null, event));
       },
-      downloadPresentationsResult(res){
-        this.newlyPublishedPresentations = res.data.presentations;
+      downloadPresentationsResult(event, res, err){
+        if(!err && res && res.status == 200){
+            event.target.className = event.target.className.replace('btn-warning', 'btn-primary');
+            event.target.className = event.target.className.replace('btn-danger', 'btn-primary'); //in case it worked the 2nd time
+            event.target.innerHTML = 'download published presentations';
+            if(res.data.presentations.length==0){
+              event.target.className = event.target.className.replace('btn-primary', 'btn-warning'); //in case it worked the 2nd time
+              event.target.innerHTML = 'no new published presentations';
+            }else{
+              this.newlyPublishedPresentations = res.data.presentations;
+            }
+        }else{
+          console.log('error downloading presentations', res, err);
+          event.target.className = event.target.className.replace('btn-warning', 'btn-danger');
+          event.target.innerHTML = 'error';
+        }
       },
-      sortTableBy(key) {
+      importDownloadedPresentation(idx){
+        //move the presentation from the newlyPublishedPresentations array into the presentations array
+        let presentationToImport = this.newlyPublishedPresentations.splice(idx,1)[0]
+        this.presentations.push(presentationToImport);
+        //write the file
+        this.adminObj.writePresentation(presentationToImport)
+
+      },
+      sortTableBy(key, type) {
         this.presentations = this.presentations.sort((a,b) => {
           if(key==this.currentSortKey){
             if(type=='alph'){
