@@ -147,11 +147,20 @@ export function build(){
     fs.writeFileSync(path.join(appPresentationPath, fileName + ".json"), JSON.stringify(presentationObject, null, '\t'), 'utf8');
   }
 
-  admin.deletePresentation = function(id){
+  admin.archivePresentation = function(id){ //prepend file with "deleted_"
     let currName = path.join(appPresentationPath, id+".json");
     let newName = path.join(appPresentationPath, "deleted_"+id+".json")
     fs.renameSync(currName, newName)
-    // fs.unlinkSync(path.join(appPresentationPath, id + ".json")); //this just deletes
+  }
+  
+  admin.unarchivePresentation = function(id){ //remove prepended "deleted_"
+    let currName = path.join(appPresentationPath, "deleted_"+id+".json");
+    let newName = path.join(appPresentationPath, id+".json")
+    fs.renameSync(currName, newName)
+  }
+
+  admin.deletePresentation = function(id){  // fully delete from the file system.  Note that this can receive "deleted_<id>" (not just id).  So dont' use this ID for other calls!!!
+    fs.unlinkSync(path.join(appPresentationPath, id + ".json")); //this just deletes
   }
 
   admin.publishPresentation = function(id, callback){

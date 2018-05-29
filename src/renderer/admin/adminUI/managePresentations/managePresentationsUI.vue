@@ -23,7 +23,7 @@
             <td>{{formatDt(new Date(presentation.metadata.creationDate))}}</td>
             <td><button type="button" class="btn btn-primary btn-sm" @click="makeActive(presentation.metadata.id)" :disabled="activePresentationId==presentation.metadata.id">make active</button></td>
             <td><button type="button" class="btn btn-primary btn-sm" @click="duplicatePresentation(presentation.metadata.id)">duplicate</button></td>
-            <td><button type="button" class="btn btn-primary btn-sm" @click="deletePresentation(presentation.metadata.id)" :disabled="activePresentationId==presentation.metadata.id">archive</button></td>
+            <td><button type="button" class="btn btn-primary btn-sm" @click="archivePresentation(presentation.metadata.id)" :disabled="activePresentationId==presentation.metadata.id">archive</button></td>
             <td><button type="button" class="btn btn-primary btn-sm" @click="publishPresentation(presentation.metadata.id)">publish</button></td>
           </tr>
         </tbody>
@@ -50,7 +50,7 @@
             <td>{{presentation.metadata.author}}</td>
             <td>{{formatDt(new Date(presentation.metadata.creationDate))}}</td>
             <td><button type="button" class="btn btn-primary btn-sm" @click="unarchivePresentation(presentation.metadata.id)">un-archive</button></td>
-            <td><button type="button" class="btn btn-primary btn-sm" @click="deletePermanently(presentation.metadata.id)">delete forever</button></td>
+            <td><button type="button" class="btn btn-primary btn-sm" @click="deletePresentation(presentation.metadata.id)">delete forever</button></td>
           </tr>
         </tbody>
       </table>
@@ -119,10 +119,17 @@
         this.highlightBriefly(idx+1);
         this.getPresentations();  //refresh the list
       },
-      deletePresentation(id){
-        this.adminObj.deletePresentation(id);
+      archivePresentation(id){
+        this.adminObj.archivePresentation(id);
         this.getPresentations();  //refresh the list
-        // this.presentations = this.presentations.filter(f => f.metadata.id!=id); //filter out of UI
+      },
+      unarchivePresentation(id){
+        this.adminObj.unarchivePresentation(id);
+        this.getPresentations();  //refresh the list
+      },
+      deletePresentation(id){
+        this.adminObj.deletePresentation("deleted_"+id);
+        this.getPresentations();  //refresh the list
       },
       publishPresentation(id){
         this.adminObj.publishPresentation(id, res => console.log('result in managePresentationsUI.vue', res));
@@ -134,37 +141,46 @@
       sortTableBy(key) {
         this.presentations = this.presentations.sort((a,b) => {
           if(key==this.currentSortKey){
-            this.currentSortKey="";
-            return a.metadata[key]>b.metadata[key] ? -1 : 1;
-          }else{
-            this.currentSortKey = key;
-            return a.metadata[key]>b.metadata[key] ? 1 : -1;
-          }
-        })
-      },
-      sortArchiveTableBy(key, type) {
-        console.log('sorting by ' + key, type)
-        console.log("array start", this.archivedPresentations)
-        this.archivedPresentations = this.archivedPresentations.sort((a,b) => {
-          if(key==this.currentSortKey){
-            this.currentSortKey="";
             if(type=='alph'){
               return a.metadata[key]>b.metadata[key] ? -1 : 1;
             }else{
               return a.metadata[key]-b.metadata[key]
             }
-            
           }else{
-            this.currentSortKey = key;
             if(type=='alph'){
               return a.metadata[key]>b.metadata[key] ? 1 : -1;
             }else{
-              console.log(b.metadata[key] + ", " + a.metadata[key], b.metadata[key]-a.metadata[key])
               return b.metadata[key]-a.metadata[key]
             }
           }
         });
-        console.log('array after', this.archivedPresentations)
+        if(key == this.currentSortKey){
+          this.currentSortKey = "";
+        }else{
+          this.currentSortKey = key;
+        }
+      },
+      sortArchiveTableBy(key, type) {
+        this.archivedPresentations = this.archivedPresentations.sort((a,b) => {
+          if(key==this.currentSortKey){
+            if(type=='alph'){
+              return a.metadata[key]>b.metadata[key] ? -1 : 1;
+            }else{
+              return a.metadata[key]-b.metadata[key]
+            }
+          }else{
+            if(type=='alph'){
+              return a.metadata[key]>b.metadata[key] ? 1 : -1;
+            }else{
+              return b.metadata[key]-a.metadata[key]
+            }
+          }
+        });
+        if(key == this.currentSortKey){
+          this.currentSortKey = "";
+        }else{
+          this.currentSortKey = key;
+        }
       }
     }
   }
