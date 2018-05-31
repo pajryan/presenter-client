@@ -203,7 +203,7 @@ export function build(){
 
   admin.publishPresentation = function(id, callback){
     let presentationToPublish = admin.getPresentationById(id);
-    utils.publishPresentation(_state.dataUpdateServiceURL, '/savePresentation', presentationToPublish, (data, err) => {
+    utils.publishPresentation(_state.dataUpdateServiceURL, _state.apiKey, '/savePresentation', presentationToPublish, (data, err) => {
       callback(data, err);
     });
   }
@@ -220,10 +220,10 @@ export function build(){
     let existingPresentationNames = existingPresentations.map(p => p.metadata.id);
     
     //make sure we're online and connected to data
-    utils.checkOnlineAndDataConnection(_state.dataUpdateServiceURL, (online, err) => {
+    utils.checkOnlineAndDataConnectionAndApiKey(_state.dataUpdateServiceURL, _state.apiKey, (online, err) => {
       if(online){
         // make call to server to get presentations
-        utils.getPresentations(_state.dataUpdateServiceURL, existingPresentationNames, (data, err) => {
+        utils.getPresentations(_state.dataUpdateServiceURL, _state.apiKey, existingPresentationNames, (data, err) => {
           if(err){
             callback(null, {error:err});
           }else{
@@ -265,7 +265,7 @@ export function build(){
 
         // now get the data log from the data update service.  The data log is a large object that looks like { dataLog: [timestamp:<timeInMS>, file:<fileName>, timestamp:<timeInMS>, file:<fileName>, ....]}
         //   The <timestamp? is when the source data (<fileName>) was created.  So any timestamps greater than the last udpate time in the config is NEW
-        utils.dataServiceCall(_state.dataUpdateServiceURL, '/dataLog', (data, err) => {
+        utils.dataServiceCall(_state.dataUpdateServiceURL, _state.apiKey, '/dataLog', (data, err) => {
           if(err){
             console.error("error calling the data update service: ", err)
             callback({isOnline: true, dataAvailable: false, messsage:{text:'error: ' + JSON.stringify(err)}});
@@ -293,7 +293,7 @@ export function build(){
     dataToUpdate.forEach((d,i) => {
       //fetch the file and copy to the local directory
       let req = '/requestFile/' + d.file;
-      utils.dataServiceCall(_state.dataUpdateServiceURL, req, (data, error) => {
+      utils.dataServiceCall(_state.dataUpdateServiceURL, _state.apiKey, req, (data, error) => {
         
         if(error) {// file not found
           console.error('error fetching file from data service ', error)

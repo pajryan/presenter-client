@@ -55,7 +55,6 @@ module.exports = {
   },
 
   checkIfHaveValidApiKey: function(dataUrl, apiKey, callback){
-    console.log("CHECKING FOR VALID API KEY")
     let postData = {data:{apiKey:apiKey}}
     let opts = { host: dataUrl, port:80, path: '/apiCheck', method: 'POST', headers: {'Content-Type': 'application/json'}};
     if(dataUrl.indexOf('localhost') != -1){opts.port = 3000; opts.host="localhost"};
@@ -106,14 +105,15 @@ module.exports = {
   },
 
   // fetch data from data service
-  dataServiceCall: function(dataUrl, endpoint, callback){
-    let opts = { host: dataUrl, port:80, path: endpoint, method: 'GET'};
+  dataServiceCall: function(dataUrl, apiKey, endpoint, callback){
+    let postData = {data:{apiKey: apiKey}};
+    let opts = { host: dataUrl, port:80, path: endpoint, method: 'POST', headers: {'Content-Type': 'application/json'}};
     if(dataUrl.indexOf('localhost') != -1){opts.port = 3000; opts.host="localhost"};
     let request = http.request(opts, res => {
         res.setEncoding('utf8');
         res.on('data', data => {
           let o=JSON.parse(data);
-          if(o.status && o.status === 400){
+          if(o.error){
             callback(null, {error: o.error})
           }else{
             callback(o);
@@ -125,14 +125,14 @@ module.exports = {
       console.log('error making dataService call', error);
       callback(null, {error: error});
     });
-
+    request.write(JSON.stringify(postData));
     request.end();
   },
 
 
 
-  publishPresentation: function(dataUrl, endpoint, presentation, callback){
-    let postData = {data:presentation};
+  publishPresentation: function(dataUrl, apiKey, endpoint, presentation, callback){
+    let postData = {data:{presentation:presentation, apiKey:apiKey}};
     let opts = { host: dataUrl, port:80, path: endpoint, method: 'POST', headers: {'Content-Type': 'application/json'}};
     if(dataUrl.indexOf('localhost') != -1){opts.port = 3000; opts.host="localhost"};
     let request = http.request(opts, res => {
@@ -155,8 +155,8 @@ module.exports = {
     request.end();
   },
 
-  getPresentations: function(dataUrl, localPresentationIds, callback){
-    let postData = {data:localPresentationIds};
+  getPresentations: function(dataUrl, apiKey, localPresentationIds, callback){
+    let postData = {data:{presentations: localPresentationIds, apiKey: apiKey}};
     let opts = { host: dataUrl, port:80, path: '/getPresentations', method: 'POST', headers: {'Content-Type': 'application/json'}};
     if(dataUrl.indexOf('localhost') != -1){opts.port = 3000; opts.host="localhost"};
     let request = http.request(opts, res => {
