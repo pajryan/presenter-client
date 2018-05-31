@@ -41,9 +41,7 @@ module.exports = {
         console.log('error connecting to localhost', error);
         callback(false);
       });
-
       request.end();
-
     }else{
       require('dns').resolve(dataUrl, function(err) {
         if (err) {
@@ -56,13 +54,45 @@ module.exports = {
     }
   },
 
+  checkIfHaveValidApiKey: function(dataUrl, apiKey, callback){
+    console.log("CHECKING FOR VALID API KEY")
+    let postData = {data:{apiKey:apiKey}}
+    let opts = { host: dataUrl, port:80, path: '/apiCheck', method: 'POST', headers: {'Content-Type': 'application/json'}};
+    if(dataUrl.indexOf('localhost') != -1){opts.port = 3000; opts.host="localhost"};
+    let request = http.request(opts, res => {
+        res.setEncoding('utf8');
+        res.on('data', data => {
+          let o=JSON.parse(data);
+          if(o.status && o.status === 200){
+            callback(o);
+          }else{
+            callback(null, {error: o.error})
+          }
+        });
+    });
 
-  checkOnlineAndDataConnection: function(dataUrl, callback){
+    request.on('error', error => {
+      console.log('error making checking if have valid api key', error);
+      callback(null, {error: error});
+    });
+    request.write(JSON.stringify(postData));
+    request.end();
+  
+  },
+
+
+  checkOnlineAndDataConnectionAndApiKey: function(dataUrl, apiKey, callback){
     this.checkIfOnline(online => {
       if(online){
         this.checkIfHaveDataConnection(dataUrl, dataConnected => {
           if(dataConnected){
-            callback(true);
+            this.checkIfHaveValidApiKey(dataUrl, apiKey, apiAccepted => {
+              if(apiAccepted){
+                callback(true);
+              }else{
+                callback(false, {error:"Your API key was rejected."});      
+              }
+            })
           }else{
             callback(false, {error:"It looks like you are online, but the data service provider is not available."});    
           }

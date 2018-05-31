@@ -39,6 +39,7 @@
   import EditPresentation from './editPresentation/editPresentationUI.vue'
   import ManagePresentations from './managePresentations/managePresentationsUI.vue'
   import UpdateApplication from './updateApplication/updateApplicationUI.vue'
+  import ConfigureApplication from './configuration/configurationUI.vue'
 
   import FontAwesomeIcon from '@fortawesome/vue-fontawesome'
   import faCog from '@fortawesome/fontawesome-free-solid/faCog'
@@ -50,22 +51,29 @@
     components: { FontAwesomeIcon },
     data () {
       return {
-        shown: true,
-        tabIndex: 1,
+        shown: false,
+        tabIndex: 0,
         tabs: [
           {name: 'update data', index: 0, isActive: true, hasBeenLoaded:false, childId: "adminUpdateData", uiToLoad: UpdateData},
           {name: 'manage presentations', index: 1, isActive: false, hasBeenLoaded:false, childId: "adminManagePresentation", uiToLoad: ManagePresentations},
           {name: 'edit presentation', index: 2, isActive: false, hasBeenLoaded:false, childId: "adminEditPresentation", uiToLoad: EditPresentation},
-          {name: 'update application', index: 3, isActive: false, hasBeenLoaded:false, childId: "adminUpdateApplication", uiToLoad: UpdateApplication}
+          {name: 'update application', index: 3, isActive: false, hasBeenLoaded:false, childId: "adminUpdateApplication", uiToLoad: UpdateApplication},
+          {name: 'configuration', index: 4, isActive: false, hasBeenLoaded:false, childId: "adminConfiguration", uiToLoad: ConfigureApplication}
         ],
         vues:[]
       }
     },
     mounted () {
-      if(this.shown){
-        // this is for debugging purposes so I don't have to open admin every time (when I'm working on it.)
+      console.log("IS FIRST TIME USER", this.adminObj.firstTimeUser())
+      if(this.adminObj.firstTimeUser()){
+        this.tabIndex = 4;
+        this.shown = true;
         this.setActive(this.tabs[this.tabIndex]);  
       }
+      // this is for debugging purposes so I don't have to open admin every time (when I'm working on it.)
+      // if(this.shown){
+      //   this.setActive(this.tabs[this.tabIndex]);  
+      // }
     },
 
     methods: {

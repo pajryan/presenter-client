@@ -22,6 +22,7 @@ export function build(){
       appPresentationConfig,
       dataToUpdate = [];
 
+  let isFirstTimeUser = false;  //if this goes true, the user will be launched directly to admin configuration
       
   function admin(){
     let p = document.createElement('p'); p.innerHTML = "admin";
@@ -33,12 +34,17 @@ export function build(){
     appPresentationConfig = path.join(appPresentationPath, _state.appPresentationConfigFileName)
 
     //if needed, build the user storage directories, configs etc (on first time running the app)
-    admin.initAppDirectories();
+    isFirstTimeUser = admin.initAppDirectories();
+    if(!isFirstTimeUser){
+      // these items are configured by the user. So get them if we have them. A first time user will be prompted
+      let config = JSON.parse(fs.readFileSync(appConfigPath))
+      _state.dataUpdateServiceURL = config.dataUrl;
+      _state.userName = config.userName;
+      _state.userEmail = config.email;
+      _state.apiKey = config.apiKey;
+    }
 
-
-    console.log('a uuid ', utils.getUUID())
-
-     //build the admin UI
+    //build the admin UI
     new Vue({
       el: '#admin',
       render: h => h(AdminUI, {
@@ -47,6 +53,9 @@ export function build(){
     })
   }
   
+
+
+
   admin.getUUID = function(){
     return utils.getUUID();
   }
@@ -79,9 +88,37 @@ export function build(){
         fs.writeFileSync(appDefaultPresentationFile, JSON.stringify(defaultPresentationFlow, null, '\t'), 'utf8');
         //write the default presentation config
         fs.writeFileSync(appPresentationConfig, JSON.stringify(defaultPresentationConfig, null, '\t'), 'utf8');
-        
       }
+      return true;
     }
+    return false;
+  }
+
+  // this is called from the config tab of the admin view - to update the config with api key, user name etc
+  admin.writeConfigFileDetails = function(configData){  // { name:<name>, email:<email>, dataUrl:<dataUrl>, apiKey:<apiKey>  }
+    //update local state
+    _state.dataUpdateServiceURL = configData.dataUrl;
+    _state.apiKey = configData.apiKey;
+    _state.userName = configData.name;
+    _state.userEmail = configData.email;
+    //update user stored config file
+    let config = JSON.parse(fs.readFileSync(appConfigPath));
+    config.userName = configData.name;
+    config.email = configData.email;
+    config.dataUrl = configData.dataUrl;
+    config.apiKey = configData.apiKey;
+    fs.writeFileSync(appConfigPath, JSON.stringify(config, null, '\t'), 'utf8');
+  }
+
+  admin.checkForDataServer = function(callback){
+    utils.checkOnlineAndDataConnectionAndApiKey(_state.dataUpdateServiceURL, _state.apiKey, (online, err) => {
+      if(online){
+        callback({status:200});
+      }else{
+        console.log('could not connect to data provider', err)
+        callback(null, {error:err});
+      }
+    })
   }
 
   /*
@@ -384,6 +421,12 @@ export function build(){
   admin.autoUpdater = function(val) {
     if (!arguments.length) { return autoUpdater; }
     autoUpdater = val;
+    return admin;
+  }
+  //is first time user
+  admin.firstTimeUser = function(val) {
+    if (!arguments.length) { return isFirstTimeUser; }
+    isFirstTimeUser = val;
     return admin;
   }
 

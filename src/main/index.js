@@ -20,8 +20,6 @@ const appDefaultPresentationFileName = "_defaultPresentation.json";
 const appPresentationConfigFileName = "_presentationConfig.json";
 const appConfigFileName = "_appConfig.json";
 
-const dataUpdateServiceURL = "http://localhost:3000/";
-
 
 let isDevelopment = process.env.NODE_ENV !== 'production'
 
@@ -87,7 +85,6 @@ app.on('ready', () => {
         appVersion: appVersion, 
         appPath: appPath,
         appConfigFileName: appConfigFileName,
-        dataUpdateServiceURL: dataUpdateServiceURL,
         appDataStorePath: appDataStorePath,
         appPresentationPath: appPresentationPath,
         appDefaultPresentationFileName: appDefaultPresentationFileName,

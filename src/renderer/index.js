@@ -40,11 +40,18 @@ ipcRenderer.on('appReady', function(event, args) {
   _state.appVersion = args.appVersion;
   _state.appPath = args.appPath;
   _state.appConfigFileName = args.appConfigFileName;
-  _state.dataUpdateServiceURL = args.dataUpdateServiceURL;
+  
   _state.appDataStorePath = args.appDataStorePath;
   _state.appPresentationPath = args.appPresentationPath;
   _state.appDefaultPresentationFileName = args.appDefaultPresentationFileName;
   _state.appPresentationConfigFileName = args.appPresentationConfigFileName;
+
+  // will collect some additional state in the admin() call (because they are part of the app config and will need to be initialized for a new user)
+  _state.dataUpdateServiceURL = "";
+  _state.userName = "";
+  _state.userEmail = "";
+  _state.apiKey = "";
+
   appInit();  //have items passed from main.js.  Kick off building the app
 });
 
@@ -79,7 +86,7 @@ function appInit(){
   toc.admin(admin).slideshow(slideshow);
 
   // run each .
-  admin();
+  admin();  //this will also check if we have a first time user. If so, will jump to admin config
   slideshow();
   toc();
 
