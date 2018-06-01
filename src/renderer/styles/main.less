@@ -23,3 +23,52 @@ body{
 .tab-pane{
   padding: 12px;
 }
+
+
+#slideshow{
+  position: absolute;
+  width:100%;
+  height:100%;
+  background:pink;
+  top:0px;
+  left:0px;
+  display:none;
+  z-index:1;
+}
+#prevPage{
+  left: -100%;
+}
+#currPage{
+
+}
+#nextPage{
+  left: 100%;
+}
+.pageWrap{
+  height:100%;
+  width:100%;
+  position: absolute;
+  top: 0;
+  left:0;
+  background: #ffffcc;
+}
+.pageWrapDebug{
+  height:50%;
+  width:50%;
+  border: 1px solid #333;
+}
+
+#prevPage.pageWrapDebug {
+  top: 25%;
+  left: -28%
+}
+
+#currPage.pageWrapDebug {
+  top: 25%;
+  left:25%;
+}
+
+#nextPage.pageWrapDebug {
+  top: 25%;
+  left:78%
+}

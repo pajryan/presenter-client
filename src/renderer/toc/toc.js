@@ -8,13 +8,9 @@ export function build(){
       _slideshow,
       _state;
   
-  let activePresentation = null;
 
  
   function toc(){
-    activePresentation = _admin.getActivePresentation();
-    console.log('in toc. active presentation is', activePresentation)
-    
     //build the admin UI
     new Vue({
       el: '#toc',
@@ -22,11 +18,20 @@ export function build(){
         props: {adminObj: _admin} 
       })
     })
+  }
 
-
+  toc.adminClosed = function(){
+    //runs when the admin panel is closed
+    // rebuild the toc ui
+    toc();
+    
   }
 
 
+
+  /* 
+    GETTERS / SETTERS 
+  */
   toc.rootElem = function(val){
     if (!arguments.length) { return _rootElem; }
     _rootElem = val;

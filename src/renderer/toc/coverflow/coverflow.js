@@ -1,3 +1,16 @@
+/*
+  Note, I started with:
+    https://github.com/OrangeXC/vue-coverflow
+
+  But that library relies on fixed px for everythig.  I wanted a % based display.  So I modified it
+
+  The original code is pretty mediocre, so this could be cleaned up significantly, but haven't done so yet.
+
+  Also, not that the reflection doesn't work - not really sure why - seems like it won't work when both a -webkit-transform and z-index are defined.  It works in their demo: https://orangex_c.coding.me/vue-coverflow/ but I just can't get it going.
+*/
+
+
+
 var browserPrefix = ''
 
 if (navigator.userAgent.indexOf('Firefox') !== -1) {
@@ -17,9 +30,14 @@ function setTransform3D (el, degree, perspective, z) {
 
 
 function oneImgWidth(imgs){
+  return 20;
   let percOfTotal = 100/imgs.length;
+  console.log("IMAGE WIDTH", percOfTotal)
   if(percOfTotal<20){
     return 20;
+  }
+  if(percOfTotal>40){
+    return 40
   }
 }
 
@@ -89,6 +107,11 @@ export default {
       }
     }
 
+    if(index > imgs.length-1){
+      console.error('You set the coverflow index to '+ index + ' but you only have indices 0-' + (imgs.length-1) + ' to choose from!  Resetting it back to zero')
+      index =0;
+    }
+
     for (var j = 0; j < imgs.length; j++) {
       imgs[j].style.position = 'absolute'
       imgs[j].style.cursor = 'pointer'
@@ -137,6 +160,20 @@ export default {
 
 
     el.style.width = '100%'
+
+    // if (shadow) {
+    //   console.log('doing shadow')
+    //   // el.style.height = (imgHeight * 2 + 80) + 'px'
+    //   // el.style['-webkit-perspective-origin'] = el.style['perspective-origin'] = el.style['-moz-perspective-origin'] = '50% 25%'
+
+    //   for (var k = 0; k < imgs.length; k++) {
+    //     // imgs[k].style.bottom = (20 + imgHeight) + 'px'
+    //     imgs[k].style['-webkit-box-reflect'] = 'below 0 -webkit-gradient(linear, 30% 20%, 30% 100%, from(transparent), color-stop(0.3, transparent), to(rgba(0, 0, 0, 0.8)))'
+    //   }
+    // } else {
+    //   // el.style.height = (imgHeight + 80) + 'px'
+    // }
+
 
 
     el.style.height = '100%';

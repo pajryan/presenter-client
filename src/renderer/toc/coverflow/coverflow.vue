@@ -8,6 +8,16 @@
 </template>
 
 <script>
+
+/*
+  Note, I started with:
+    https://github.com/OrangeXC/vue-coverflow
+
+  But that library relies on fixed px for everythig.  I wanted a % based display.  So I modified it
+*/
+
+
+
 import coverflow from './coverflow'
 
 export default {
@@ -71,3 +81,9 @@ export default {
   }
 }
 </script>
+
+
+
+<style scoped>
+
+</style>

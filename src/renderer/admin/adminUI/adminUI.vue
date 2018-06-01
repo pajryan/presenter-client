@@ -81,6 +81,9 @@
         if(this.shown){
           this.setActive(this.tabs[this.tabIndex]);
         }
+        if(!this.shown){
+          this.adminObj.closeAdmin();
+        }
       },
       setActive (tab) {
         this.tabs.forEach( t => { t.isActive = false; });

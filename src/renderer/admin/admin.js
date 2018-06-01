@@ -60,6 +60,12 @@ export function build(){
     return utils.getUUID();
   }
 
+  admin.closeAdmin = function(){
+    //runs when the admin is hidden
+    _toc.adminClosed();
+    _slideshow.adminClosed();
+  }
+
 
   // the first time a user launches the application we need the following in the user storage (e.g. /Users/<user>/Library/Application Support/<appName>/:
   //  a default configuration file

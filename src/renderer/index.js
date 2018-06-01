@@ -67,10 +67,6 @@ function appInit(){
 
   let b = document.getElementById("app");
 
-  // build slideshow
-  let s = document.createElement('div'); s.id="slideshow"; b.appendChild(s);
-  var slideshow = Slideshow.build().rootElem(s).state(_state);
-
   // build table of contents
   let t = document.createElement('div'); t.id="toc"; b.appendChild(t);
   var toc = TOC.build().rootElem(t).state(_state);
@@ -79,6 +75,10 @@ function appInit(){
   let a = document.createElement('div'); a.id="admin"; a.className="admin"; b.appendChild(a);
   var admin = Admin.build().rootElem(a).state(_state);
   admin.autoUpdater(autoUpdater); // pass the autoUpdater so the admin can manage update functions
+
+  // build slideshow (do this last so it stacks on top. this allows me to just show this, and it "hides" the toc and admin)
+  let s = document.createElement('div'); s.id="slideshow"; b.appendChild(s);
+  var slideshow = Slideshow.build().rootElem(s).state(_state);
 
   // pass the pieces to each other
   slideshow.admin(admin).toc(toc);
