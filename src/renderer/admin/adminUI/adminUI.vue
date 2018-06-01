@@ -64,7 +64,6 @@
       }
     },
     mounted () {
-      console.log("IS FIRST TIME USER", this.adminObj.firstTimeUser())
       if(this.adminObj.firstTimeUser()){
         this.tabIndex = 4;
         this.shown = true;

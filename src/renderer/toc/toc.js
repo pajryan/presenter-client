@@ -1,4 +1,6 @@
 'use strict';
+import Vue from 'vue'
+import tocUI from './tocUI.vue'
 
 export function build(){
   let _rootElem,
@@ -6,9 +8,22 @@ export function build(){
       _slideshow,
       _state;
   
+  let activePresentation = null;
+
+ 
   function toc(){
-    // let p = document.createElement('p'); p.innerHTML = "TOC";
-    // _rootElem.appendChild(p)
+    activePresentation = _admin.getActivePresentation();
+    console.log('in toc. active presentation is', activePresentation)
+    
+    //build the admin UI
+    new Vue({
+      el: '#toc',
+      render: h => h(tocUI, {
+        props: {adminObj: _admin} 
+      })
+    })
+
+
   }
 
 

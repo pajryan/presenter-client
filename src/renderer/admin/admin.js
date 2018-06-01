@@ -163,6 +163,7 @@ export function build(){
     let presentationConfig = JSON.parse(fs.readFileSync(appPresentationConfig));
     presentationConfig.activePresentation = id;
     fs.writeFileSync(appPresentationConfig, JSON.stringify(presentationConfig, null, '\t'), 'utf8');
+    _state.activePresentation = this.getActivePresentation();
   }
 
   admin.getPresentationById = function(id){
