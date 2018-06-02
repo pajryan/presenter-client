@@ -1,6 +1,8 @@
 'use strict';
 import Vue from 'vue'
-import pageUI from './page.vue'
+// import Page from './page.js'
+
+let Page = require("./page.js");
 
 export function build(){
   let _rootElem,
@@ -17,9 +19,9 @@ export function build(){
     let slideshow = document.getElementById("slideshow");
 
     //build containers for previous, current and next page
-    let prevPage = document.createElement("div"); prevPage.id="prevPage"; prevPage.className=doDebugView?"pageWrap pageWrapDebug":"pageWrap"
-    let currPage = document.createElement("div"); currPage.id="currPage"; currPage.className=doDebugView?"pageWrap pageWrapDebug":"pageWrap"
-    let nextPage = document.createElement("div"); nextPage.id="nextPage"; nextPage.className=doDebugView?"pageWrap pageWrapDebug":"pageWrap"
+    prevPage = document.createElement("div"); prevPage.id="prevPage"; prevPage.className=doDebugView?"pageWrap pageWrapDebug":"pageWrap"
+    currPage = document.createElement("div"); currPage.id="currPage"; currPage.className=doDebugView?"pageWrap pageWrapDebug":"pageWrap"
+    nextPage = document.createElement("div"); nextPage.id="nextPage"; nextPage.className=doDebugView?"pageWrap pageWrapDebug":"pageWrap"
     slideshow.appendChild(prevPage);
     slideshow.appendChild(currPage);
     slideshow.appendChild(nextPage);
@@ -29,11 +31,17 @@ export function build(){
     //runs when the admin panel is closed
   }
 
-  slideshow.launchPresentation = function(sectionIndex, pageIndex=0) {
+  slideshow.launchPresentation = function(sectionIndex=0, pageIndex=0) {
     section = _admin.getActivePresentation().presentation.sections[sectionIndex];
     console.log('current section', section)
     document.getElementById("slideshow").style.display="block";
+    console.log("the element", currPage)
+    new Page(section.pages[pageIndex], currPage);
 
+  }
+
+  slideshow.closePresentation = function() {
+    document.getElementById("slideshow").style.display="none";
   }
 
   /* 

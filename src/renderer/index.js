@@ -57,6 +57,8 @@ ipcRenderer.on('appReady', function(event, args) {
 
 
 
+
+
 // do some initialization of the components of the app
 function appInit(){
 
@@ -89,6 +91,17 @@ function appInit(){
   admin();  //this will also check if we have a first time user. If so, will jump to admin config
   slideshow();
   toc();
+
+  //capture the escape key to close the presentation
+  document.onkeydown = function(evt) {
+    evt = evt || window.event;
+    if (evt.keyCode == 27) {
+      slideshow.closePresentation();
+    }
+  };
+
+  console.error("temporarily launching the slideshow (renderer/index.js - very bottom of the file)");
+  slideshow.launchPresentation();
 
 
 }

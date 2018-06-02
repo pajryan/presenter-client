@@ -182,6 +182,7 @@ export function build(){
     newPresentation.metadata.title += "(COPY)";
     newPresentation.metadata.id = newPresentationId;
     newPresentation.metadata.isPublished = false;
+    newPresentation.metadata.version = 0;
     newPresentation.metadata.creationDate = new Date().getTime();
     admin.writePresentation(newPresentation);
     return newPresentation;

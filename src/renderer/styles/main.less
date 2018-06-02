@@ -44,6 +44,8 @@ body{
 #nextPage{
   left: 100%;
 }
+
+/* this is the main class that holds the page*/
 .pageWrap{
   height:100%;
   width:100%;
@@ -51,7 +53,10 @@ body{
   top: 0;
   left:0;
   background: #ffffcc;
+  display: flex;
+  flex-direction: column;
 }
+/* this is in addition to pageWrap in debug mode*/
 .pageWrapDebug{
   height:50%;
   width:50%;
@@ -71,4 +76,39 @@ body{
 #nextPage.pageWrapDebug {
   top: 25%;
   left:78%
+}
+
+
+.pageWrap .pageTitle{
+  text-align: center;
+  font-size: 1.2em;
+  line-height:1.2em;
+  display: table-cell;
+  vertical-align: middle;
+  margin:0;
+  padding:0.4em;
+}
+
+// this holds all the page content *except* the title
+.pageWrap .pageContent{
+  text-align: center;
+  height: 10%;
+  min-height: 1em;
+  background: #ccc;
+  flex-grow: 1; // tak up all remaining space besides title
+  margin:0;
+  padding:10px 0px;
+
+  display: flex;
+  flex-direction: row;
+}
+
+// finally, this holds actual content (inside pageContent)
+.pageWrap .pageBlock{
+  background:red;
+  padding: 5px 15px;
+}
+
+.pageWrap .pageBlockMulti{
+  border-left: 1px solid #ccc;
 }
