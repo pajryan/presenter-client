@@ -34,55 +34,65 @@ body{
   left:0px;
   display:none;
   z-index:1;
-}
-#prevPage{
-  left: -100%;
-}
-#currPage{
 
+  //going to lay out the pages horizontally
+  // display: flex;
+  flex-direction: row;
+  overflow: scroll;
+  flex-wrap: nowrap;
 }
-#nextPage{
-  left: 100%;
-}
+
 
 /* this is the main class that holds the page*/
 .pageWrap{
   height:100%;
-  width:100%;
-  position: absolute;
-  top: 0;
-  left:0;
+  flex-grow: 0;     /* do not grow   - initial value: 0 */
+  flex-shrink: 0;   /* do not shrink - initial value: 1 */
+  flex-basis: 100%;
   background: #ffffcc;
+  font-size: 1.2em;
+  line-height:1.2em;
+
   display: flex;
   flex-direction: column;
 }
 /* this is in addition to pageWrap in debug mode*/
-.pageWrapDebug{
-  height:50%;
-  width:50%;
-  border: 1px solid #333;
+#slideshow.debug .pageWrap{
+  height:48%;
+  flex-grow: 0;     /* do not grow   - initial value: 0 */
+  flex-shrink: 0;   /* do not shrink - initial value: 1 */
+  flex-basis: 48%;
+  margin-right:1%;
+  margin-left:1%;
+  box-shadow: 0px 0px 25px 0 rgba(0,0,0,0.5);
+  font-size: 1.0em;
+  line-height:1.0em;
+
+  // flex-basis:auto;
+  margin-top: 25%;
+  // border: 1px solid #333;
 }
 
-#prevPage.pageWrapDebug {
-  top: 25%;
-  left: -28%
-}
 
-#currPage.pageWrapDebug {
-  top: 25%;
-  left:25%;
+#slideshow.debug .pageWrap:first-of-type{
+  margin-left:22%;
 }
+//this doesn't work, so doing deadspace
+// #slideshow.debug .pageWrap:last-of-type{
+//   margin-right:25%;
+// }
 
-#nextPage.pageWrapDebug {
-  top: 25%;
-  left:78%
+#slideshow.debug .deadspace{
+  height:48%;
+  flex-grow: 0;     /* do not grow   - initial value: 0 */
+  flex-shrink: 0;   /* do not shrink - initial value: 1 */
+  flex-basis: 22%;
+  margin-top: 25%;
 }
 
 
 .pageWrap .pageTitle{
   text-align: center;
-  font-size: 1.2em;
-  line-height:1.2em;
   display: table-cell;
   vertical-align: middle;
   margin:0;

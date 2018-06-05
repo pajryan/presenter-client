@@ -10,21 +10,29 @@ export function build(){
       _toc,
       _state;
   
-  let section=null,
-      prevPage, currPage, nextPage;
+  let isShown=false,
+      section=null,
+      pages = [],
+      slideshowContainer,
+      currentPageIndex = 0;
 
   let doDebugView = true;
 
-  function slideshow(){
-    let slideshow = document.getElementById("slideshow");
 
-    //build containers for previous, current and next page
-    prevPage = document.createElement("div"); prevPage.id="prevPage"; prevPage.className=doDebugView?"pageWrap pageWrapDebug":"pageWrap"
-    currPage = document.createElement("div"); currPage.id="currPage"; currPage.className=doDebugView?"pageWrap pageWrapDebug":"pageWrap"
-    nextPage = document.createElement("div"); nextPage.id="nextPage"; nextPage.className=doDebugView?"pageWrap pageWrapDebug":"pageWrap"
-    slideshow.appendChild(prevPage);
-    slideshow.appendChild(currPage);
-    slideshow.appendChild(nextPage);
+  //t = current time,  b = start value,   c = change in value,  d = duration
+  // https://gist.github.com/andjosh/6764939
+  Math.easeInOutQuad = function (t, b, c, d) {
+    t /= d/2;
+    if (t < 1) return c/2*t*t + b;
+    t--;
+    return -c/2 * (t*(t-2) - 1) + b;
+  };
+
+  function slideshow(){
+    slideshowContainer = document.getElementById("slideshow");
+    if(doDebugView){
+      slideshowContainer.className = "debug";
+    }
   }
 
   slideshow.adminClosed = function(){
@@ -32,16 +40,73 @@ export function build(){
   }
 
   slideshow.launchPresentation = function(sectionIndex=0, pageIndex=0) {
+    this.clearPresentation();
+
     section = _admin.getActivePresentation().presentation.sections[sectionIndex];
-    console.log('current section', section)
-    document.getElementById("slideshow").style.display="block";
-    console.log("the element", currPage)
-    new Page(section.pages[pageIndex], currPage);
+    slideshowContainer.style.display="flex";
+
+    console.log("launching section", section)
+    section.pages.forEach(pageData => {
+      let pageContainer = document.createElement("div"); pageContainer.className="pageWrap";
+      new Page(pageData, pageContainer); 
+      slideshowContainer.appendChild(pageContainer);
+      pages.push(pageContainer);
+    })
+
+    // this is to force some right padding when in debug mode.  I can't set margin-right like I can with margin left.
+    let deadSpace = document.createElement("div"); deadSpace.className="deadspace";
+    slideshowContainer.appendChild(deadSpace);
+    isShown = true;
+
+    // go the appropriate page
+    this.goToPage(3, false)
+  }
+
+  slideshow.goToPage = function(index=0, animateScroll=true){
+    let totalWidth = slideshowContainer.scrollWidth;
+    let slideWidth = totalWidth / pages.length;
+    
+    if(doDebugView){
+      slideWidth = totalWidth / (pages.length+1);  // this accounts for padding etc in the debug view. +1 to include the space on the sides
+    }
+    
+    //store the current index
+    currentPageIndex = index;
+
+    if(!animateScroll){
+      slideshowContainer.scrollLeft = slideWidth * index;
+
+    }else{
+      //animate the scrolling
+      let start = slideshowContainer.scrollLeft,
+                  change = (slideWidth * index) - start,
+                  currentTime = 0,
+                  increment = 20,
+                  duration = 1000;
+      
+      var animateScroll = function(){        
+        currentTime += increment;
+        var val = Math.easeInOutQuad(currentTime, start, change, duration);
+        slideshowContainer.scrollLeft = val;
+        if(currentTime < duration) {
+          setTimeout(animateScroll, increment);
+        }
+      };
+      animateScroll();
+    }
 
   }
 
+  slideshow.clearPresentation = function(){
+    pages = [];
+    section = null;
+    slideshowContainer.innerHTML = '';
+  }
+
   slideshow.closePresentation = function() {
-    document.getElementById("slideshow").style.display="none";
+    this.clearPresentation();
+    isShown=false;
+    slideshowContainer.style.display="none";
   }
 
   /* 
