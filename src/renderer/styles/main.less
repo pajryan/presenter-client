@@ -53,7 +53,7 @@ body{
   flex-grow: 0;     /* do not grow   - initial value: 0 */
   flex-shrink: 0;   /* do not shrink - initial value: 1 */
   flex-basis: 100%;
-  background: #ffffcc;
+  background: #fff;
   font-size: 1.2em;
   line-height:1.2em;
 
@@ -97,6 +97,8 @@ body{
   display: flex;
   flex-direction: row;
   flex-wrap: nowrap;
+  background: #fff linear-gradient(-45deg, rgba(189,220,232, 0.4), rgba(189,220,232, 0.4));
+  border-bottom: 1px solid #ccc;
 }
 .pageWrap .pageNav .upPageNav{
   font-size: 0.8em;
@@ -105,7 +107,6 @@ body{
 .pageWrap .pageNav .leftPageNav, 
 .pageWrap .pageNav .rightPageNav,
 .pageWrap .pageNav .gridPageNav {
-  background: pink;
   padding: 6px;
   margin: auto;
   cursor: pointer;
@@ -118,8 +119,17 @@ body{
   display: none;
 }
 
+#slideshow.debug .pageNav{
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
+}
+
 #slideshow.debug .gridPageNav{
   border-top-left-radius: 5px;
+}
+
+#slideshow.debug .pageTitle{
+  border-top-right-radius: 5px;
 }
 
 // hide arrows for first and last slides
@@ -144,7 +154,7 @@ body{
   text-align: center;
   height: 10%;
   min-height: 1em;
-  background: #ccc;
+  background: #fff linear-gradient(45deg, rgba(189,220,232, 0.4), white);
   flex-grow: 1; // tak up all remaining space besides title
   margin:0;
   padding:10px 0px;
@@ -161,8 +171,9 @@ body{
 
 // finally, this holds actual content (inside pageContent)
 .pageWrap .pageBlock{
-  background:red;
+  background:f7f7f7;
   padding: 5px 15px;
+  text-align: left;
 }
 
 .pageWrap .pageBlockMulti{

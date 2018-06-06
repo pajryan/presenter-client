@@ -20,12 +20,13 @@ export function build(){
       appDataPath,
       appPresentationPath,
       appPresentationConfig,
-      dataToUpdate = [];
+      dataToUpdate = [],
+      adminVue;
 
   let isFirstTimeUser = false;  //if this goes true, the user will be launched directly to admin configuration
       
   function admin(){
-    let p = document.createElement('p'); p.innerHTML = "admin";
+    let p = document.createElement('p');
     _rootElem.appendChild(p);
 
     appConfigPath = path.join(_state.appPath, _state.appConfigFileName);
@@ -45,7 +46,7 @@ export function build(){
     }
 
     //build the admin UI
-    new Vue({
+    adminVue = new Vue({
       el: '#admin',
       render: h => h(AdminUI, {
         props: {adminObj: admin} //this.adminObj
@@ -436,6 +437,10 @@ export function build(){
     if (!arguments.length) { return isFirstTimeUser; }
     isFirstTimeUser = val;
     return admin;
+  }
+
+  admin.adminVue = function(){
+    return adminVue;
   }
 
 

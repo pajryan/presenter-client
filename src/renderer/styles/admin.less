@@ -5,7 +5,7 @@
   left: 0px;
   // width:100%;
   // height: 100%;
-  overflow: auto;
+  overflow: hidden;
   z-index: 0; // to get it under the slideshow
 }
 
@@ -14,10 +14,24 @@
   height: 100%;
   width:100%;
   background:#fff;
+  display: flex;
+  flex-direction: column;
 }
 
-#admin .tab-pane {
+#admin .nav{
+  flex-shrink: 0;
+}
+
+#admin .tab-content{
   border-left: 1px solid #dee2e6;
   border-bottom: 1px solid #dee2e6;
   border-right: 1px solid #dee2e6;
+  flex-grow: 1;
+  overflow: auto;
+}
+
+#admin .tab-pane {
+  height: 100%;
+  width: 100%;
+  overflow: auto;
 }

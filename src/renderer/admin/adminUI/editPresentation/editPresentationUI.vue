@@ -9,12 +9,13 @@
           <li v-for="error in validationErrors" :key="error.num">error</li>
         </ul>
       </div>
-      <div id="presentationEditor"></div>
       <div id="presentationEditorControls" v-if="selectedPresentationId!=''">
         <button type="button" class="btn btn-primary" @click="savePresentation" v-if="!selectedPresentationIsActive">save changes</button>
         <button type="button" class="btn btn-primary" @click="savePresentation" v-if="selectedPresentationIsActive">save changes and make active</button>
         <button type="button" class="btn btn-primary" @click="discardChanges">discard changes</button>
       </div>
+      <div id="presentationEditor"></div>
+      
     </div>
 </template>
 
@@ -141,12 +142,7 @@
 
 <style  lang="less">
   #presentationEditorControls{
-    background: #fff;
-    position: absolute;
-    right: 30px;
-    top: 180px;
-    // box-shadow: 3px 3px 6px 2px #ccc;
-    // border: 1 px solid #ccc;
+    float:right;
   }
 
 

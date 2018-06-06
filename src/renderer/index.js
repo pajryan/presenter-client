@@ -95,7 +95,8 @@ function appInit(){
 
 
 
-  //capture shortcut keys to navigat
+  //capture shortcut keys to navigate
+  // doing this at the renderer/index level because the events will only get added once (e.g. not multiple times in slideshow()) and are used for functions across toc, admin etc
   document.onkeydown = function(evt) {
     evt = evt || window.event;
     if (evt.keyCode == 27 || evt.keyCode == 38) {  // esc or up arrow
@@ -117,8 +118,8 @@ function appInit(){
   };
 
 
-  console.error("temporarily launching the slideshow (renderer/index.js - very bottom of the file)");
-  slideshow.launchPresentation(0, 1);
+  // console.error("temporarily launching the slideshow (renderer/index.js - very bottom of the file)");
+  // slideshow.launchPresentation(0, 1);
 
 
 }
