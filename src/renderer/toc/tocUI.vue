@@ -59,7 +59,7 @@
 <style scoped lang="less">
 
 .coverflow{
-  border: 2px solid red;
+  background: #fff linear-gradient(-45deg, rgba(189,220,232, 0.4), white);
 }
 
 

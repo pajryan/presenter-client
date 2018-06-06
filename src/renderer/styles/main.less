@@ -29,17 +29,21 @@ body{
   position: absolute;
   width:100%;
   height:100%;
-  background:pink;
+  background: #fff linear-gradient(-45deg, rgba(189,220,232, 0.4), white);
   top:0px;
   left:0px;
   display:none;
   z-index:1;
 
   //going to lay out the pages horizontally
-  // display: flex;
+  // display: flex; // default to display:none, but will get changed to flex when presentaiton opens
   flex-direction: row;
-  overflow: scroll;
+  overflow: hidden;
   flex-wrap: nowrap;
+}
+
+#slideshow.debug{
+  overflow:scroll;
 }
 
 
@@ -65,12 +69,11 @@ body{
   margin-right:1%;
   margin-left:1%;
   box-shadow: 0px 0px 25px 0 rgba(0,0,0,0.5);
+  border-radius: 5px;
   font-size: 1.0em;
   line-height:1.0em;
 
-  // flex-basis:auto;
   margin-top: 25%;
-  // border: 1px solid #333;
 }
 
 
@@ -90,6 +93,42 @@ body{
   margin-top: 25%;
 }
 
+.pageWrap .pageNav{
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+}
+.pageWrap .pageNav .upPageNav{
+  font-size: 0.8em;
+}
+.pageWrap .pageNav .upPageNav, 
+.pageWrap .pageNav .leftPageNav, 
+.pageWrap .pageNav .rightPageNav,
+.pageWrap .pageNav .gridPageNav {
+  background: pink;
+  padding: 6px;
+  margin: auto;
+  cursor: pointer;
+  color: #666;
+}
+
+#slideshow.debug .upPageNav,
+#slideshow.debug .leftPageNav,
+#slideshow.debug .rightPageNav{
+  display: none;
+}
+
+#slideshow.debug .gridPageNav{
+  border-top-left-radius: 5px;
+}
+
+// hide arrows for first and last slides
+#slideshow .pageWrap:first-of-type .leftPageNav{
+  visibility: hidden;
+}
+#slideshow .pageWrap:nth-last-child(2) .rightPageNav{
+  visibility: hidden;
+}
 
 .pageWrap .pageTitle{
   text-align: center;
@@ -97,6 +136,7 @@ body{
   vertical-align: middle;
   margin:0;
   padding:0.4em;
+  flex-grow: 1;
 }
 
 // this holds all the page content *except* the title
@@ -112,6 +152,12 @@ body{
   display: flex;
   flex-direction: row;
 }
+
+#slideshow.debug .pageWrap .pageContent{
+  border-bottom-left-radius: 5px;
+  border-bottom-right-radius: 5px;
+}
+
 
 // finally, this holds actual content (inside pageContent)
 .pageWrap .pageBlock{

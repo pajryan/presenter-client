@@ -92,16 +92,33 @@ function appInit(){
   slideshow();
   toc();
 
-  //capture the escape key to close the presentation
+
+
+
+  //capture shortcut keys to navigat
   document.onkeydown = function(evt) {
     evt = evt || window.event;
-    if (evt.keyCode == 27) {
+    if (evt.keyCode == 27 || evt.keyCode == 38) {  // esc or up arrow
       slideshow.closePresentation();
+    }
+    if (evt.keyCode == 37) {  // left arrow
+      slideshow.prevPage();
+    }
+    if (evt.keyCode == 39 || evt.keyCode == 32) {  // right arrow or space bar
+      slideshow.nextPage();
+    }
+    if (evt.keyCode == 70) {  // f key (e.g. for full page toggle)
+      slideshow.toggleGridView();
+    }
+    if(!slideshow.shown() && evt.keyCode >= 49 && evt.keyCode <= 58 ){  // the numbers 1 thru 9
+      let sectionIndex = evt.keyCode-49;  // zero index
+      slideshow.launchPresentation(sectionIndex);
     }
   };
 
+
   console.error("temporarily launching the slideshow (renderer/index.js - very bottom of the file)");
-  slideshow.launchPresentation();
+  slideshow.launchPresentation(0, 1);
 
 
 }

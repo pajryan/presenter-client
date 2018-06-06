@@ -19,6 +19,8 @@ The project structure & what the boilerplate expects is [here](https://webpack.e
 
 Currently using [Vue.js](https://vuejs.org/v2/guide/index.html) as the MVC framework.
 
+In general, start here with questions: https://webpack.electron.build/using-static-assets
+
 ## running
 ```bash
 # run application in development mode

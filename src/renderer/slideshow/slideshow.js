@@ -16,7 +16,7 @@ export function build(){
       slideshowContainer,
       currentPageIndex = 0;
 
-  let doDebugView = true;
+  let doDebugView = false;
 
 
   //t = current time,  b = start value,   c = change in value,  d = duration
@@ -31,7 +31,7 @@ export function build(){
   function slideshow(){
     slideshowContainer = document.getElementById("slideshow");
     if(doDebugView){
-      slideshowContainer.className = "debug";
+      slideshowContainer.classList.add("debug");
     }
   }
 
@@ -40,26 +40,61 @@ export function build(){
   }
 
   slideshow.launchPresentation = function(sectionIndex=0, pageIndex=0) {
+    let activePresentation = _admin.getActivePresentation().presentation;
+
+    //make sure the passed sectionIndex and pageIndex are valid. if not, get out.
+    if(sectionIndex+1 > activePresentation.sections.length){
+      console.error('tried to open section ' + sectionIndex + ', which is outside the bounds of the available sections: ', activePresentation.sections)
+      return;
+    }
+    if(pageIndex+1 > activePresentation.sections[sectionIndex].pages.length){
+      console.error('tried to open page ' + pageIndex + ', which is outside the bounds of the available pages: ', activePresentation.sections[sectionIndex].pages)
+      return;
+    }
+
     this.clearPresentation();
 
-    section = _admin.getActivePresentation().presentation.sections[sectionIndex];
-    slideshowContainer.style.display="flex";
+    section = activePresentation.sections[sectionIndex];
+    slideshowContainer.style.display="flex";  //show the slideshow container
 
-    console.log("launching section", section)
-    section.pages.forEach(pageData => {
-      let pageContainer = document.createElement("div"); pageContainer.className="pageWrap";
-      new Page(pageData, pageContainer); 
+    section.pages.forEach((pageData, idx) => {
+      let pageContainer = document.createElement("div"); pageContainer.classList.add("pageWrap");
+      let pg = new Page(pageData, pageContainer, this, idx); 
       slideshowContainer.appendChild(pageContainer);
-      pages.push(pageContainer);
+      pages.push(pg);
     })
 
     // this is to force some right padding when in debug mode.  I can't set margin-right like I can with margin left.
-    let deadSpace = document.createElement("div"); deadSpace.className="deadspace";
+    let deadSpace = document.createElement("div"); deadSpace.classList.add("deadspace");
     slideshowContainer.appendChild(deadSpace);
     isShown = true;
 
     // go the appropriate page
-    this.goToPage(3, false)
+    this.goToPage(pageIndex, false)
+  }
+
+  slideshow.nextPage = function(animateScroll=true) {
+    if(currentPageIndex+1 >= pages.length){
+      return; //don't wrap, it's confusing
+    }
+    currentPageIndex++;
+    this.goToPage(currentPageIndex, animateScroll);
+  }
+
+  slideshow.prevPage = function(animateScroll=true) {
+    if(currentPageIndex-1 < 0 ){
+      return; // don't wrap, it's confusing
+    }
+    currentPageIndex--;
+    this.goToPage(currentPageIndex, animateScroll);
+  }
+
+  slideshow.toggleGridView = function(index=currentPageIndex){
+    console.log('isshown', this.isShown)
+    if(!isShown){return;}
+    slideshowContainer.classList.toggle("debug");
+    doDebugView = !doDebugView;
+    this.goToPage(index, false);
   }
 
   slideshow.goToPage = function(index=0, animateScroll=true){
@@ -82,7 +117,7 @@ export function build(){
                   change = (slideWidth * index) - start,
                   currentTime = 0,
                   increment = 20,
-                  duration = 1000;
+                  duration = 500;
       
       var animateScroll = function(){        
         currentTime += increment;
@@ -94,10 +129,19 @@ export function build(){
       };
       animateScroll();
     }
-
   }
 
   slideshow.clearPresentation = function(){
+    // need to remove event listeners from the page navigation
+    pages.forEach(p => {
+      p.parentElem.querySelector('.upPageNav').removeEventListener('click', p.navEventUp);
+      p.parentElem.querySelector('.leftPageNav').removeEventListener('click', p.navEventLeft);
+      p.parentElem.querySelector('.rightPageNav').removeEventListener('click', p.navEventRight);
+      p.parentElem.querySelector('.gridPageNav').removeEventListener('click', p.navEventGrid);
+      p.destroy();
+    });
+
+    // clear content
     pages = [];
     section = null;
     slideshowContainer.innerHTML = '';
@@ -135,6 +179,12 @@ export function build(){
     _toc = val;
     return slideshow;
   };
+
+  slideshow.shown = function(val) {
+    if (!arguments.length) { return isShown; }
+    isShown = val;
+    return slideshow;
+  }
   
   return slideshow;
   

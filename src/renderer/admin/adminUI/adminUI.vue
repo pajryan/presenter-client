@@ -1,5 +1,5 @@
 <template>
-    <div id="admin" :style="shown?'height:100%':''"> 
+    <div id="admin" :style="shown?'height:100%; width:100%':''"> 
       <div id="adminCollapsed" v-show="!shown" class="navbar fixed-bottom " style="text-align:right">
         <a href="#" @click.stop.prevent="toggleShown()" style="width:100%"><font-awesome-icon :icon="icon" /></a>
       </div>
