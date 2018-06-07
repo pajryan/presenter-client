@@ -53,7 +53,7 @@ yarn dist:dir
  3. go to `https://github.com/pajryan/presenter-client/releases` and locate the new `draft` release
  4. Click `edit` to the right of the release. Scroll down and click `publish release`
       - can download the release (e.g. the DMG) from here too.
- 5. When you next download the app, it will check for an update and automatically download/update.
+ 5. When you next open the app, you can check for an update and automatically download/update.
 
 
 ## in-scope
@@ -61,12 +61,15 @@ yarn dist:dir
      - app updates will be stored as releases in this github project
  - [ ] edit presentation
      - [ ] editing by permission only
-     - [ ] flow
+     - [x] flow
      - [ ] text
      - [ ] static images
  - [ ] push edits to server
+     - [x] flow
+     - [ ] text
+     - [ ] static images
      - [ ] conflict resolution
- - [ ] notify and update clients with presentation edits
+ - [x] notify and update clients with presentation edits
 
 
 ## details on app updates
