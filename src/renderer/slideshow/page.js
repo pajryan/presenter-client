@@ -2,7 +2,7 @@
 
 // import ResizeObserver from 'resize-observer-polyfill';
 let ResizeObserver = require('resize-observer-polyfill');
-
+let path = require('path');
 let marked = require('marked');
 
 module.exports = class Page {
@@ -11,11 +11,12 @@ module.exports = class Page {
   
   
 
-  constructor(pageData, parentElem, slideshow, index) {
+  constructor(pageData, parentElem, slideshow, index, imagePath) {
     this.title = pageData.title;
     this.parentElem = parentElem;
     this.slideshow = slideshow;
     this.pageIndex = index;
+    this.imagePath = imagePath;
     this.items = pageData.pageItems;
 
     this.mmdBoxes = [];
@@ -119,7 +120,7 @@ module.exports = class Page {
     //get the image, display it in a resize-friendly way
     uiElem.classList.add('imageBlock');
     let img = document.createElement('img');
-    img.src = itm.type.image;
+    img.src = 'file://' + path.join(this.imagePath, itm.type.image);
     uiElem.appendChild(img)
     console.log('adding an image', itm)
     

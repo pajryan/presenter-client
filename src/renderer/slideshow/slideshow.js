@@ -59,7 +59,7 @@ export function build(){
 
     section.pages.forEach((pageData, idx) => {
       let pageContainer = document.createElement("div"); pageContainer.classList.add("pageWrap");
-      let pg = new Page(pageData, pageContainer, this, idx); 
+      let pg = new Page(pageData, pageContainer, this, idx, _admin.getAppImagePath()); 
       slideshowContainer.appendChild(pageContainer);
       pages.push(pg);
     })

@@ -16,6 +16,7 @@ const appVersion = pj.version;
 const appPath = app.getPath('userData'); // This is where ALL data will be stored (user data as well as data driving pictures)
 const appDataStorePath = "/_data";
 const appPresentationPath = "/_presentations";
+const appImagePath = "/_images";
 const appDefaultPresentationFileName = "_defaultPresentation.json";
 const appPresentationConfigFileName = "_presentationConfig.json";
 const appConfigFileName = "_appConfig.json";
@@ -27,7 +28,7 @@ let mainWindow;
 const menuTemplate = getMenuTemplate();
 
 function createMainWindow() {
-  const window = new BrowserWindow()
+  const window = new BrowserWindow({webPreferences:{webSecurity: false}})
   if (isDevelopment) {
     window.webContents.openDevTools()
   }
@@ -86,6 +87,7 @@ app.on('ready', () => {
         appConfigFileName: appConfigFileName,
         appDataStorePath: appDataStorePath,
         appPresentationPath: appPresentationPath,
+        appImagePath: appImagePath,
         appDefaultPresentationFileName: appDefaultPresentationFileName,
         appPresentationConfigFileName: appPresentationConfigFileName
       }

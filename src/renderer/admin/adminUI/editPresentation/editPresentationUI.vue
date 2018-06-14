@@ -25,7 +25,32 @@
 
   import Vue from 'vue'
 
-  require('@json-editor/json-editor') //impacts window object directly (not ideal..), so don't load as module
+  // require('@json-editor/json-editor') 
+  // note that I had to modify jsoneditor. So I moved it out of node_modules into this diretory.
+  require('./jsoneditor.js'); //impacts window object directly (not ideal..), so don't load as module
+
+/***
+ * 
+ * NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE
+ * * NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE
+ * * NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE
+ * * NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE
+ * 
+ * 
+ *  the json editor loads super slow with all the base64 images.  But rather than get fancy, just change from base64 to an image path
+ *   The images wil be stored in the user directory (in a new folder) by UUID (?)
+ * 
+ * When the user "publishes" a presentation, we just also publish any related images to the server
+ *   can later get smart and publish only changed images
+ * 
+ *  This means that all editing still takes place within json editor (KEY GOAL!) 
+ * 
+ * 
+ * 
+ * * NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE
+ * 
+ */
+
 
 
   //load the json schema for the presentation, along with the current flow
@@ -93,26 +118,20 @@
         //   }
         // });
         // set the event handling for uploading images
-        JSONEditor.defaults.options.upload = function(type, file, cbs) {
+        JSONEditor.defaults.options.upload = this.imageUploadComplete.bind(this)
+
+        this.editor = new JSONEditor(editorElem, editorOpts, "file:///"+this.adminObj.getAppImagePath());
+        this.editor.on('ready',this.validateEditor);
+      },
+
+      imageUploadComplete(type, file, cbs){
           console.log("GOT UPLOAD: type ", type)
           console.log("GOT UPLOAD: file ", file)
           console.log("GOT UPLOAD: cbs ", cbs)
-
-          // readin the file
-          var bitmap = fs.readFileSync(file.path);
-          // convert to base 64 string
-          var str64 = "data:image/png;base64, " + new Buffer(bitmap).toString('base64');
-
-          var str64zip = zlib.deflateSync("data:image/png;base64, " + bitmap).toString('base64')
-
-          //this is a GIANT string. so try to zip it
-
-          console.log('base64 string length----:', str64.length)
-          console.log('base64 zip string length:', str64zip.length)
-
-          cbs.success(str64);
-
-          
+          console.log('in upload. this=', self)
+          let fileName = this.adminObj.saveImage(file.path);
+          console.log('wrote image ', fileName)
+          cbs.success(fileName);
 
           // var tick = 0;
           // var tickFunction = function() {
@@ -130,12 +149,9 @@
           // };
           // window.setTimeout(tickFunction)
 
-
-        }
-
-        this.editor = new JSONEditor(editorElem, editorOpts);
-        this.editor.on('ready',this.validateEditor);
       },
+
+
       validateEditor(){
         // Now the api methods will be available
         this.validationErrors = this.editor.validate();

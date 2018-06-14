@@ -62,8 +62,8 @@ import ManageText from './manageText/manageTextUI.vue'
           {name: 'manage presentations', index: 1, isActive: false, hasBeenLoaded:false, childId: "adminManagePresentation", uiToLoad: ManagePresentations},
           {name: 'edit presentation', index: 2, isActive: false, hasBeenLoaded:false, childId: "adminEditPresentation", uiToLoad: EditPresentation},
 
-          {name: 'manage images', index: 3, isActive: false, hasBeenLoaded:false, childId: "adminManageImages", uiToLoad: ManageImages},
-          {name: 'manage text', index: 4, isActive: false, hasBeenLoaded:false, childId: "adminManageTExt", uiToLoad: ManageText},
+          // {name: 'manage images', index: 3, isActive: false, hasBeenLoaded:false, childId: "adminManageImages", uiToLoad: ManageImages},
+          // {name: 'manage text', index: 4, isActive: false, hasBeenLoaded:false, childId: "adminManageTExt", uiToLoad: ManageText},
 
           {name: 'update application', index: 5, isActive: false, hasBeenLoaded:false, childId: "adminUpdateApplication", uiToLoad: UpdateApplication},
           {name: 'configuration', index: 6, isActive: false, hasBeenLoaded:false, childId: "adminConfiguration", uiToLoad: ConfigureApplication}

@@ -19,6 +19,7 @@ export function build(){
       appConfigPath,
       appDataPath,
       appPresentationPath,
+      appImagePath,
       appPresentationConfig,
       dataToUpdate = [],
       adminVue,
@@ -33,6 +34,7 @@ export function build(){
     appConfigPath = path.join(_state.appPath, _state.appConfigFileName);
     appDataPath = path.join(_state.appPath, _state.appDataStorePath);
     appPresentationPath = path.join(_state.appPath, _state.appPresentationPath);
+    appImagePath = path.join(_state.appPath, _state.appImagePath);
     appPresentationConfig = path.join(appPresentationPath, _state.appPresentationConfigFileName)
 
     //if needed, build the user storage directories, configs etc (on first time running the app)
@@ -98,6 +100,12 @@ export function build(){
         //write the default presentation config
         fs.writeFileSync(appPresentationConfig, JSON.stringify(defaultPresentationConfig, null, '\t'), 'utf8');
       }
+
+      //write the _images directory
+      if(!fs.existsSync(appImagePath)){
+        fs.mkdirSync(appImagePath);
+      }
+
       return true;
     }
     return false;
@@ -249,6 +257,30 @@ export function build(){
   }
 
 
+  /*
+    IMAGE MANAGEMENT ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  */
+  admin.saveImage = function(localPath) {
+    let uuid = utils.getUUID();
+    let fileParts = localPath.split(".");
+    let extension = "." + fileParts[fileParts.length-1];
+    let filename = uuid + extension;
+    fs.copyFileSync(localPath, path.join(appImagePath, filename));
+    return filename;
+  }
+
+
+
+  // admin.getPresentations = function(){
+  //   //get a list of all images available
+  //   let images = []; 
+  //   fs.readdirSync(appImagePath).forEach(file => {
+  //     if(file != '.DS_Store' && file.indexOf('deleted_') == -1){ //skip the config file! and skip deleted files!
+  //       images.push(JSON.parse(fs.readFileSync(path.join(appImagePath, file))));
+  //     }
+  //   });
+  //   return images;
+  // }
 
 
   /*
@@ -449,12 +481,17 @@ export function build(){
     return appDataPath;
   }
 
+  admin.getAppImagePath = function(){
+    return appImagePath;
+  }
+
   admin.isShown = function(val){
     if (!arguments.length) { return isShown; }
     isShown = val;
     return admin;
   }
 
+  
   
 
 
