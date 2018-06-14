@@ -3,6 +3,8 @@
 // import ResizeObserver from 'resize-observer-polyfill';
 let ResizeObserver = require('resize-observer-polyfill');
 
+let marked = require('marked');
+
 module.exports = class Page {
   // https://googlechrome.github.io/samples/classes-es6/
 
@@ -10,12 +12,13 @@ module.exports = class Page {
   
 
   constructor(pageData, parentElem, slideshow, index) {
-    console.log('building page', pageData)
     this.title = pageData.title;
     this.parentElem = parentElem;
     this.slideshow = slideshow;
     this.pageIndex = index;
     this.items = pageData.pageItems;
+
+    this.mmdBoxes = [];
 
     // add a listener for resize on this page element
     this.resizeObserver = new ResizeObserver(entries => {
@@ -33,11 +36,11 @@ module.exports = class Page {
 
   resize(){
     //deal with resize: https://alligator.io/js/resize-observer/
+    console.log('got a resize event')
+    this.manageTextFontSize();
   }
 
   build() {
-    this.destroy();
-
     let nav = document.createElement('div'); nav.classList.add('pageNav'); 
     this.parentElem.appendChild(nav);
 
@@ -61,7 +64,7 @@ module.exports = class Page {
     nav.appendChild(rightPage);
     rightPage.addEventListener('click', this.navEventRight.bind(null, this), false)
 
-    let content = document.createElement('p'); content.classList.add("pageContent");
+    let content = document.createElement('div'); content.classList.add("pageContent");
     this.parentElem.appendChild(content);
 
     this.items.forEach((itm, i) => {
@@ -72,7 +75,16 @@ module.exports = class Page {
       }
       block.style['flex-basis'] = itm.percentWidth + '%';
       content.appendChild(block);
-      block.innerHTML = "asdfasdf asdf asdf asdf asdf asdf asdf asdfasd fasdf asdf asdf asdf asdf asdfa sdf asdfasdfasdf asdf asdf asdf"
+
+      if(itm.type.mmdText){
+        this.buildText(itm, block);
+      }else if(itm.type.image){
+        this.buildImage(itm, block);
+      }else if(itm.type.component){
+        this.buildComponent(itm, block);
+      }else{
+        console.error("could not resolve what type of element to build: ", itm.type);
+      }
 
     });
   }
@@ -92,4 +104,65 @@ module.exports = class Page {
   navEventGrid(page, event) {
     page.slideshow.toggleGridView(page.pageIndex);
   }
+
+  buildText(itm, uiElem){
+    //get the mmd, convert to html and display
+    uiElem.classList.add('textBlock');
+    let mmdWrap = document.createElement('div');
+    mmdWrap.classList.add('textBlockWrap');
+    mmdWrap.innerHTML = marked(itm.type.mmdText);
+    uiElem.appendChild(mmdWrap);
+    this.mmdBoxes.push(mmdWrap);  // will get looked at (fonts adjusted) on resize, which triggers on load
+  }
+
+  buildImage(itm, uiElem){
+    //get the image, display it in a resize-friendly way
+    uiElem.classList.add('imageBlock');
+    let img = document.createElement('img');
+    img.src = itm.type.image;
+    uiElem.appendChild(img)
+    console.log('adding an image', itm)
+    
+  }
+
+  buildComponent(itm, uiElem){
+    //load custom component
+    uiElem.classList.add('componentBlock');
+    console.log('adding a component', itm)
+    
+  }
+
+  manageTextFontSize(){
+    this.mmdBoxes.forEach(elem => {
+      let elemSize = elem.getBoundingClientRect();
+      let parentSize = elem.parentNode.getBoundingClientRect();
+      //shrink font
+      while(elemSize.height > parentSize.height){
+        let fontSize = parseFloat(window.getComputedStyle(elem, null).getPropertyValue('font-size'));
+        fontSize --;
+        elem.style.fontSize = (fontSize) + 'px';
+        elem.style.lineHeight = (fontSize+1) + 'px';
+        elemSize = elem.getBoundingClientRect();
+        // console.log('-------------CHANGING FONT DOWN-------------------')
+        // console.log('new elem font size', fontSize)
+        // console.log('new elem size', elemSize)
+      }
+      
+      //grow font
+      while(elemSize.height < parentSize.height-50){
+        let fontSize = parseFloat(window.getComputedStyle(elem, null).getPropertyValue('font-size'));
+        fontSize ++;
+        if(fontSize > 17) { break;}
+        elem.style.fontSize = (fontSize) + 'px';
+        elem.style.lineHeight = (fontSize+1) + 'px';
+        elemSize = elem.getBoundingClientRect();
+        // console.log('-------------CHANGING FONT UP-------------------')
+        // console.log('new elem font size', fontSize)
+        // console.log('new elem size', elemSize)
+      }
+     
+    });
+  }
+  
+
 }

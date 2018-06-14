@@ -90,7 +90,6 @@ export function build(){
   }
 
   slideshow.toggleGridView = function(index=currentPageIndex){
-    console.log('isshown', this.isShown)
     if(!isShown){return;}
     slideshowContainer.classList.toggle("debug");
     doDebugView = !doDebugView;

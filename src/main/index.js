@@ -20,7 +20,6 @@ const appDefaultPresentationFileName = "_defaultPresentation.json";
 const appPresentationConfigFileName = "_presentationConfig.json";
 const appConfigFileName = "_appConfig.json";
 
-
 let isDevelopment = process.env.NODE_ENV !== 'production'
 
 // global reference to mainWindow (necessary to prevent window from being garbage collected)

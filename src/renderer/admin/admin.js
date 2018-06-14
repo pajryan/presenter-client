@@ -21,7 +21,8 @@ export function build(){
       appPresentationPath,
       appPresentationConfig,
       dataToUpdate = [],
-      adminVue;
+      adminVue,
+      isShown = false;
 
   let isFirstTimeUser = false;  //if this goes true, the user will be launched directly to admin configuration
       
@@ -65,6 +66,7 @@ export function build(){
     //runs when the admin is hidden
     _toc.adminClosed();
     _slideshow.adminClosed();
+    isShown = false;
   }
 
 
@@ -122,7 +124,7 @@ export function build(){
       if(online){
         callback({status:200});
       }else{
-        console.log('could not connect to data provider', err)
+        console.error('could not connect to data provider', err)
         callback(null, {error:err});
       }
     })
@@ -442,6 +444,18 @@ export function build(){
   admin.adminVue = function(){
     return adminVue;
   }
+
+  admin.getAppDataPath = function(){
+    return appDataPath;
+  }
+
+  admin.isShown = function(val){
+    if (!arguments.length) { return isShown; }
+    isShown = val;
+    return admin;
+  }
+
+  
 
 
   

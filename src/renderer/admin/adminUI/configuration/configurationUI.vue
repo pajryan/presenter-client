@@ -41,7 +41,7 @@
           <p class="text-success" v-if="successMsg!=''" style="padding-top:20px;">{{successMsg}}</p>
         </form>
       </div>
-      
+      <p style="margin-top:15px; font-size: 0.8em; color: #999;">( local data store: {{dataStorePath}} )</p>
     </div>
 </template>
 
@@ -59,11 +59,13 @@
         firstTimeuser: false,
         successMsg: '',
         errorMsg: '',
+        dataStorePath:''
       }
     },
     mounted () {
       this.firstTimeuser = this.adminObj.firstTimeUser();
       this.firstTimeuser = true;
+      this.dataStorePath = this.adminObj.getAppDataPath();
     },
     methods: {
       checkInputs(event){

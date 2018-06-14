@@ -98,6 +98,11 @@ function appInit(){
   //capture shortcut keys to navigate
   // doing this at the renderer/index level because the events will only get added once (e.g. not multiple times in slideshow()) and are used for functions across toc, admin etc
   document.onkeydown = function(evt) {
+
+    // ONLY do these when not in admin - otherwise when typing mmd in the admin section, can get sudden jumping around to presentations!
+    if(admin.isShown()){return;};
+    
+
     evt = evt || window.event;
     if (evt.keyCode == 27 || evt.keyCode == 38) {  // esc or up arrow
       slideshow.closePresentation();

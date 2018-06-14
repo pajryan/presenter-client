@@ -32,8 +32,15 @@ module.exports = {
       let request = http.request(opts, res => {
           res.setEncoding('utf8');
           res.on('data', data => {
-            let o=JSON.parse(data);
-            if(o.status === 200){ callback(true); }else {callback(false)}
+            let o, success=true;
+            try {
+              o = JSON.parse(data);
+            } catch (e) {
+              success = false;
+              console.error('when checking data connection, received JSON parse error when parsing: ', data);
+              callback(false);
+            }
+            if(success && o.status && o.status === 200){ callback(true); }else {callback(false)}
           });
       });
 
@@ -71,7 +78,7 @@ module.exports = {
     });
 
     request.on('error', error => {
-      console.log('error making checking if have valid api key', error);
+      console.error('error checking if have valid api key', error);
       callback(null, {error: error});
     });
     request.write(JSON.stringify(postData));

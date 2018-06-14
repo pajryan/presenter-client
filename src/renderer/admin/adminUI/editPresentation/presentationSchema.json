@@ -89,24 +89,57 @@
                             "minimum": 0,
                             "maximum": 100
                           },
-                          "type": {
-                            "type": "string",
-                            "title": "item type",
-                            "enum": [
-                              "image", "text", "component"
-                            ],
-                            "options": {
-                              "enum_titles": ["image", "text", "widget"]
-                            }
-                            
-                          },
-                          "item": {
-                            "type": "string",
-                            "title": "item path (enum!)"
-                          },
-                          "dataSource": {
-                            "type": "string",
-                            "title": "data source (enum!)"
+
+
+                          "type":{
+                            "type": "object",
+                            "oneOf": [
+                              {
+                                "title": "image",
+                                "properties": {
+                                  "image": {
+                                    "title": " ",
+                                    "type": "string",
+                                    "format": "url",
+                                    "options": {
+                                      "upload": true
+                                    },
+                                    "links": [
+                                      {
+                                        "href": "{{self}}",
+                                        "mediaType": "image/png",
+                                        "class": "inlineImagePreview"
+                                      }
+                                    ]
+                                  }
+                                },
+                                "additionalProperties":false
+                              },
+                              {
+                                "title": "text",
+                                "properties": {
+                                  "mmdText":{
+                                    "title": " ",
+                                    "type": "string",
+                                    "format": "markdown"
+                                  }
+                                },
+                                "additionalProperties":false
+                              },
+                              {
+                                "title": "component",
+                                "properties": {
+                                  "component":{
+                                    "type": "string",
+                                    "title": "component"
+                                  },
+                                  "data":{
+                                    "type": "string"
+                                  }
+                                },
+                                "additionalProperties":false
+                              }
+                            ]
                           }
                         }
                       }
