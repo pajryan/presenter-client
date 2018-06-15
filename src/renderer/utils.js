@@ -1,4 +1,6 @@
 const http = require('http');
+const fs = require('fs');
+const request = require('request');
 
 module.exports = {
 
@@ -170,21 +172,93 @@ module.exports = {
         res.setEncoding('utf8');
         res.on('data', data => {
           let o=JSON.parse(data);
-          if(o.status && o.status === 400){
-            callback(null, {error: o.error})
-          }else{
+          if(o.status && o.status === 200){
             callback(o);
+          }else{
+            console.error('error in getPresentations', data)
+            callback(null, {error: o.error})
           }
         });
     });
 
     request.on('error', error => {
-      console.log('error making getPresentations call', error);
+      console.error('error making getPresentations call', error);
       callback(null, {error: error});
     });
     request.write(JSON.stringify(postData));
     request.end();
-  }
+  },
+
+
+  getImagesList: function(dataUrl, apiKey, callback){
+    let postData = {data:{apiKey: apiKey}};
+    let opts = { host: dataUrl, port:80, path: '/getImagesList', method: 'POST', headers: {'Content-Type': 'application/json'}};
+    if(dataUrl.indexOf('localhost') != -1){opts.port = 3000; opts.host="localhost"};
+    let request = http.request(opts, res => {
+      res.setEncoding('utf8');
+      res.on('data', data => {
+        let o=JSON.parse(data);
+        if(o.status && o.status === 200){
+          callback(o);
+        }else{
+          callback(null, {error: o.error})
+        }
+      });
+    });
+
+    request.on('error', error => {
+      console.log('error making getImagesList call', error);
+      callback(null, {error: error});
+    });
+    request.write(JSON.stringify(postData));
+    request.end();
+  },
+
+  extractKeyValueFromObject: function(itm, key, returnedValues){
+    if(typeof itm === 'object'){
+      for( let k in itm){
+        if(k === key){
+          returnedValues.push(itm[k]);
+        }
+        this.extractKeyValueFromObject(itm[k], key, returnedValues)
+      }
+    }else if(typeof itm === 'array'){
+      itm.forEach(i => {
+        this.extractKeyValueFromObject(i, key, returnedValues)
+      })
+    }
+    return returnedValues
+  },
+
+
+  publishImage: function(dataUrl, apiKey, imgPath, fileName, callback){
+
+    let postData = {data:{apiKey:apiKey}};
+    let opts = { host: dataUrl, port:80, path: '/saveImage', method: 'POST', headers: {'Content-Type': 'image/png'}};
+    if(dataUrl.indexOf('localhost') != -1){opts.port = 3000; opts.host="localhost"};
+
+    let fullURL = dataUrl + 'saveImage';
+    // console.log('posting (image) to (url) ', imgPath, fullURL)
+
+    var req = request.post(fullURL, function (err, resp, body) {
+      if (err) {
+        console.error('Error publishing image', err);
+        callback({status:400, error: err})
+      } else {
+        callback({status:200})
+      }
+    });
+
+    var form = req.form();
+    form.append('file', fs.createReadStream(imgPath));
+
+    
+  },
+
+
+
+
+
 
 
 

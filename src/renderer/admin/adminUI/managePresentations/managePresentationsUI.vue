@@ -1,7 +1,7 @@
 <!--
   A few notes about presentations and their management
   1. ANY edit to a presentation (or dup of a presentation) results in a BRAND NEW FILE:
-      UUID.json
+      <UUID>.json
   2. In the case of an edit, the original (local) file is deleted thereby replaced by the new UUID.json. 
 
   This allows me to keep files unique and frequently generated, then just deal with the excess. It also means there's no such thing
@@ -9,11 +9,11 @@
 
   When clicking "make active", the _presentationConfig.json file is update to activePresentation:<appropriateUUID>
 
-  When clicking "duplicate", the object is dup'd with a new ID, new Creation date (eventually a new author) and the file is created UUID.json
+  When clicking "duplicate", the object is dup'd with a new ID, new Creation date (eventually a new author) and the file is created <UUID>.json
 
   When clicking "archive", the file is simply renamed with the prefix "deleted_". These can be seen and recovered in the "Show/hide archived presentations" section
 
-  When clicking "publish", the file is simply recreated on the server with metadata.isPublished=true
+  When clicking "publish", the file is simply recreated on the server with metadata.isPublished=true. This will also go thru all the images required in the presentation and publish THEM as well.
 
   
   When clicking "download published presentations", we go to the server and find any files that have been *published* that do not match local files (regular or archived)
@@ -27,7 +27,7 @@
 
       This kind of makes sense (there's a published version I don't have). But maybe weird.
       
-      If it's too weird, on the downlaoded presentations table, could offere the ability to "delete from server forever" which would at least clean things up.
+      If it's too weird, on the downloaded presentations table, could offere the ability to "delete from server forever" which would at least clean things up.
 -->
 <template>
     <div>

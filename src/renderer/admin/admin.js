@@ -21,7 +21,7 @@ export function build(){
       appPresentationPath,
       appImagePath,
       appPresentationConfig,
-      dataToUpdate = [],
+      dataToUpdate = [], unpublishedImageObj = [],
       adminVue,
       isShown = false;
 
@@ -221,10 +221,71 @@ export function build(){
   }
 
   admin.publishPresentation = function(id, callback){
-    let presentationToPublish = admin.getPresentationById(id);
-    utils.publishPresentation(_state.dataUpdateServiceURL, _state.apiKey, '/savePresentation', presentationToPublish, (data, err) => {
-      callback(data, err);
+    utils.checkOnlineAndDataConnectionAndApiKey(_state.dataUpdateServiceURL, _state.apiKey, (online, err) => {
+      if(online){
+
+        let presentationToPublish = admin.getPresentationById(id);
+        //push the presentation to the server
+        utils.publishPresentation(_state.dataUpdateServiceURL, _state.apiKey, '/savePresentation', presentationToPublish, (data, err) => {
+          //now, need to go thru the presentation and see if it includes any images not already published to the server
+          if(!err && data && data.status == 200){
+            utils.getImagesList(_state.dataUpdateServiceURL, _state.apiKey, (data2, err2) => {
+              if(!err2 && data2 && data2.status == 200){
+                let publishedImages = data2.images; // array of <uuid>.png
+                // determine what images are in the presentation
+                let pres = this.getPresentationById(id);
+                let presImages = utils.extractKeyValueFromObject(pres, 'image', []);
+                // see if any of the presentation images are NOT published
+                let unpublishedImages = presImages.filter(pi => (publishedImages.findIndex(pub => pub===pi) == -1));
+                // console.log('unpublished images: ', unpublishedImages)
+                if(unpublishedImages.length == 0){
+                  callback(data, err);    // no images to publish, return
+                }else{
+                  //need to publish images
+                  unpublishedImageObj = unpublishedImages.map(upi => {return {image: upi, attempted: false, complete: false, msg:''}});
+                  unpublishedImageObj.forEach(upi => {
+                    utils.publishImage(_state.dataUpdateServiceURL, _state.apiKey, path.join(admin.getAppImagePath(), upi.image), upi.image, (data, error) => {
+                      if(error){
+                        console.error('error publishing image to server ', error);
+                        upi.attempted = true;
+                        up.msg = error;
+                        admin.publishPresentationImageStatus(callback)
+                      }else{
+                        upi.attempted = true;
+                        upi.complete = true;
+                        admin.publishPresentationImageStatus(callback);
+                      }
+                    })
+                  })
+                }
+
+              }else{
+                callback(data, err)    
+              }
+            });
+          }else{
+            callback(data, err)
+          }
+        });
+      }else{
+        console.error('could not connect to data provider', err)
+        callback(null, {error:err});
+      }
     });
+  }
+
+  admin.publishPresentationImageStatus = function(callback){
+    let attempted = unpublishedImageObj.filter(d => d.attempted);
+    let percentAttempted = 100 * attempted.length / unpublishedImageObj.length;
+
+    if(percentAttempted === 100){
+      let incomplete = unpublishedImageObj.filter(d => !d.complete);
+      if(incomplete.length === 0){
+        callback({status: 200});
+      }else{
+        callback(null, {status:400, error: incomplete});
+      }
+    }
   }
 
   admin.markLocalPresentationAsPublished = function(id){

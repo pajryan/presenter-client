@@ -37,10 +37,6 @@
   import Vue from 'vue'
   import UpdateData from './updateData/updateDataUI.vue'
   import EditPresentation from './editPresentation/editPresentationUI.vue'
-
-import ManageImages from './manageImages/manageImagesUI.vue'
-import ManageText from './manageText/manageTextUI.vue'
-
   import ManagePresentations from './managePresentations/managePresentationsUI.vue'
   import UpdateApplication from './updateApplication/updateApplicationUI.vue'
   import ConfigureApplication from './configuration/configurationUI.vue'
@@ -55,18 +51,14 @@ import ManageText from './manageText/manageTextUI.vue'
     components: { FontAwesomeIcon },
     data () {
       return {
-        shown: false,
-        tabIndex: 0,
+        shown: true,
+        tabIndex: 1,
         tabs: [
           {name: 'update data', index: 0, isActive: true, hasBeenLoaded:false, childId: "adminUpdateData", uiToLoad: UpdateData},
           {name: 'manage presentations', index: 1, isActive: false, hasBeenLoaded:false, childId: "adminManagePresentation", uiToLoad: ManagePresentations},
           {name: 'edit presentation', index: 2, isActive: false, hasBeenLoaded:false, childId: "adminEditPresentation", uiToLoad: EditPresentation},
-
-          // {name: 'manage images', index: 3, isActive: false, hasBeenLoaded:false, childId: "adminManageImages", uiToLoad: ManageImages},
-          // {name: 'manage text', index: 4, isActive: false, hasBeenLoaded:false, childId: "adminManageTExt", uiToLoad: ManageText},
-
-          {name: 'update application', index: 5, isActive: false, hasBeenLoaded:false, childId: "adminUpdateApplication", uiToLoad: UpdateApplication},
-          {name: 'configuration', index: 6, isActive: false, hasBeenLoaded:false, childId: "adminConfiguration", uiToLoad: ConfigureApplication}
+          {name: 'update application', index: 3, isActive: false, hasBeenLoaded:false, childId: "adminUpdateApplication", uiToLoad: UpdateApplication},
+          {name: 'configuration', index: 4, isActive: false, hasBeenLoaded:false, childId: "adminConfiguration", uiToLoad: ConfigureApplication}
         ],
         vues:[]
       }
@@ -78,9 +70,9 @@ import ManageText from './manageText/manageTextUI.vue'
         this.setActive(this.tabs[this.tabIndex]);  
       }
       // this is for debugging purposes so I don't have to open admin every time (when I'm working on it.)
-      // if(this.shown){
-      //   this.setActive(this.tabs[this.tabIndex]);  
-      // }
+      if(this.shown){
+        this.setActive(this.tabs[this.tabIndex]);  
+      }
     },
 
     methods: {

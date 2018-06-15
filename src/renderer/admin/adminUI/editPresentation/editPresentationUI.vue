@@ -105,18 +105,7 @@
           theme: 'bootstrap2',
           disable_edit_json: true, disable_properties: true, disable_collapse: true
         }
-        // set custom editors for mmd and image handling
-        // JSONEditor.defaults.resolvers.unshift(function(schema) {
-        //   if(schema.type === "object" && schema.format === "customImageUpload") {
-        //     return "customImageUpload";
-        //   }
-        // });
-        // JSONEditor.defaults.resolvers.unshift(function(schema) {
-        //   if(schema.type === "object" && schema.format === "customMarkdown") {
-        //     console.log("doing custom markdown ui")
-        //     return "customMarkdown";
-        //   }
-        // });
+       
         // set the event handling for uploading images
         JSONEditor.defaults.options.upload = this.imageUploadComplete.bind(this)
 
@@ -125,14 +114,9 @@
       },
 
       imageUploadComplete(type, file, cbs){
-          console.log("GOT UPLOAD: type ", type)
-          console.log("GOT UPLOAD: file ", file)
-          console.log("GOT UPLOAD: cbs ", cbs)
-          console.log('in upload. this=', self)
           let fileName = this.adminObj.saveImage(file.path);
-          console.log('wrote image ', fileName)
           cbs.success(fileName);
-
+          // can use the following to manage an automatic progressbar
           // var tick = 0;
           // var tickFunction = function() {
           //   tick += 1;
