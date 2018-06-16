@@ -21,7 +21,7 @@ export function build(){
       appPresentationPath,
       appImagePath,
       appPresentationConfig,
-      dataToUpdate = [], unpublishedImageObj = [],
+      dataToUpdate = [], unpublishedImageObj = [], missingImages = [],
       adminVue,
       isShown = false;
 
@@ -234,7 +234,7 @@ export function build(){
                 let publishedImages = data2.images; // array of <uuid>.png
                 // determine what images are in the presentation
                 let pres = this.getPresentationById(id);
-                let presImages = utils.extractKeyValueFromObject(pres, 'image', []);
+                let presImages = utils.extractKeyValueFromObject(pres, 'image');
                 // see if any of the presentation images are NOT published
                 let unpublishedImages = presImages.filter(pi => (publishedImages.findIndex(pub => pub===pi) == -1));
                 // console.log('unpublished images: ', unpublishedImages)
@@ -311,7 +311,7 @@ export function build(){
           }
         });
       }else{
-        console.log('could not connect to data provideer to download presentations', err)
+        console.error('could not connect to data provider to download presentations', err)
         callback(null, {error:err});
       }
     })
@@ -331,17 +331,56 @@ export function build(){
   }
 
 
+  admin.downloadPresentationImages = function(pres, callback){  //callback expecting one parameter: true/false for success
+    // need to determine first if any of the imags required for this presentation are "new" for the user
+    let presentationImages = utils.extractKeyValueFromObject(pres, 'image');
+    console.log('presentation images', presentationImages)
+    //get list of presentations we already have
+    let existingImages = utils.listImagesInLocalStore(this.getAppImagePath());
+    console.log('existing images', existingImages)
 
-  // admin.getPresentations = function(){
-  //   //get a list of all images available
-  //   let images = []; 
-  //   fs.readdirSync(appImagePath).forEach(file => {
-  //     if(file != '.DS_Store' && file.indexOf('deleted_') == -1){ //skip the config file! and skip deleted files!
-  //       images.push(JSON.parse(fs.readFileSync(path.join(appImagePath, file))));
-  //     }
-  //   });
-  //   return images;
-  // }
+    missingImages = presentationImages.filter(pi => (existingImages.findIndex(pub => pub===pi) == -1));
+    console.log('missing images', missingImages)
+
+    if(missingImages.length ==0){
+      callback({status: 200});
+    }else{
+      //need to get images
+      missingImages = presentationImages.map(d => {return {image: d, attempted: false, complete: false, msg:''}}); // add some metadata
+      missingImages.forEach(mi => {
+        let downloadToPath = path.join(this.getAppImagePath(), mi.image)
+        utils.downloadImage(_state.dataUpdateServiceURL, _state.apiKey, mi.image, downloadToPath, (data, error) => {
+          if(error){
+            mi.attempted = true;
+            mi.msg = error;
+            admin.downloadPresentationImagesStatus(callback)
+          }else{
+            mi.attempted = true;
+            mi.complete = true;
+            admin.downloadPresentationImagesStatus(callback)
+          }
+        })
+      })
+      
+
+      
+    }
+  }
+
+
+  admin.downloadPresentationImagesStatus = function(callback){
+    let attempted = missingImages.filter(d => d.attempted);
+    let percentAttempted = 100 * attempted.length / missingImages.length;
+    if(percentAttempted == 100){
+      let incomplete = missingImages.filter(d => !d.complete);
+      if(incomplete.length === 0){
+        callback({status: 200});
+      }else{
+        callback(null, {status:400, error: incomplete});
+      }
+    }
+  }
+
 
 
   /*

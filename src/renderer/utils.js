@@ -1,6 +1,7 @@
 const http = require('http');
 const fs = require('fs');
 const request = require('request');
+const Stream = require('stream').Transform;
 
 module.exports = {
 
@@ -214,7 +215,7 @@ module.exports = {
     request.end();
   },
 
-  extractKeyValueFromObject: function(itm, key, returnedValues){
+  extractKeyValueFromObject: function(itm, key, returnedValues = []){
     if(typeof itm === 'object'){
       for( let k in itm){
         if(k === key){
@@ -232,7 +233,6 @@ module.exports = {
 
 
   publishImage: function(dataUrl, apiKey, imgPath, fileName, callback){
-
     let postData = {data:{apiKey:apiKey}};
     let opts = { host: dataUrl, port:80, path: '/saveImage', method: 'POST', headers: {'Content-Type': 'image/png'}};
     if(dataUrl.indexOf('localhost') != -1){opts.port = 3000; opts.host="localhost"};
@@ -251,9 +251,38 @@ module.exports = {
 
     var form = req.form();
     form.append('file', fs.createReadStream(imgPath));
-
     
   },
+
+  
+
+
+
+
+  downloadImage: function(dataUrl, apiKey, fileName, downloadToPath, callback){
+    let postData = {data:{apiKey: apiKey, fileName: fileName}};
+    let opts = { host: dataUrl, port:80, path: '/downloadImage', method: 'POST', headers: {'Content-Type': 'application/json'}};
+    if(dataUrl.indexOf('localhost') != -1){opts.port = 3000; opts.host="localhost"};
+
+    let fullURL = dataUrl + 'downloadImage';
+    try{
+      request.post({ url: fullURL, json: postData}).pipe(fs.createWriteStream(downloadToPath));
+      callback({status:200})
+    }catch(err){
+      callback({status:400, error: err})
+    }
+  },
+
+  listImagesInLocalStore: function(imageDirectory){
+    let images = [];
+    fs.readdirSync(imageDirectory).forEach(file => {
+      if(file.indexOf('.DS') == -1){
+        images.push(file);
+      }
+    });
+    return images;
+  }
+
 
 
 

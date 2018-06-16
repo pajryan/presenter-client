@@ -219,11 +219,31 @@
         }
       },
       importDownloadedPresentation(idx){
-        //move the presentation from the newlyPublishedPresentations array into the presentations array
-        let presentationToImport = this.newlyPublishedPresentations.splice(idx,1)[0]
-        this.presentations.push(presentationToImport);
-        //write the file
-        this.adminObj.writePresentation(presentationToImport)
+        event.target.className = event.target.className.replace('btn-primary', 'btn-warning');
+        event.target.innerHTML = '…';
+        let presentationToImport = this.newlyPublishedPresentations[idx];
+        //download any relevant images
+        this.adminObj.downloadPresentationImages(presentationToImport, (data, error) => {
+          if(error){
+            console.error('error downloading presentation images', error)
+            event.target.className = event.target.className.replace('btn-warning', 'btn-danger');
+            event.target.innerHTML = 'error';
+          }else if(data && data.status && data.status==200){
+            //write the file
+            event.target.className = event.target.className.replace('btn-warning', 'btn-primary');
+            event.target.className = event.target.className.replace('btn-danger', 'btn-primary'); //in case it worked the 2nd time
+            event.target.innerHTML = 'import'
+            this.adminObj.writePresentation(presentationToImport)
+            this.presentations.push(presentationToImport);
+            //remove from the 'presentations to import'
+            this.newlyPublishedPresentations.splice(idx,1)[0];
+          }else{
+            console.error('error downloading presentation images', data)
+            event.target.className = event.target.className.replace('btn-warning', 'btn-danger');
+            event.target.innerHTML = 'error';
+          }
+        });
+        
 
       },
       sortTableBy(key, type) {
