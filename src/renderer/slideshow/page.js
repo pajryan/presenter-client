@@ -128,6 +128,9 @@ module.exports = class Page {
 
   buildComponent(itm, uiElem){
     //load custom component
+    let comp = require('../components/historyOfIdeas')
+    new comp(itm, uiElem)
+
     uiElem.classList.add('componentBlock');
     console.log('adding a component', itm)
     

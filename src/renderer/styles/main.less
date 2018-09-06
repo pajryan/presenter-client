@@ -3,225 +3,229 @@
 
 @color: #f7f7f7;
 
-html{
-  height: 100%;
-  overflow:hidden;
-}
+@media screen {
 
-body{
-  font-size: 0.9em;
-  background: @color;
-  height: 100%;
-}
+  html{
+    height: 100%;
+    overflow:hidden;
+  }
 
-#app{
-  height:100%;
-  overflow:hidden;
-}
+  body{
+    font-size: 0.9em;
+    background: @color;
+    height: 100%;
+  }
 
-
-.tab-pane{
-  padding: 12px;
-}
+  #app{
+    height:100%;
+    overflow:hidden;
+  }
 
 
-#slideshow{
-  position: absolute;
-  width:100%;
-  height:100%;
-  background: #fff linear-gradient(-45deg, rgba(189,220,232, 0.4), white);
-  top:0px;
-  left:0px;
-  display:none;
-  z-index:1;
-
-  //going to lay out the pages horizontally
-  // display: flex; // default to display:none, but will get changed to flex when presentaiton opens
-  flex-direction: row;
-  overflow: hidden;
-  flex-wrap: nowrap;
-}
-
-#slideshow.debug{
-  overflow:scroll;
-}
+  .tab-pane{
+    padding: 12px;
+  }
 
 
-/* this is the main class that holds the page*/
-.pageWrap{
-  height:100%;
-  flex-grow: 0;     /* do not grow   - initial value: 0 */
-  flex-shrink: 0;   /* do not shrink - initial value: 1 */
-  flex-basis: 100%;
-  background: #fff;
-  font-size: 1.2em;
-  line-height:1.2em;
+  #slideshow{
+    position: absolute;
+    width:100%;
+    height:100%;
+    background: #fff linear-gradient(-45deg, rgba(189,220,232, 0.4), white);
+    top:0px;
+    left:0px;
+    display:none;
+    z-index:1;
 
-  display: flex;
-  flex-direction: column;
-}
-/* this is in addition to pageWrap in debug mode*/
-#slideshow.debug .pageWrap{
-  height:48%;
-  flex-grow: 0;     /* do not grow   - initial value: 0 */
-  flex-shrink: 0;   /* do not shrink - initial value: 1 */
-  flex-basis: 48%;
-  margin-right:1%;
-  margin-left:1%;
-  box-shadow: 0px 0px 25px 0 rgba(0,0,0,0.5);
-  border-radius: 5px;
-  font-size: 1.0em;
-  line-height:1.0em;
-
-  margin-top: 25%;
-}
+    //going to lay out the pages horizontally
+    // display: flex; // default to display:none, but will get changed to flex when presentation opens
+    flex-direction: row;
+    overflow: hidden;
+    flex-wrap: nowrap;
+  }
 
 
-#slideshow.debug .pageWrap:first-of-type{
-  margin-left:22%;
-}
-//this doesn't work, so doing deadspace
-// #slideshow.debug .pageWrap:last-of-type{
-//   margin-right:25%;
-// }
-
-#slideshow.debug .deadspace{
-  height:48%;
-  flex-grow: 0;     /* do not grow   - initial value: 0 */
-  flex-shrink: 0;   /* do not shrink - initial value: 1 */
-  flex-basis: 22%;
-  margin-top: 25%;
-}
-
-.pageWrap .pageNav{
-  display: flex;
-  flex-direction: row;
-  flex-wrap: nowrap;
-  background: #fff linear-gradient(-45deg, rgba(189,220,232, 0.4), rgba(189,220,232, 0.4));
-  border-bottom: 1px solid #ccc;
-}
-.pageWrap .pageNav .upPageNav{
-  font-size: 0.8em;
-}
-.pageWrap .pageNav .upPageNav, 
-.pageWrap .pageNav .leftPageNav, 
-.pageWrap .pageNav .rightPageNav,
-.pageWrap .pageNav .gridPageNav {
-  padding: 6px;
-  margin: auto;
-  cursor: pointer;
-  color: #666;
-}
-
-#slideshow.debug .upPageNav,
-#slideshow.debug .leftPageNav,
-#slideshow.debug .rightPageNav{
-  display: none;
-}
-
-#slideshow.debug .pageNav{
-  border-top-left-radius: 5px;
-  border-top-right-radius: 5px;
-}
-
-#slideshow.debug .gridPageNav{
-  border-top-left-radius: 5px;
-}
-
-#slideshow.debug .pageTitle{
-  border-top-right-radius: 5px;
-}
-
-// hide arrows for first and last slides
-#slideshow .pageWrap:first-of-type .leftPageNav{
-  visibility: hidden;
-}
-#slideshow .pageWrap:nth-last-child(2) .rightPageNav{
-  visibility: hidden;
-}
-
-.pageWrap .pageTitle{
-  text-align: center;
-  display: table-cell;
-  vertical-align: middle;
-  margin:0;
-  padding:0.4em;
-  flex-grow: 1;
-}
-
-// this holds all the page content *except* the title
-.pageWrap .pageContent{
-  text-align: center;
-  height: 10%;
-  min-height: 1em;
-  background: #fff linear-gradient(45deg, rgba(189,220,232, 0.4), white);
-  flex-grow: 1; // take up all remaining space besides title
-  margin:0;
-  padding:10px 0px;
-
-  display: flex;
-  flex-direction: row;
-}
-
-#slideshow.debug .pageWrap .pageContent{
-  border-bottom-left-radius: 5px;
-  border-bottom-right-radius: 5px;
-}
+  #slideshow.debug{
+    overflow:scroll;
+  }
 
 
-// finally, this holds actual content (inside pageContent)
-.pageWrap .pageBlock{
-  padding: 5px 15px;
-  text-align: left;
-  overflow: scroll;
-}
+  /* this is the main class that holds the page*/
+  .pageWrap{
+    height:100%;
+    flex-grow: 0;     /* do not grow   - initial value: 0 */
+    flex-shrink: 0;   /* do not shrink - initial value: 1 */
+    flex-basis: 100%;
+    background: #fff;
+    font-size: 1.2em;
+    line-height:1.2em;
 
-.pageWrap .pageBlockMulti{
-  border-left: 1px solid #ccc;
-}
+    display: flex;
+    flex-direction: column;
+  }
+  /* this is in addition to pageWrap in debug mode*/
+  #slideshow.debug .pageWrap{
+    height:48%;
+    flex-grow: 0;     /* do not grow   - initial value: 0 */
+    flex-shrink: 0;   /* do not shrink - initial value: 1 */
+    flex-basis: 48%;
+    margin-right:1%;
+    margin-left:1%;
+    box-shadow: 0px 0px 25px 0 rgba(0,0,0,0.5);
+    border-radius: 5px;
+    font-size: 1.0em;
+    line-height:1.0em;
 
-// for mmd
-.textBlock .textBlockWrap{
-  position: relative;
-  top: 50%;
-  transform: translateY(-50%);
-  // vw should grow/shrink the font-size according to avialble size.
-  font-size: 1.4vmax;
-  line-height: 1.6vmax;
-}
-.textBlock .textBlockWrap h1{font-size:3.0vmax;}
-.textBlock .textBlockWrap h2{font-size:2.7vmax;}
-.textBlock .textBlockWrap h3{font-size:2.4vmax;}
-.textBlock .textBlockWrap ul{margin-bottom: 1.5vmax;}
-.textBlock .textBlockWrap p{margin-bottom: 1.5vmax;}
-
-
-#slideshow.debug .textBlock .textBlockWrap{
-  font-size: 1.3vw;
-  line-height: 1.4vw;
-}
-.textBlock .textBlockWrap h1{font-size:2.3vw}
-.textBlock .textBlockWrap h2{font-size:2.0vw}
-.textBlock .textBlockWrap h3{font-size:1.7vw}
-.textBlock .textBlockWrap ul{margin-bottom: 0.8vmax; padding-left: 2vmax;}
-.textBlock .textBlockWrap p{margin-bottom: 0.8vmax;}
+    margin-top: 25%;
+  }
 
 
+  #slideshow.debug .pageWrap:first-of-type{
+    margin-left:22%;
+  }
+  //this doesn't work, so doing deadspace
+  // #slideshow.debug .pageWrap:last-of-type{
+  //   margin-right:25%;
+  // }
+
+  #slideshow.debug .deadspace{
+    height:48%;
+    flex-grow: 0;     /* do not grow   - initial value: 0 */
+    flex-shrink: 0;   /* do not shrink - initial value: 1 */
+    flex-basis: 22%;
+    margin-top: 25%;
+  }
+
+  .pageWrap .pageNav{
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    background: #fff linear-gradient(-45deg, rgba(189,220,232, 0.4), rgba(189,220,232, 0.4));
+    border-bottom: 1px solid #ccc;
+  }
+  .pageWrap .pageNav .upPageNav{
+    font-size: 0.8em;
+  }
+  .pageWrap .pageNav .upPageNav, 
+  .pageWrap .pageNav .leftPageNav, 
+  .pageWrap .pageNav .rightPageNav,
+  .pageWrap .pageNav .gridPageNav {
+    padding: 6px;
+    margin: auto;
+    cursor: pointer;
+    color: #666;
+  }
+
+  #slideshow.debug .upPageNav,
+  #slideshow.debug .leftPageNav,
+  #slideshow.debug .rightPageNav{
+    display: none;
+  }
+
+  #slideshow.debug .pageNav{
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+  }
+
+  #slideshow.debug .gridPageNav{
+    border-top-left-radius: 5px;
+  }
+
+  #slideshow.debug .pageTitle{
+    border-top-right-radius: 5px;
+  }
+
+  // hide arrows for first and last slides
+  #slideshow .pageWrap:first-of-type .leftPageNav{
+    visibility: hidden;
+  }
+  #slideshow .pageWrap:nth-last-child(2) .rightPageNav{
+    visibility: hidden;
+  }
+
+  .pageWrap .pageTitle{
+    text-align: center;
+    display: table-cell;
+    vertical-align: middle;
+    margin:0;
+    padding:0.4em;
+    flex-grow: 1;
+  }
+
+  // this holds all the page content *except* the title
+  .pageWrap .pageContent{
+    text-align: center;
+    height: 10%;
+    min-height: 1em;
+    background: #fff linear-gradient(45deg, rgba(189,220,232, 0.4), white);
+    flex-grow: 1; // take up all remaining space besides title
+    margin:0;
+    padding:10px 0px;
+
+    display: flex;
+    flex-direction: row;
+  }
+
+  #slideshow.debug .pageWrap .pageContent{
+    border-bottom-left-radius: 5px;
+    border-bottom-right-radius: 5px;
+  }
 
 
-//for images
-.imageBlock {
-  text-align: center !important;
-}
-.imageBlock img{
-  max-width: 100%;
-  max-height: 100%;
-  position: relative;
-  top: 50%;
-  transform: translateY(-50%);
-}
+  // finally, this holds actual content (inside pageContent)
+  .pageWrap .pageBlock{
+    padding: 5px 15px;
+    text-align: left;
+    overflow: scroll;
+  }
 
-//for components
-.componentBlock{
+  .pageWrap .pageBlockMulti{
+    border-left: 1px solid #ccc;
+  }
 
+  // for mmd
+  .textBlock .textBlockWrap{
+    position: relative;
+    top: 50%;
+    transform: translateY(-50%);
+    // vw should grow/shrink the font-size according to avialble size.
+    font-size: 1.4vmax;
+    line-height: 1.6vmax;
+  }
+  .textBlock .textBlockWrap h1{font-size:3.0vmax;}
+  .textBlock .textBlockWrap h2{font-size:2.7vmax;}
+  .textBlock .textBlockWrap h3{font-size:2.4vmax;}
+  .textBlock .textBlockWrap ul{margin-bottom: 1.5vmax;}
+  .textBlock .textBlockWrap p{margin-bottom: 1.5vmax;}
+
+
+  #slideshow.debug .textBlock .textBlockWrap{
+    font-size: 1.3vw;
+    line-height: 1.4vw;
+  }
+  .textBlock .textBlockWrap h1{font-size:2.3vw}
+  .textBlock .textBlockWrap h2{font-size:2.0vw}
+  .textBlock .textBlockWrap h3{font-size:1.7vw}
+  .textBlock .textBlockWrap ul{margin-bottom: 0.8vmax; padding-left: 2vmax;}
+  .textBlock .textBlockWrap p{margin-bottom: 0.8vmax;}
+
+
+
+
+  //for images
+  .imageBlock {
+    text-align: center !important;
+  }
+  .imageBlock img{
+    max-width: 100%;
+    max-height: 100%;
+    position: relative;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+
+  //for components
+  .componentBlock{
+
+  }
 }

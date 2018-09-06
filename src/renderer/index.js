@@ -13,11 +13,12 @@
 const {ipcRenderer, remote} = require('electron');
 // const main = remote.require('/src/main/index.js');
 // const main = remote.require(__dirname + '/../main/index.js');
-
+const print = require('../renderer/slideshow/print')
 let autoUpdater = remote.getGlobal("autoUpdaterPlus");
 
 
-require("./styles/main.less");  //note that this main.less file includes bootstrap
+require("./styles/main.less");  // note that this main.less file includes bootstrap
+require("./styles/print.less"); // used when printing to PDF (also includes bootstrap)
 require("./styles/admin.less");
 require("bootstrap");
 
@@ -120,6 +121,13 @@ function appInit(){
     if(!slideshow.shown() && evt.keyCode >= 49 && evt.keyCode <= 58 ){  // the numbers 1 thru 9
       let sectionIndex = evt.keyCode-49;  // zero index
       slideshow.launchPresentation(sectionIndex);
+    }
+    if(evt.metaKey && evt.keyCode == 80 || evt.ctrlKey && evt.keyCode == 80){ //evt.metaKey is OSX's command, evt.ctrlKey might be for windows?
+      if(!slideshow.shown()) {
+        window.alert('Open a section, then print');
+        return;
+      }
+      new print(slideshow);
     }
   };
 

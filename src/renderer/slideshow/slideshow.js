@@ -161,6 +161,10 @@ export function build(){
     return slideshow;
   }
 
+  slideshow.getCurrentSection = function(){
+    return section;
+  }
+
   slideshow.state = function(val) {
     if (!arguments.length) { return _state; }
     _state = val;

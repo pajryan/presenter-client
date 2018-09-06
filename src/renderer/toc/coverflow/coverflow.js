@@ -52,6 +52,8 @@ function displayIndex (imgSize, spacing, left, imgs, index, flat, width, titleBo
     imgs[i].style.marginLeft = -lftM + '%';
     imgs[i].style['-webkit-filter'] = 'brightness(0.7)'
     imgs[i].style.zIndex = i + 1
+    imgs[i].classList.remove('selectedCoverImg'); // used in print view
+    imgs[i].classList.add('notSelectedCoverImg'); // used in print view
     setTransform3D(imgs[i], flat ? 0 : ((index - i) * 10 + 45), 300, flat ? -(index - i) * 10 : (-(index - i) * 30 - 20))
   }
 
@@ -59,6 +61,8 @@ function displayIndex (imgSize, spacing, left, imgs, index, flat, width, titleBo
   imgs[index].style['-webkit-filter'] = 'none'
   imgs[index].style.marginLeft = (-oneImgWidth(imgs)/2)+'%';  //center this one
   imgs[index].style.zIndex = imgs.length
+  imgs[index].classList.add('selectedCoverImg'); // used in print view
+  imgs[index].classList.remove('notSelectedCoverImg'); // used in print view
   titleBox.style.visibility = 'hidden'
 
   // deal with the title
@@ -78,6 +82,8 @@ function displayIndex (imgSize, spacing, left, imgs, index, flat, width, titleBo
     imgs[j].style.marginLeft = lftM + '%';
     imgs[j].style['-webkit-filter'] = 'brightness(0.7)'
     imgs[j].style.zIndex = imgs.length - j
+    imgs[j].classList.remove('selectedCoverImg'); // used in print view
+    imgs[j].classList.add('notSelectedCoverImg'); // used in print view
     setTransform3D(imgs[j], flat ? 0 : ((index - j) * 10 - 45), 300, flat ? (index - j) * 10 : ((index - j) * 30 - 20))
   }
 

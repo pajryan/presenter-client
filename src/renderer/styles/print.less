@@ -1,0 +1,166 @@
+
+
+
+@color: #f7f7f7;
+
+@media print{
+  @page {size: landscape}
+
+  html {
+    height: 100%;
+  }
+
+  body{
+    font-size: 0.9em;
+    background: @color;
+    height: 100%;
+  }
+
+
+  #app {
+    height: 100%;
+  }
+
+  .coverflow img.notSelectedCoverImg{
+    opacity:0 !important; // hide the other icons. Makes it look like a title page!
+  }
+
+  #slideshow {
+    display: block !important; // important! this overrides display:flex which is set in JS (not css)
+    height: 100%;
+  }
+
+  .pageWrap{
+    page-break-before: always;
+    // background: pink;
+    // width: 100%;
+    // height: 100%;
+    height:100%;
+    flex-grow: 0;     /* do not grow   - initial value: 0 */
+    flex-shrink: 0;   /* do not shrink - initial value: 1 */
+    flex-basis: 100%;
+    background: #fff;
+    font-size: 1.2em;
+    line-height:1.2em;
+
+    display: flex;
+    flex-direction: column;
+  }
+
+
+
+  .pageWrap .pageNav{
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    background: #fff linear-gradient(-45deg, rgba(189,220,232, 0.4), rgba(189,220,232, 0.4));
+    border-bottom: 1px solid #ccc;
+  }
+  .pageWrap .pageNav .upPageNav{
+    font-size: 0.8em;
+  }
+  .pageWrap .pageNav .upPageNav, 
+  .pageWrap .pageNav .leftPageNav, 
+  .pageWrap .pageNav .rightPageNav,
+  .pageWrap .pageNav .gridPageNav {
+    padding: 6px;
+    margin: auto;
+    cursor: pointer;
+    color: #666;
+  }
+
+  #slideshow.debug .upPageNav,
+  #slideshow.debug .leftPageNav,
+  #slideshow.debug .rightPageNav{
+    display: none;
+  }
+
+
+  // hide arrows for first and last slides
+  #slideshow .pageWrap:first-of-type .leftPageNav{
+    visibility: hidden;
+  }
+  #slideshow .pageWrap:nth-last-child(2) .rightPageNav{
+    visibility: hidden;
+  }
+
+  .pageWrap .pageTitle{
+    text-align: center;
+    display: table-cell;
+    vertical-align: middle;
+    margin:0;
+    padding:0.4em;
+    flex-grow: 1;
+  }
+
+  // this holds all the page content *except* the title
+  .pageWrap .pageContent{
+    text-align: center;
+    height: 10%;
+    min-height: 1em;
+    background: #fff linear-gradient(45deg, rgba(189,220,232, 0.4), white);
+    flex-grow: 1; // take up all remaining space besides title
+    margin:0;
+    padding:10px 0px;
+
+    display: flex;
+    flex-direction: row;
+  }
+
+
+  // finally, this holds actual content (inside pageContent)
+  .pageWrap .pageBlock{
+    padding: 5px 15px;
+    text-align: left;
+    overflow: scroll;
+  }
+
+  .pageWrap .pageBlockMulti{
+    border-left: 1px solid #ccc;
+  }
+
+  // for mmd
+  .textBlock .textBlockWrap{
+    position: relative;
+    top: 50%;
+    transform: translateY(-50%);
+    // vw should grow/shrink the font-size according to avialble size.
+    font-size: 1.4vmax;
+    line-height: 1.6vmax;
+  }
+  .textBlock .textBlockWrap h1{font-size:3.0vmax;}
+  .textBlock .textBlockWrap h2{font-size:2.7vmax;}
+  .textBlock .textBlockWrap h3{font-size:2.4vmax;}
+  .textBlock .textBlockWrap ul{margin-bottom: 1.5vmax;}
+  .textBlock .textBlockWrap p{margin-bottom: 1.5vmax;}
+
+
+  #slideshow.debug .textBlock .textBlockWrap{
+    font-size: 1.3vw;
+    line-height: 1.4vw;
+  }
+  .textBlock .textBlockWrap h1{font-size:2.3vw}
+  .textBlock .textBlockWrap h2{font-size:2.0vw}
+  .textBlock .textBlockWrap h3{font-size:1.7vw}
+  .textBlock .textBlockWrap ul{margin-bottom: 0.8vmax; padding-left: 2vmax;}
+  .textBlock .textBlockWrap p{margin-bottom: 0.8vmax;}
+
+
+
+
+  //for images
+  .imageBlock {
+    text-align: center !important;
+  }
+  .imageBlock img{
+    max-width: 100%;
+    max-height: 100%;
+    position: relative;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+
+
+
+
+}

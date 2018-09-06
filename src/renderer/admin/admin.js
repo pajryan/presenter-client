@@ -407,7 +407,7 @@ export function build(){
         if(dataAfterDate){lastAppDataUpdate = dataAfterDate.getTime();}
 
         // now get the data log from the data update service.  The data log is a large object that looks like { dataLog: [timestamp:<timeInMS>, file:<fileName>, timestamp:<timeInMS>, file:<fileName>, ....]}
-        //   The <timestamp? is when the source data (<fileName>) was created.  So any timestamps greater than the last udpate time in the config is NEW
+        //   The <timestamp> is when the source data (<fileName>) was created.  So any timestamps greater than the last udpate time in the config is NEW
         utils.dataServiceCall(_state.dataUpdateServiceURL, _state.apiKey, '/dataLog', (data, err) => {
           if(err){
             console.error("error calling the data update service: ", err)

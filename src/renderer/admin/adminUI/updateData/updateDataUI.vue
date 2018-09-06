@@ -146,7 +146,7 @@
         console.log("getting to result", arg)
         this.arrayOfErrors = [];
         this.fetchDataComplete = false;
-        this.updateButtonDisabled=false;
+        this.updateButtonDisabled = false;
         this.isOnline = arg.isOnline;
         this.msg = arg.message?arg.message.text:'';
         if(!this.isOnline){   // we're not online (or can't connect to the service.  get out.)
