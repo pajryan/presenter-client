@@ -21,6 +21,52 @@
     overflow:hidden;
   }
 
+  #disclosure{
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    z-index: 2;
+    padding: 10px;
+    background: #f7f7f7;
+    overflow: scroll;
+    font-size: 0.7em;
+    padding-top: 60px;
+  }
+    #disclosure h1{
+      position: fixed;
+      padding: 10px;
+      top: 0;
+      left: 0;
+      font-size: 1.8em;
+      background: #fff;
+      width: 100%;
+      border-bottom:1px solid #ccc;
+    }
+    #disclosure h1 span#scrollToAccept{
+      float:right;
+      font-size: 0.7em;
+      padding-top: 2px;
+    }
+    #disclosure h1 span#printedOn{
+      display: none;
+    }
+    #disclosure a{
+      width: 100%;
+      display: block;
+      background:#008edc;
+      font-size: 1.3em;
+      text-align: center;
+      color: #fff;
+      margin-bottom: 40px;
+      border-radius: 3px;
+      padding: 6px;
+    }
+    #disclosure a:hover{
+      text-decoration: none;
+    }
+
 
   .tab-pane{
     padding: 12px;

@@ -13,7 +13,9 @@
 const {ipcRenderer, remote} = require('electron');
 // const main = remote.require('/src/main/index.js');
 // const main = remote.require(__dirname + '/../main/index.js');
-const print = require('../renderer/slideshow/print')
+const print = require('../renderer/slideshow/print');
+const fs = require('fs');
+const path = require('path');
 let autoUpdater = remote.getGlobal("autoUpdaterPlus");
 
 
@@ -70,6 +72,14 @@ function appInit(){
   const TOC = require("./toc/toc.js")
 
   let b = document.getElementById("app");
+
+  // build disclosure block
+  let d = document.createElement('div'); d.id="disclosure"; b.appendChild(d);
+  d.innerHTML = fs.readFileSync(path.resolve(__dirname, 'disclosures.html'), 'utf8')
+  let cl = document.createElement('a'); cl.href= '#'; cl.innerHTML = 'accept';
+  cl.addEventListener('click', e => {document.getElementById('disclosure').style.display='none'})
+  d.appendChild(cl)
+  document.getElementById('printedOn').innerHTML = 'document generated on ' + new Date().getMonth() + '/' +  new Date().getDay() + '/' + new Date().getFullYear() + ' at ' + new Date().getHours() + ':' + new Date().getMinutes();
 
   // build table of contents
   let t = document.createElement('div'); t.id="toc"; b.appendChild(t);

@@ -21,6 +21,35 @@
     height: 100%;
   }
 
+
+  #disclosure{
+    background: #f7f7f7;
+    overflow: scroll;
+    font-size: 0.7em;
+    padding: 10px;
+    display: block !important;
+  }
+    #disclosure h1{
+      font-size: 1.8em;
+      width: 100%;
+      border-bottom:1px solid #ccc;
+    }
+    #disclosure h1 span#scrollToAccept{
+      display: none;
+    }
+    #disclosure h1 span#printedOn{
+      float:right;
+      font-size: 0.7em;
+      padding-top: 2px;
+    }
+    #disclosure a{
+      display: none;
+    }
+
+  #toc{
+    page-break-before: always;
+  }
+
   .coverflow img.notSelectedCoverImg{
     opacity:0 !important; // hide the other icons. Makes it look like a title page!
   }
@@ -32,9 +61,6 @@
 
   .pageWrap{
     page-break-before: always;
-    // background: pink;
-    // width: 100%;
-    // height: 100%;
     height:100%;
     flex-grow: 0;     /* do not grow   - initial value: 0 */
     flex-shrink: 0;   /* do not shrink - initial value: 1 */
@@ -56,24 +82,15 @@
     background: #fff linear-gradient(-45deg, rgba(189,220,232, 0.4), rgba(189,220,232, 0.4));
     border-bottom: 1px solid #ccc;
   }
-  .pageWrap .pageNav .upPageNav{
-    font-size: 0.8em;
-  }
+ 
   .pageWrap .pageNav .upPageNav, 
   .pageWrap .pageNav .leftPageNav, 
   .pageWrap .pageNav .rightPageNav,
   .pageWrap .pageNav .gridPageNav {
-    padding: 6px;
-    margin: auto;
-    cursor: pointer;
-    color: #666;
+    display:none;
   }
 
-  #slideshow.debug .upPageNav,
-  #slideshow.debug .leftPageNav,
-  #slideshow.debug .rightPageNav{
-    display: none;
-  }
+
 
 
   // hide arrows for first and last slides
