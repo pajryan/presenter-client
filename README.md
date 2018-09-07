@@ -61,16 +61,23 @@ yarn dist:dir
      - app updates will be stored as releases in this github project
  - [ ] edit presentation
      - [ ] editing by permission only
+        - [ ] edit & update
+        - [ ] update only
      - [x] flow
-     - [ ] text
-     - [ ] static images
+     - [x] text
+     - [x] static images
  - [ ] push edits to server
      - [x] flow
-     - [ ] text
-     - [ ] static images
-     - [ ] conflict resolution
+     - [x] text
+     - [x] static images
+     - [-] conflict resolution [ not doing. everything generates a new file.]
  - [x] notify and update clients with presentation edits
-
+ - [x] print to PDF
+ - [ ] 'launch picture by default' mechanism to aid in debugging one component
+ - [ ] disclosures
+     - [x] on launch
+     - [ ] re-show
+     - [x] added to print
 
 ## details on app updates
 The steps above are modified from [here](https://github.com/iffy/electron-updater-example).  Specifically, have a look at `main.js` in that project.
