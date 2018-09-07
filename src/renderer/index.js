@@ -118,6 +118,7 @@ function appInit(){
     evt = evt || window.event;
     if (evt.keyCode == 27 || evt.keyCode == 38) {  // esc or up arrow
       slideshow.closePresentation();
+      document.getElementById('disclosure').style.display = 'none';
     }
     if (evt.keyCode == 37) {  // left arrow
       slideshow.prevPage();
@@ -134,10 +135,10 @@ function appInit(){
     }
     if(evt.metaKey && evt.keyCode == 80 || evt.ctrlKey && evt.keyCode == 80){ //evt.metaKey is OSX's command, evt.ctrlKey might be for windows?
       if(!slideshow.shown()) {
-        window.alert('Open a section, then print');
+        window.alert('You need to be in a section/page to print. View any section and try again.');
         return;
       }
-      new print(slideshow);
+      let newPDFFileName = new print(slideshow);
     }
   };
 
