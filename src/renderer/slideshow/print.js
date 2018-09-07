@@ -13,7 +13,11 @@ module.exports = class Print{
     // Maybe the best thing to do is only allow this to run when a slideshow (one module) is loaded, and print just that module?
 
     // need to decide where to put this?
-    let filename = 'Tablet - section ' + slideshow.getCurrentSection().title + '.pdf'
+    let filename = 'Tablet Section - ' + slideshow.getCurrentSection().title;
+    let dt = new Date();
+    let dtStr = '' + dt.getFullYear() + (dt.getMonth()+1 < 10 ? '0' + (dt.getMonth()+1) : (dt.getMonth()+1)) + (dt.getDate() < 10 ? '0' + (dt.getDate()) : dt.getDate());
+    filename += ' - ' + dtStr;
+    filename += '.pdf'
 
     // NOTE. There's a separate stylesheet (print.less that is used for this output)
     let window = remote.getCurrentWindow();

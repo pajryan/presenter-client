@@ -43,6 +43,7 @@
   },
   "build": {
     "appId": "dci.presenter",
+    "productName": "DCI Presenter",
     "mac": {
       "category": "marketing.dci.presenter"
     },

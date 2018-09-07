@@ -1,5 +1,9 @@
 'use strict';
-import Vue from 'vue'
+import fontawesome from '@fortawesome/fontawesome'
+import faFreeSolid from '@fortawesome/fontawesome-free-solid'
+fontawesome.library.add(faFreeSolid)
+
+import Print from './print'
 // import Page from './page.js'
 
 let Page = require("./page.js");
@@ -56,6 +60,14 @@ export function build(){
 
     section = activePresentation.sections[sectionIndex];
     slideshowContainer.style.display="flex";  //show the slideshow container
+
+    let printIconWrap = document.createElement('a'); printIconWrap.href='#'; printIconWrap.className = 'printIconWrap'; printIconWrap.title = 'Print';
+    printIconWrap.addEventListener('click', e => {console.log('printing'); new Print(slideshow)})  
+    let printIcon = document.createElement('i'); printIcon.innerHTML = 'print'; printIcon.className='fa fa-print printIcon';
+    slideshowContainer.appendChild(printIconWrap);
+    printIconWrap.appendChild(printIcon);
+    
+    fontawesome.dom.i2svg();  // this converts the <i> tag with the fontawsome class to the svg (remember to style an <svg>, not an <i>)
 
     section.pages.forEach((pageData, idx) => {
       let pageContainer = document.createElement("div"); pageContainer.classList.add("pageWrap");

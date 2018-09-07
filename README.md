@@ -78,6 +78,7 @@ yarn dist:dir
      - [x] on launch
      - [ ] re-show
      - [x] added to print
+     - [ ] add date to printed PDF file name
 
 ## details on app updates
 The steps above are modified from [here](https://github.com/iffy/electron-updater-example).  Specifically, have a look at `main.js` in that project.

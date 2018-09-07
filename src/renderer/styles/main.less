@@ -91,6 +91,29 @@
     flex-wrap: nowrap;
   }
 
+  #slideshow .printIconWrap{
+    display: none;
+  }
+
+  #slideshow.debug .printIconWrap{
+    display: block;
+  }
+
+  #slideshow.debug svg.printIcon{
+    position: fixed;
+    left: 20px;
+    bottom: 20px;
+    height: 25px;
+    width: 25px;
+    cursor: pointer;
+  }
+  #slideshow.debug svg.printIcon path{
+    fill: #ccc
+  }
+  #slideshow.debug a:hover svg.printIcon path{
+    fill: #008edc;
+  }
+
 
   #slideshow.debug{
     overflow:scroll;
@@ -123,7 +146,7 @@
     font-size: 1.0em;
     line-height:1.0em;
 
-    margin-top: 25%;
+    margin-top: 15%;
   }
 
 
