@@ -22,7 +22,8 @@ let autoUpdater = remote.getGlobal("autoUpdaterPlus");
 require("./styles/main.less");  // note that this main.less file includes bootstrap
 require("./styles/print.less"); // used when printing to PDF (also includes bootstrap)
 require("./styles/admin.less");
-require("./styles/animate.css");
+// require("./styles/animate.css");
+// require('./styles/velocity')
 require("bootstrap");
 
 

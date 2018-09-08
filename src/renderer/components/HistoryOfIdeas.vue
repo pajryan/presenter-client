@@ -1,6 +1,6 @@
 <template>
     <div>
-      <p>here</p>
+      <p>herasdfasde</p>
       <button id="sampleMessage" type="button" class="btn btn-primary" @click="checkForUpdate" >check for data updates</button>
 
       <div v-if="updateReady==1" class="updateContainer">
@@ -16,14 +16,13 @@
 <script>
   import Vue from 'vue'
   import * as d3 from 'd3';
-import { setTimeout } from 'timers';
-
-  let ResizeObserver = require('resize-observer-polyfill');
+  import anime from 'animejs';
 
   let parseDate = d3.timeParse("%m/%d/%y");
-  // require('animate.css')
 
-   // using https://github.com/daneden/animate.css for animations
+  
+
+   // using http://animejs.com/documentation/ for animations
 
   export default {
     props: ['adminObj', 'itm', 'uiElem'], 
@@ -44,10 +43,15 @@ import { setTimeout } from 'timers';
       checkForUpdate(){
         this.updateReady = 1;
         console.log('testing animation', document.getElementById('sampleMessage'))
-        document.getElementById('sampleMessage').classList.add('animated')
-        document.getElementById('sampleMessage').classList.add('bounce')
-        // document.getElementById('sampleMessage').classList.remove('animated')
-        // document.getElementById('sampleMessage').classList.remove('bounce')
+
+        anime({
+          targets: document.getElementById('sampleMessage'),
+          translateX: 50,
+          rotate: 90,
+          scale: '2',
+          duration: 0
+        });
+
         
       },
 

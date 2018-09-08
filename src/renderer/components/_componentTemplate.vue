@@ -1,10 +1,10 @@
 <template>
     <div>
       <p>Sample Component</p>
-      <button type="button" class="btn btn-primary" @click="showStuff" >show stuff</button>
+      <button id="sampleButton" type="button" class="btn btn-primary" @click="showStuff" >show stuff</button>
 
       <div v-if="showingStuff">
-        <p id="sampleMessage" class="text-danger">{{msg}}</p>
+        <p  class="text-danger">{{msg}}</p>
       </div>
 
       
@@ -16,7 +16,7 @@
 <script>
   import Vue from 'vue'
 
-   // using https://github.com/daneden/animate.css for animations
+   // using http://animejs.com/documentation/ for animations
 
   export default {
     props: ['itm', 'uiElem'], 
@@ -34,7 +34,11 @@
     methods: {
       showStuff(){
         this.showingStuff = true;
-        document.getElementById('#sampleMessage').className='animated bounceOutLeft';
+
+        anime({
+          targets: document.getElementById('sampleButton'),
+          translateX: 500
+        });
       },
 
 
