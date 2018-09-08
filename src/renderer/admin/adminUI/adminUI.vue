@@ -51,7 +51,7 @@
     components: { FontAwesomeIcon },
     data () {
       return {
-        shown: true,
+        shown: false,
         tabIndex: 1,
         tabs: [
           {name: 'update data', index: 0, isActive: true, hasBeenLoaded:false, childId: "adminUpdateData", uiToLoad: UpdateData},

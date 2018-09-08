@@ -22,6 +22,7 @@ let autoUpdater = remote.getGlobal("autoUpdaterPlus");
 require("./styles/main.less");  // note that this main.less file includes bootstrap
 require("./styles/print.less"); // used when printing to PDF (also includes bootstrap)
 require("./styles/admin.less");
+require("./styles/animate.css");
 require("bootstrap");
 
 
@@ -49,6 +50,7 @@ ipcRenderer.on('appReady', function(event, args) {
   _state.appImagePath = args.appImagePath;
   _state.appDefaultPresentationFileName = args.appDefaultPresentationFileName;
   _state.appPresentationConfigFileName = args.appPresentationConfigFileName;
+  _state.isDevelopment = args.isDevelopment;
 
   // will collect some additional state in the admin() call (because they are part of the app config and will need to be initialized for a new user)
   _state.dataUpdateServiceURL = "";
@@ -75,11 +77,17 @@ function appInit(){
 
   // build disclosure block
   let d = document.createElement('div'); d.id="disclosure"; b.appendChild(d);
-  d.innerHTML = fs.readFileSync(path.resolve(__dirname, 'disclosures.html'), 'utf8')
-  let cl = document.createElement('a'); cl.href= '#'; cl.innerHTML = 'accept';
+  d.innerHTML = fs.readFileSync(path.resolve(__dirname, 'disclosures.html'), 'utf8'); // load the disclosure html
+  let cl = document.createElement('a'); cl.href= '#'; cl.innerHTML = 'accept';  // add a close button (so user can hide disclosure)
   cl.addEventListener('click', e => {document.getElementById('disclosure').style.display='none'})
   d.appendChild(cl)
+  // add the current date to the top of the disclosure. This is only shown in print view (just so we know when it was created)
   document.getElementById('printedOn').innerHTML = 'document generated on ' + new Date().getMonth() + '/' +  new Date().getDay() + '/' + new Date().getFullYear() + ' at ' + new Date().getHours() + ':' + new Date().getMinutes();
+  if(_state.isDevelopment){
+    // hide disclosure in dev mode so I don't have to dismiss it every time...
+    console.log('AUTO HIDING DISCLOSURE in dev mode')
+    d.style.display = 'none';
+  }
 
   // build table of contents
   let t = document.createElement('div'); t.id="toc"; b.appendChild(t);

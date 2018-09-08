@@ -282,7 +282,7 @@
   }
 
   #presentationEditor div[data-schemapath*=".pages"] ul.nav{
-    margin-left:12px;
+    // margin-left:12px;
   }
 
  #presentationEditor div[data-schemapath*=".pageItems"] table{

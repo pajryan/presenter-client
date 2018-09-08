@@ -89,7 +89,8 @@ app.on('ready', () => {
         appPresentationPath: appPresentationPath,
         appImagePath: appImagePath,
         appDefaultPresentationFileName: appDefaultPresentationFileName,
-        appPresentationConfigFileName: appPresentationConfigFileName
+        appPresentationConfigFileName: appPresentationConfigFileName,
+        isDevelopment: isDevelopment
       }
     );
 

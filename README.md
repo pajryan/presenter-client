@@ -79,6 +79,10 @@ yarn dist:dir
      - [ ] re-show
      - [x] added to print
      - [ ] add date to printed PDF file name
+ - [ ] Clean up processes:
+     - [ ] admin function to check what components are used in the presentation vs. what exists in the app. (can achieve this with components/_componentMap.js)
+     - [ ] admin function to see what images exist on the users machine that aren't being used.
+     - [x] admin function to see what presentations exist on the user's maching that aren't being used (kind of have this in archived)
 
 ## details on app updates
 The steps above are modified from [here](https://github.com/iffy/electron-updater-example).  Specifically, have a look at `main.js` in that project.
