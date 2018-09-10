@@ -14,7 +14,7 @@
           "title": "type",
           "default": ""
         },
-        "defaultValue": {
+        "value": {
           "title": "default value (special cases: {today})",
           "default": ""
         }

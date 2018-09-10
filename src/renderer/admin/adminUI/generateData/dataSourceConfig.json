@@ -3,7 +3,7 @@
     {
       "label": "As of date (inclusive)",
       "type": "datetime",
-      "defaultValue": "{today}"
+      "value": "{today}"
     }
   ],
   
@@ -31,12 +31,12 @@
         {
           "label": "user Id number less than:",
           "type": "int",
-          "defaultValue": 30
+          "value": 30
         },
         {
           "label": "ldap name contains:",
           "type": "varchar",
-          "defaultValue": "a"
+          "value": "a"
         }
       ]
     }

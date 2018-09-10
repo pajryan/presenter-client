@@ -23,11 +23,11 @@
         <h4>
           Data Sources
           &nbsp;&nbsp;
-          <button type="button" class="btn btn-primary btn-sm" @click="runAllDataSources()" >run everything</button>
+          <button type="button" class="btn btn-primary btn-sm" @click="queryAndWriteAllDataSources()" :disabled="isRunningAllQueries" >run everything</button>
         </h4>
         
         <div v-for="dataSource in dataSources" class="dataSource"  :key="dataSource.index">
-          <button type="button" class="btn btn-primary btn-sm" @click="runOneDataSource(dataSource)" :disabled="dataSource.isRunning">run</button>
+          <button type="button" class="btn btn-primary btn-sm" @click="queryAndWriteOneDataSource(dataSource)" :disabled="dataSource.isRunning">run</button>
           <label>{{ dataSource.name }}</label>
           <!-- messages -->
           <label :hidden="dataSource.successMsg==null"  class="alert alert-success">{{ dataSource.successMsg }}</label>
@@ -35,7 +35,7 @@
           <!-- parameters -->
           <div v-for="parameter in dataSource.sqlParameters" class="dataSourceParameter"  :key="parameter.index">
             <label>{{ parameter.label }}</label>
-            <input :value="parameter.defaultValue" />
+            <input v-model="parameter.value" />
           </div>
           
         </div>
@@ -60,7 +60,9 @@
       return {
         shown: false,
         globalInputs: dataSourceConfig.globalInputs,
-        dataSources: dataSourceConfig.dataSources
+        dataSources: dataSourceConfig.dataSources,
+        runAllQueriesCount: 0,
+        isRunningAllQueries: false
       }
     },
     mounted () {
@@ -77,30 +79,44 @@
     },
 
     methods: {
-      runOneDataSource (dataSource) {
+      queryAndWriteOneDataSource (dataSource, callback = this.runResult) {
         dataSource.isRunning=true;
         dataSource.attempted=true;
         dataSource.successMsg = null;
         dataSource.errorMsg = null;
-        let qr = new queryRunner(dataSource, this.runResult)
+        console.log('-------------')
+        console.log('running datasrounce with', dataSource)
+        let qr = new queryRunner(dataSource, callback)
       },
 
+      // probably don't want to actually return all the results... could be huge
       runResult (result, dataSource){ // result is an object of {success:true, results:...} or {success:false, err: error}
         dataSource.isRunning = false;
 
-        if(result.success){
+        // we get here even if we've had an error. So check that the error message hasn't already been populated
+        if(result.success && dataSource.errorMsg == null){
           dataSource.succeeded = true;
           dataSource.successMsg = 'received ' + result.results.length + ' records'
-        }else{
+          console.log(result.results)
+        }else if(result.error != null){
           dataSource.errorMsg = 'error: ' + result.error
         }
 
         console.log('got to call back with ', result, dataSource)
       },
 
-      runAllDataSources () {
-        this.dataSources.forEach(d => {
-          this.runOneDataSource(d)
+
+      queryAndWriteAllDataSources (currQuery = this.runAllQueriesCount) {
+        console.log('******running query #', this.runAllQueriesCount)
+        this.isRunningAllQueries = true;
+        this.queryAndWriteOneDataSource(this.dataSources[currQuery], (result, dataSource) => {
+          this.runResult(result, dataSource);
+          if(this.runAllQueriesCount < this.dataSources.length){
+            this.queryAndWriteAllDataSources(this.runAllQueriesCount++);
+          }else{
+            this.runAllQueriesCount = 0;
+            this.isRunningAllQueries = false;
+          }
         })
       }
 
