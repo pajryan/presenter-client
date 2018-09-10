@@ -6,7 +6,6 @@ let path = require('path');
 let marked = require('marked');
 let componentRunner = require('../components/_componentRunner')
 
-
 // export function Page(){
 module.exports = class Page {
   // https://googlechrome.github.io/samples/classes-es6/
@@ -125,7 +124,6 @@ module.exports = class Page {
     let img = document.createElement('img');
     img.src = 'file://' + path.join(this.imagePath, itm.type.image);
     uiElem.appendChild(img)
-    console.log('adding an image', itm)
     
   }
 
@@ -133,7 +131,6 @@ module.exports = class Page {
     // when putting a vue component inside the existing div, the existing div's classnames get overwritten (weird)
     //  so build an extra nested div that Vue will override
     uiElem.classList.add('componentBlock');
-    console.log('loading component', itm)
     componentRunner.build(itm, uiElem.appendChild(document.createElement('div')))
   }
 

@@ -21,6 +21,8 @@ const appDefaultPresentationFileName = "_defaultPresentation.json";
 const appPresentationConfigFileName = "_presentationConfig.json";
 const appConfigFileName = "_appConfig.json";
 
+const validAdminPassword = "tabletAdm!n";
+
 let isDevelopment = process.env.NODE_ENV !== 'production'
 
 // global reference to mainWindow (necessary to prevent window from being garbage collected)
@@ -90,7 +92,8 @@ app.on('ready', () => {
         appImagePath: appImagePath,
         appDefaultPresentationFileName: appDefaultPresentationFileName,
         appPresentationConfigFileName: appPresentationConfigFileName,
-        isDevelopment: isDevelopment
+        isDevelopment: isDevelopment,
+        validAdminPassword: validAdminPassword
       }
     );
 

@@ -19,22 +19,27 @@
           <div class="form-group">
             <label for="inputName">Your name</label>
             <input type="input" class="form-control" id="inputName" aria-describedby="nameHelp" placeholder="Enter first and last name" required value="Patrick">
-            <small id="nameHelp" class="form-text text-muted">This is not shown to clients, just used internally.</small>
+            <small id="nameHelp" class="form-text text-muted">REQUIRED. This is not shown to clients, just used internally.</small>
           </div>
           <div class="form-group">
             <label for="inputEmail">Email address</label>
             <input type="email" class="form-control" id="inputEmail" aria-describedby="emailHelp" placeholder="Enter email" required value="pr@abc.com">
-            <small id="emailHelp" class="form-text text-muted">Not shown or shared, just for internal communication.</small>
+            <small id="emailHelp" class="form-text text-muted">REQUIRED. Not shown or shared, just for internal communication.</small>
           </div>
           <div class="form-group">
             <label for="inputUrl">Data update service URL</label>
             <input type="input" class="form-control" id="inputUrl" aria-describedby="urlHelp" placeholder="http://xyz.com" required value="http://localhost:3000/">
-            <small id="urlHelp" class="form-text text-muted">This should have been provided to you.</small>
+            <small id="urlHelp" class="form-text text-muted">REQUIRED. This should have been provided to you.</small>
           </div>
           <div class="form-group">
             <label for="inputApiKey">API key</label>
             <input type="input" class="form-control" id="inputApiKey" aria-describedby="apiHelp" placeholder="abc-123-xyz-789" required value="aaa">
-            <small id="apiHelp" class="form-text text-muted">This should have been provided to you.</small>
+            <small id="apiHelp" class="form-text text-muted">REQUIRED. This should have been provided to you.</small>
+          </div>
+          <div class="form-group">
+            <label for="inputApiKey">Administrator Password</label>
+            <input type="input" class="form-control" id="inputAdminPassword" aria-describedby="adminPassword" placeholder="***" required value="tabletAdm!n">
+            <small id="apiHelp" class="form-text text-muted">OPTIONAL. This is only relevant for team member responsible for creating and distributing updates.</small>
           </div>
           <button class="btn btn-primary" type="submit"  @click.stop.prevent="checkInputs" style="width:190px;">Save and test inputs</button>
           <p class="text-danger" v-if="errorMsg!=''" style="padding-top:20px;">{{errorMsg}}</p>
@@ -79,7 +84,8 @@
             name: document.getElementById("inputName").value, 
             email: document.getElementById("inputEmail").value, 
             dataUrl: document.getElementById("inputUrl").value, 
-            apiKey: document.getElementById("inputApiKey").value  
+            apiKey: document.getElementById("inputApiKey").value,
+            adminPassword: document.getElementById("inputAdminPassword").value,
           }
           this.adminObj.writeConfigFileDetails(configObj); // write the updated config file
           this.adminObj.checkForDataServer((res,err) => {

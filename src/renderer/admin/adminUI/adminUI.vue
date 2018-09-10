@@ -40,6 +40,7 @@
   import ManagePresentations from './managePresentations/managePresentationsUI.vue'
   import UpdateApplication from './updateApplication/updateApplicationUI.vue'
   import ConfigureApplication from './configuration/configurationUI.vue'
+  import GenerateData from './generateData/generateDataUI.vue'
 
   import FontAwesomeIcon from '@fortawesome/vue-fontawesome'
   import faCog from '@fortawesome/fontawesome-free-solid/faCog'
@@ -53,26 +54,40 @@
       return {
         shown: false,
         tabIndex: 1,
-        tabs: [
-          {name: 'update data', index: 0, isActive: true, hasBeenLoaded:false, childId: "adminUpdateData", uiToLoad: UpdateData},
-          {name: 'manage presentations', index: 1, isActive: false, hasBeenLoaded:false, childId: "adminManagePresentation", uiToLoad: ManagePresentations},
-          {name: 'edit presentation', index: 2, isActive: false, hasBeenLoaded:false, childId: "adminEditPresentation", uiToLoad: EditPresentation},
-          {name: 'update application', index: 3, isActive: false, hasBeenLoaded:false, childId: "adminUpdateApplication", uiToLoad: UpdateApplication},
-          {name: 'configuration', index: 4, isActive: false, hasBeenLoaded:false, childId: "adminConfiguration", uiToLoad: ConfigureApplication}
-        ],
+        tabs: [],
         vues:[]
       }
     },
     mounted () {
-      if(this.adminObj.firstTimeUser()){
-        this.tabIndex = 4;
-        this.shown = true;  this.adminObj.isShown(this.shown);
-        this.setActive(this.tabs[this.tabIndex]);  
+      // define the tabs: depends on whether user is admin
+      this.tabs.push({name: 'update data', index: 0, isActive: true, hasBeenLoaded:false, childId: "adminUpdateData", uiToLoad: UpdateData});
+      this.tabs.push({name: 'update application', index: 1, isActive: false, hasBeenLoaded:false, childId: "adminUpdateApplication", uiToLoad: UpdateApplication});
+      this.tabs.push({name: 'manage presentations', index: 2, isActive: false, hasBeenLoaded:false, childId: "adminManagePresentation", uiToLoad: ManagePresentations});
+      this.tabs.push({name: 'configuration', index: 3, isActive: false, hasBeenLoaded:false, childId: "adminConfiguration", uiToLoad: ConfigureApplication});
+
+      if(this.adminObj.isAdminUser()){
+        this.tabs.push({name: 'edit presentation', index: 4, isActive: false, hasBeenLoaded:false, childId: "adminEditPresentation", uiToLoad: EditPresentation});
+        this.tabs.push({name: 'generate data', index: 5, isActive: false, hasBeenLoaded:false, childId: "adminGenerateData", uiToLoad: GenerateData});
       }
-      // this is for debugging purposes so I don't have to open admin every time (when I'm working on it.)
-      if(this.shown){
-        this.setActive(this.tabs[this.tabIndex]);  
-      }
+
+      // because the tabs are getting defined above, they are still being written to the DOM when this code runs. Need to show a given tab after the DO loads
+      //  https://github.com/vuejs/vue/issues/2918
+      setTimeout(() => { // setTimeout to put this into event queue
+        if(this.adminObj.firstTimeUser()){
+          this.tabIndex = 4;
+          this.shown = true;  this.adminObj.isShown(this.shown);
+          this.setActive(this.tabs[this.tabIndex]);  
+        }
+
+        // this is for debugging purposes so I don't have to open admin every time (when I'm working on it.)
+        console.error('defaulting admin view to on! (adminUI.vue, line 83)')
+        this.shown=true; this.tabIndex=5;
+        if(this.shown){
+          this.setActive(this.tabs[this.tabIndex]);  
+        }
+      }, 0)
+
+      
     },
 
     methods: {
@@ -92,6 +107,7 @@
         this.tabIndex = tab.index;  //store so when the user returns to admin, they're where they left off
 
         //build the tabs on-demand so we dont use resources that are never used.
+        console.log('tab loadeing', tab)
         if(!tab.hasBeenLoaded){
           tab.hasBeenLoaded = true;
           this.vues[tab.index] = new Vue({

@@ -19,11 +19,35 @@ const path = require('path');
 let autoUpdater = remote.getGlobal("autoUpdaterPlus");
 
 
+// right click'ness
+const remoteDistinct = require('electron').remote
+const Menu = remoteDistinct.Menu
+const MenuItem = remoteDistinct.MenuItem;
+
+let rightClickPosition = null
+
+const menu = new Menu()
+const menuItem = new MenuItem({
+  label: 'Inspect Element',
+  click: () => {
+    remote.getCurrentWindow().inspectElement(rightClickPosition.x, rightClickPosition.y)
+  }
+})
+menu.append(menuItem)
+
+window.addEventListener('contextmenu', (e) => {
+  e.preventDefault()
+  rightClickPosition = {x: e.x, y: e.y}
+  menu.popup(remote.getCurrentWindow())
+}, false)
+
+
+
+
+
 require("./styles/main.less");  // note that this main.less file includes bootstrap
 require("./styles/print.less"); // used when printing to PDF (also includes bootstrap)
 require("./styles/admin.less");
-// require("./styles/animate.css");
-// require('./styles/velocity')
 require("bootstrap");
 
 
@@ -52,12 +76,16 @@ ipcRenderer.on('appReady', function(event, args) {
   _state.appDefaultPresentationFileName = args.appDefaultPresentationFileName;
   _state.appPresentationConfigFileName = args.appPresentationConfigFileName;
   _state.isDevelopment = args.isDevelopment;
+  _state.validAdminPassword = args.validAdminPassword;  // the correct password for various admin access
+  
 
   // will collect some additional state in the admin() call (because they are part of the app config and will need to be initialized for a new user)
   _state.dataUpdateServiceURL = "";
   _state.userName = "";
   _state.userEmail = "";
   _state.apiKey = "";
+  _state.adminPassword = '';  // the user-entered password
+  _state.isAdmin = false;     //gets determined when 'save and test inputs' is clicked on the configuration tab
 
   appInit();  //have items passed from main.js.  Kick off building the app
 });

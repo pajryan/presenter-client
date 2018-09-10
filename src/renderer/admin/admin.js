@@ -46,6 +46,8 @@ export function build(){
       _state.userName = config.userName;
       _state.userEmail = config.email;
       _state.apiKey = config.apiKey;
+      _state.adminPassword = config.adminPassword;
+      _state.isAdmin = _state.adminPassword === _state.validAdminPassword;
     }
 
     //build the admin UI
@@ -118,12 +120,18 @@ export function build(){
     _state.apiKey = configData.apiKey;
     _state.userName = configData.name;
     _state.userEmail = configData.email;
+    _state.adminPassword = configData.adminPassword;
+
+    // set the admin state
+    _state.isAdmin = _state.adminPassword === _state.validAdminPassword;
+
     //update user stored config file
     let config = JSON.parse(fs.readFileSync(appConfigPath));
     config.userName = configData.name;
     config.email = configData.email;
     config.dataUrl = configData.dataUrl;
     config.apiKey = configData.apiKey;
+    config.adminPassword = configData.adminPassword;
     fs.writeFileSync(appConfigPath, JSON.stringify(config, null, '\t'), 'utf8');
   }
 
@@ -589,6 +597,10 @@ export function build(){
     if (!arguments.length) { return isShown; }
     isShown = val;
     return admin;
+  }
+
+  admin.isAdminUser = function(){
+    return _state.isAdmin;
   }
 
   

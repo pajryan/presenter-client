@@ -1,0 +1,85 @@
+{
+  "definitions": {
+    "parameter": {
+      "type": "object",
+      "properties": {
+        "label": {
+          "type": "string",
+          "title": "ui label",
+          "default": ""
+        },
+        "type": {
+          "type": "string",
+          "enum": ["datetime", "varchar", "int", "float"],
+          "title": "type",
+          "default": ""
+        },
+        "defaultValue": {
+          "title": "default value (special cases: {today})",
+          "default": ""
+        }
+      }
+    }
+  },
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "required": [
+    "globalInputs",
+    "dataSources"
+  ],
+  "properties": {
+    "globalInputs": {
+      "type": "array",
+      "title": "Global Inputs",
+      "items": {
+        "type": "object",
+        "required": [
+          "label",
+          "type"
+        ],
+        "$ref": "#/definitions/parameter"
+      }
+    },
+    "dataSources": {
+      "type": "array",
+      "title": "Data Sources",
+      "items": {
+        "type": "object",
+        "required": [
+          "name",
+          "isStoredProcedure",
+          "sqlString"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "object name and filename (no spaces!)",
+            "default": ""
+          },
+          "isStoredProcedure": {
+            "type": "boolean",
+            "title": "is stored procedure?",
+            "default": false
+          },
+          "sqlString": {
+            "type": "string",
+            "title": "Sql string (parameters use {n}th parameter below)",
+            "default": ""
+          },
+          "sqlParameters": {
+            "type": "array",
+            "title": "parameters",
+            "items": {
+              "type": "object",
+              "required": [
+                "label",
+                "type"
+              ],
+              "$ref": "#/definitions/parameter"
+            }
+          }
+        }
+      }
+    }
+  }
+}
