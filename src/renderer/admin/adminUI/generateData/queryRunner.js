@@ -3,7 +3,6 @@
 const sql = require('mssql')
 const pwd = require('../../../../PASSWORDS.json')
 
-
 const config = {
   user: pwd.databaseUsername, 
   password: pwd.databasePassword, 
@@ -25,8 +24,11 @@ module.exports = class QueryRunner {
     this.callback = callback;
 
     this.results = [];  // this is an ARRAY of ARRAYS to support multiple recordsets
+    this.recordCount = -1;
 
     this.run();
+
+
   }
 
 
@@ -49,40 +51,56 @@ module.exports = class QueryRunner {
         request.query(sqlstring)
       }
       
-   
-      request.on('recordset', columns => {  // Emitted once for each recordset in a query
+      let onRecordset = (columns) => {  // Emitted once for each recordset in a query
+        this.recordCount++;
+        this.results[this.recordCount] = [];  // initialize an array for this record set
         console.log('recordset', columns) // this contains a bunch of useful info about the columns
-      })
+      }
+      request.on('recordset', onRecordset)
+
    
-      request.on('row', row => {  // Emitted for each row in a recordset
-        this.results.push(row)
-      })
+      let onRow = (row) => {  // Emitted for each row in a recordset
+        this.results[this.recordCount].push(row)
+      }
+      request.on('row', onRow)
    
-      request.on('error', err => {  // May be emitted multiple times
+      let onError = (err) => {  // May be emitted multiple times
         console.error('error', err)
         this.callback(
           {success: false, error: err},
           this.dataSource
         )
-      })
+      }
+      request.on('error', onError)
    
-      request.on('done', result => {  // ALWAYS emitted as the last one. result contains # of records etc.
+
+      let onDone = (result) => {  // ALWAYS emitted as the last one. result contains # of records etc.
+        request.removeListener('recordset', onRecordset);
+        request.removeListener('row', onRow);
+        request.removeListener('error', onError);
+        request.removeListener('done', onDone);
         sql.close();
         this.callback(
-          {success: true, results: this.results},
+          {success: true, result: result.rowsAffected},
           this.dataSource
         )
-      })
+      }
+      request.on('done', onDone)
+
+
     })
     
-    sql.on('error', err => {
+    let onSqlError = (err) => {
       sql.close();
+      sql.removeListener('error', onSqlError);
       console.log('Top error', err)
       this.callback(
         {success: false,error: err},
         this.dataSource
       )
-    })
+    }
+    sql.on('error', onSqlError)
+
 
 
 

@@ -6,7 +6,7 @@
 
   The original code is pretty mediocre, so this could be cleaned up significantly, but haven't done so yet.
 
-  Also, not that the reflection doesn't work - not really sure why - seems like it won't work when both a -webkit-transform and z-index are defined.  It works in their demo: https://orangex_c.coding.me/vue-coverflow/ but I just can't get it going.
+  Also, note that the reflection doesn't work - not really sure why - seems like it won't work when both a -webkit-transform and z-index are defined.  It works in their demo: https://orangex_c.coding.me/vue-coverflow/ but I just can't get it going.
 */
 
 

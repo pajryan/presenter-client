@@ -259,27 +259,53 @@
     top: 50%;
     transform: translateY(-50%);
     // vw should grow/shrink the font-size according to avialble size.
-    font-size: 1.4vmax;
-    line-height: 1.6vmax;
+    font-size: 1.8vmax;
+    line-height: 2.5vmax;
   }
-  .textBlock .textBlockWrap h1{font-size:3.0vmax;}
-  .textBlock .textBlockWrap h2{font-size:2.7vmax;}
-  .textBlock .textBlockWrap h3{font-size:2.4vmax;}
-  .textBlock .textBlockWrap ul{margin-bottom: 1.5vmax;}
-  .textBlock .textBlockWrap p{margin-bottom: 1.5vmax;}
+  // .textBlock .textBlockWrap h1{font-size:4.0vmax;}
+  // .textBlock .textBlockWrap h2{font-size:3.7vmax;}
+  // .textBlock .textBlockWrap h3{font-size:3.4vmax;}
+  // .textBlock .textBlockWrap ul{margin-bottom: 1.5vmax;}
+  // .textBlock .textBlockWrap p{margin-bottom: 1.5vmax;}
 
 
   #slideshow.debug .textBlock .textBlockWrap{
     font-size: 1.3vw;
     line-height: 1.4vw;
   }
-  .textBlock .textBlockWrap h1{font-size:2.3vw}
-  .textBlock .textBlockWrap h2{font-size:2.0vw}
-  .textBlock .textBlockWrap h3{font-size:1.7vw}
-  .textBlock .textBlockWrap ul{margin-bottom: 0.8vmax; padding-left: 2vmax;}
-  .textBlock .textBlockWrap p{margin-bottom: 0.8vmax;}
+  .textBlock .textBlockWrap h1{font-size:3.3vw}
+  .textBlock .textBlockWrap h2{font-size:3.0vw}
+  .textBlock .textBlockWrap h3{font-size:2.7vw}
+  .textBlock .textBlockWrap ul{margin-bottom: 1.8vmax; padding-left: 2vmax;}
+  .textBlock .textBlockWrap p{margin-bottom: 1.8vmax;}
 
+  // if the ONLY thing on the page is one text block, give it some room to breath
+  // also allow the font to go a little bigger
+  .textBlock:only-child .textBlockWrap{
+    width: 90%;
+    margin: auto;
+    font-size: 2.2vmax;
+    line-height: 3vmax;
+  }
 
+  .textBlock .textBlockWrap table{
+    border-collapse: collapse;
+  }
+
+  .textBlock .textBlockWrap table th{
+    padding: 0px 6px;
+    font-size: 1.3vw;
+  }
+
+  .textBlock .textBlockWrap table td{
+    border: 1px solid #ccc;
+    padding: 3px 6px;
+    font-size: 1.2vw;
+  }
+
+  .textBlock .textBlockWrap table tr:hover>td{
+    background: #f7f7f7;
+  }
 
 
   //for images

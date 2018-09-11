@@ -98,6 +98,7 @@
       },
       buildEditor(presenationObj){
         //load the json schema and load the data file
+        // note that the markdown editor uses https://simplemde.com/
         let editorElem = document.getElementById("presentationEditor");
         let editorOpts = {
           schema: schema,

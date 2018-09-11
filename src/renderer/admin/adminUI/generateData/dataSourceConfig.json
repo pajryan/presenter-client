@@ -10,6 +10,7 @@
   "dataSources" : [
     {
       "name": "BrokerLiquidity",
+      "filenames": ["BrokerLiquidity"],
       "isStoredProcedure": true,
       "sqlString": "marketing2..broker_liquidity",
       "sqlParameters": []
@@ -18,6 +19,7 @@
 
     {
       "name": "RiskPremium",
+      "filenames": ["RiskPremium"],
       "isStoredProcedure": false,
       "sqlString": "select convert(VARCHAR(10),price_date,101) as date, dp1 as dp, spread as marketSpread, expected_loss as expectedLossSpread from macro..expected_loss order by price_date",
       "sqlParameters": []
@@ -25,8 +27,9 @@
 
     {
       "name": "TestUserName",
+      "filenames": ["TestUserName"],
       "isStoredProcedure": false,
-      "sqlString": "select * from user_admin..user_login where user_id < {1} and ldap_user_name like '%{2}%'",
+      "sqlString": "select * from user_admin..user_login; select * from user_admin..user_login where user_id < {1} and ldap_user_name like '%{2}%'",
       "sqlParameters": [
         {
           "label": "user Id number less than:",

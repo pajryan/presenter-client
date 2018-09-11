@@ -85,7 +85,7 @@
         dataSource.successMsg = null;
         dataSource.errorMsg = null;
         console.log('-------------')
-        console.log('running datasrounce with', dataSource)
+        console.log('running dataSource with', dataSource)
         let qr = new queryRunner(dataSource, callback)
       },
 
@@ -93,11 +93,12 @@
       runResult (result, dataSource){ // result is an object of {success:true, results:...} or {success:false, err: error}
         dataSource.isRunning = false;
 
+        console.log('got result back', result)
+
         // we get here even if we've had an error. So check that the error message hasn't already been populated
         if(result.success && dataSource.errorMsg == null){
           dataSource.succeeded = true;
-          dataSource.successMsg = 'received ' + result.results.length + ' records'
-          console.log(result.results)
+          dataSource.successMsg = 'received ' + result.result.length + ' record set(s), with a total of ' + result.result.reduce((p,c) => p + c)+ ' records'
         }else if(result.error != null){
           dataSource.errorMsg = 'error: ' + result.error
         }

@@ -24,14 +24,16 @@
       return {
         sectionsLoaded: false,  //don't build the component until the sections are populated
         sectionsFake: [],
-        sections:[
-          // {cover: 'http://ogu51f989.bkt.clouddn.com/react.png', title: 'one'},{cover: 'http://ogu51f989.bkt.clouddn.com/angular.png', title: 'two'}, {cover: 'http://ogu51f989.bkt.clouddn.com/vue.png', title: 'three'}, {cover: 'http://ogu51f989.bkt.clouddn.com/webpack.png', title: 'four'}, {cover: 'http://ogu51f989.bkt.clouddn.com/yarn.png', title: 'five'}, {cover: 'http://ogu51f989.bkt.clouddn.com/webpack.png', title: 'four'}, {cover: 'http://ogu51f989.bkt.clouddn.com/vue.png', title: 'three'}, {cover: 'http://ogu51f989.bkt.clouddn.com/angular.png', title: 'two'}, {cover: 'http://ogu51f989.bkt.clouddn.com/react.png', title: 'one'}
-        ]
+        sections:[]
       }
     },
     mounted () {
       let activePresentation = this.adminObj.getActivePresentation();
-      this.sections = activePresentation.presentation.sections.map(s => {
+      this.sections = activePresentation.presentation.sections.map((s, i) => {
+        
+        if(!s.thumbnail){ s.thumbnail = '/images/thumbnails/_default-logoDots.png'}   // default any missing thumbnails to the logo dots
+        if(!s.title){ s.title = 'Section ' + (i+1)}           // default any missing title to the section number
+
         return { cover: require ('./../assets' + s.thumbnail), title: s.title }
       });
       this.sectionsLoaded = true;
