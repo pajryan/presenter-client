@@ -51,7 +51,7 @@
 <script>
   import Vue from 'vue'
   import dataSourceConfig from './dataSourceConfig.json'
-  import queryRunner from './queryRunner.js'
+  import queryRunnerFileWriter from './queryRunnerFileWriter.js'
 
   export default {
     props: ['adminObj'], 
@@ -66,7 +66,6 @@
       }
     },
     mounted () {
-      // this.dataSources
       this.dataSources.forEach(d => {
         // use Vue.set to add new keys (https://vuejs.org/2016/02/06/common-gotchas/)
         Vue.set(d, 'isRunning', false)
@@ -79,36 +78,42 @@
     },
 
     methods: {
+      /*
+        Important Note: 
+          Because some data might be quite large, I'm NOT going to return results here (just metadata)
+          Instead, will STREAM the result of the query straight to a file.  This makes things a little harder to debug, but will ultimately be required due to the data
+
+          Hang on... problem: if the files are too big to write - how will I be able to read them to generate a picture ..? 
+          Maybe I should deal with file size HERE rather than in the various components that consume files...
+
+          OK - going with this for now: will return results here as a json object and write to a file.
+          It's simpler, and forces me to deal with file-size (memory) issues when I create the file (thereby not having to deal with it when I consume the files)
+      */
       queryAndWriteOneDataSource (dataSource, callback = this.runResult) {
         dataSource.isRunning=true;
         dataSource.attempted=true;
         dataSource.successMsg = null;
         dataSource.errorMsg = null;
-        console.log('-------------')
         console.log('running dataSource with', dataSource)
-        let qr = new queryRunner(dataSource, callback)
+        let qr = new queryRunnerFileWriter(dataSource, this.adminObj.state(), callback)
       },
 
       // probably don't want to actually return all the results... could be huge
-      runResult (result, dataSource){ // result is an object of {success:true, results:...} or {success:false, err: error}
+      runResult (result, dataSource){ // result is an object of {success:true, results:..., filesWritten:...} or {success:false, err: error}
         dataSource.isRunning = false;
-
-        console.log('got result back', result)
 
         // we get here even if we've had an error. So check that the error message hasn't already been populated
         if(result.success && dataSource.errorMsg == null){
           dataSource.succeeded = true;
-          dataSource.successMsg = 'received ' + result.result.length + ' record set(s), with a total of ' + result.result.reduce((p,c) => p + c)+ ' records'
+          dataSource.successMsg = 'received ' + result.result.length + ' record set(s), with a total of ' + result.result.reduce((p,c) => p + c)+ ' records. Wrote ' + result.filesWritten + ' file(s)';
         }else if(result.error != null){
           dataSource.errorMsg = 'error: ' + result.error
         }
 
-        console.log('got to call back with ', result, dataSource)
       },
 
 
       queryAndWriteAllDataSources (currQuery = this.runAllQueriesCount) {
-        console.log('******running query #', this.runAllQueriesCount)
         this.isRunningAllQueries = true;
         this.queryAndWriteOneDataSource(this.dataSources[currQuery], (result, dataSource) => {
           this.runResult(result, dataSource);

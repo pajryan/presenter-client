@@ -9,8 +9,22 @@
   
   "dataSources" : [
     {
+      "name": "DoubleNumber",
+      "filenames": ["DoubleNumber.json"],
+      "isStoredProcedure": false,
+      "sqlString": "select {1}*2 as passedValue",
+      "sqlParameters": [
+        {
+          "label": "Number to double",
+          "type": "int",
+          "value": 6
+        }
+      ]
+    },
+
+    {
       "name": "BrokerLiquidity",
-      "filenames": ["BrokerLiquidity"],
+      "filenames": ["BrokerLiquidity.json"],
       "isStoredProcedure": true,
       "sqlString": "marketing2..broker_liquidity",
       "sqlParameters": []
@@ -19,7 +33,7 @@
 
     {
       "name": "RiskPremium",
-      "filenames": ["RiskPremium"],
+      "filenames": ["RiskPremium.json"],
       "isStoredProcedure": false,
       "sqlString": "select convert(VARCHAR(10),price_date,101) as date, dp1 as dp, spread as marketSpread, expected_loss as expectedLossSpread from macro..expected_loss order by price_date",
       "sqlParameters": []
@@ -27,7 +41,7 @@
 
     {
       "name": "TestUserName",
-      "filenames": ["TestUserName"],
+      "filenames": ["TestUserName1.json", "TestUserName2.json"],
       "isStoredProcedure": false,
       "sqlString": "select * from user_admin..user_login; select * from user_admin..user_login where user_id < {1} and ldap_user_name like '%{2}%'",
       "sqlParameters": [
