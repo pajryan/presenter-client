@@ -1,13 +1,7 @@
 <template>
     <div>
-      <p>Sample Component</p>
-      <button id="sampleButton" type="button" class="btn btn-primary" @click="showStuff" >show stuff</button>
-
-      <div v-if="showingStuff">
-        <p  class="text-danger">{{msg}}</p>
-      </div>
-
-      
+      <p>This number is updated from the data tab in admin</p>
+      <p  class="text-danger">{{this.data[0][0].passedValue}}</p>
     </div>
 </template>
 
@@ -36,6 +30,8 @@
       this.data.forEach(d => {
         if(d.error){
           console.error('do something about this!', error)
+        }else{
+          console.log('inside component with data', this.data)
         }
       })
     },

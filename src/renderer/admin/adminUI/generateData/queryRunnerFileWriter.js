@@ -5,6 +5,9 @@ const pwd = require('../../../../PASSWORDS.json')
 const path = require('path');
 const fs = require('fs')
 
+const events = require('events');
+let ee = events.EventEmitter;
+
 const config = {
   user: pwd.databaseUsername, 
   password: pwd.databasePassword, 
@@ -34,7 +37,7 @@ module.exports = class QueryRunnerFileWriter {
     this.run();
   }
 
-
+  // iteratively write each file (asynchronous, but doing one at a time.)
   writeAllFiles(currFileIndex = this.filesWritten){
     let filename = this.dataSource.filenames[currFileIndex];
     this.writeOneFile(this.results[currFileIndex], filename, (err) => {
@@ -61,6 +64,7 @@ module.exports = class QueryRunnerFileWriter {
 
   }
 
+  // write one file
   writeOneFile(data, filename, fileCallback){
     // going to write straight to my own _data directory (so that pictures are immediately updated)
     // might want to consider providing a way to backup existing data? (If I do that, I might as well expose it to the user so they can backup before updating their data??)
@@ -84,6 +88,7 @@ module.exports = class QueryRunnerFileWriter {
   }
 
 
+  // run the query
   run(){
 
     sql.connect(config, err => {
@@ -93,6 +98,7 @@ module.exports = class QueryRunnerFileWriter {
 
       // stored procedure
       if(this.dataSource.isStoredProcedure){
+        console.error('TODO, need to handle parameters to SP.')
         request.execute(this.dataSource.sqlString) 
       }else{
         let sqlstring = this.dataSource.sqlString
@@ -118,6 +124,11 @@ module.exports = class QueryRunnerFileWriter {
    
       let onError = (err) => {  // May be emitted multiple times
         console.error('error', err)
+        // request.removeListener('recordset', onRecordset);
+        // request.removeListener('row', onRow);
+        // request.removeListener('error', onError);
+        // request.removeListener('done', onDone);
+        // sql.removeListener('error', onSqlError);
         this.callback(
           {success: false, error: err},
           this.dataSource
@@ -131,8 +142,13 @@ module.exports = class QueryRunnerFileWriter {
         request.removeListener('row', onRow);
         request.removeListener('error', onError);
         request.removeListener('done', onDone);
-        sql.close();
+        
 
+        console.log('---------------------')
+        console.log('events on request', request.eventNames())
+
+        sql.close();
+        // sql.removeListener('error', onSqlError);
 
         // console.log('result', this.results ) // careful showing the results. Can massively slow the app.
         // write the results to a file

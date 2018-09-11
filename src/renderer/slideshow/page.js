@@ -131,7 +131,7 @@ module.exports = class Page {
     // when putting a vue component inside the existing div, the existing div's classnames get overwritten (weird)
     //  so build an extra nested div that Vue will override
     uiElem.classList.add('componentBlock');
-    componentRunner.build(itm, uiElem.appendChild(document.createElement('div')))
+    componentRunner.build(itm, uiElem.appendChild(document.createElement('div')), this.slideshow.state())
   }
 
   manageTextFontSize(){

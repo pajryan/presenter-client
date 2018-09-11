@@ -80,8 +80,8 @@
         }
 
         // this is for debugging purposes so I don't have to open admin every time (when I'm working on it.)
-        console.error('defaulting admin view to on! (adminUI.vue, line 83)')
-        this.shown=true; this.tabIndex=5;
+        // console.error('defaulting admin view to on! (adminUI.vue, line 83)')
+        // this.shown=true; this.tabIndex=5;
         if(this.shown){
           this.setActive(this.tabs[this.tabIndex]);  
         }
