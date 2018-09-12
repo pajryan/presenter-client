@@ -5,6 +5,8 @@ import AdminUI from './adminUI/AdminUI.vue'
 const path = require('path');
 const fs = require('fs');
 
+var archiver = require('archiver');
+
 const utils = require ('./../utils.js');
 const msg = require ('./../messages.js');
 
@@ -18,6 +20,7 @@ export function build(){
   let autoUpdater,
       appConfigPath,
       appDataPath,
+      appDataArchivePath,
       appPresentationPath,
       appImagePath,
       appPresentationConfig,
@@ -33,6 +36,7 @@ export function build(){
 
     appConfigPath = path.join(_state.appPath, _state.appConfigFileName);
     appDataPath = path.join(_state.appPath, _state.appDataStorePath);
+    appDataArchivePath = path.join(_state.appPath, _state.appDataArchivePath);
     appPresentationPath = path.join(_state.appPath, _state.appPresentationPath);
     appImagePath = path.join(_state.appPath, _state.appImagePath);
     appPresentationConfig = path.join(appPresentationPath, _state.appPresentationConfigFileName)
@@ -92,6 +96,10 @@ export function build(){
       //write the _data directory
       if(!fs.existsSync(appDataPath)){
         fs.mkdirSync(appDataPath)
+      }
+      //write the _archive directory
+      if(!fs.existsSync(appDataArchivePath)){
+        fs.mkdirSync(appDataArchivePath)
       }
       //write the _presentation directory
       if(!fs.existsSync(appPresentationPath)){
@@ -509,6 +517,58 @@ export function build(){
     fs.writeFileSync(appConfigPath, JSON.stringify(appConfig, null, '\t'))
   }
 
+
+  /*
+    DATA ARCHIVE ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  */
+  admin.archiveLocalData = function(){
+    // going to get everythingin the _data directory, create a .zip it, name it dataArchive-yyyy-mm-dd-hh-mm.zip and move to _archive directory
+    let now = new Date();
+    let archiveFilename = 'dataArchive_' + now.getFullYear() + '-' + now.getMonth() + '-' + now.getDate() + '-' + now.getHours() + '-' + now.getMinutes() + '.zip'
+    console.log('creating archive file', archiveFilename)
+
+    var output = fs.createWriteStream(path.join(appDataArchivePath, archiveFilename));
+    var archive = archiver('zip', {
+      zlib: { level: 9 } // Sets the compression level.
+    });
+    
+    // listen for all archive data to be written
+    // 'close' event is fired only when a file descriptor is involved
+    output.on('close', function() {
+      console.log(archive.pointer() + ' total bytes');
+      console.log('archiver has been finalized and the output file descriptor has closed.');
+    });
+    
+    // good practice to catch warnings (ie stat failures and other non-blocking errors)
+    archive.on('warning', function(err) {
+      if (err.code === 'ENOENT') {
+        console.error('error creating archive', err)
+      } else {
+        // throw error
+        throw err;
+      }
+    });
+    
+    // good practice to catch this error explicitly
+    archive.on('error', function(err) {
+      throw err;
+    });
+    
+    // pipe archive data to the file
+    archive.pipe(output);
+    archive.directory(appDataPath, false);
+    archive.finalize();
+    console.log('DONE CREATING ARCHIVE')
+
+
+
+
+  }
+
+  admin.expandLocalArchive = function(removeAllExistingFiles = true){
+    // going to get an existing archive (.zip) and expand it into the _data directory REMOVING everything else in that directory
+
+  }
 
 
 

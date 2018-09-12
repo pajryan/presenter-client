@@ -71,6 +71,7 @@ ipcRenderer.on('appReady', function(event, args) {
   _state.appConfigFileName = args.appConfigFileName;
   
   _state.appDataStorePath = args.appDataStorePath;
+  _state.appDataArchivePath = args.appDataArchivePath;
   _state.appPresentationPath = args.appPresentationPath;
   _state.appImagePath = args.appImagePath;
   _state.appDefaultPresentationFileName = args.appDefaultPresentationFileName;

@@ -8,6 +8,14 @@
         <li>alert the users (email) that new data is available</li>
       </ol>
 
+      <ol style="color: red">
+        <li>ALL DATA MUST HAVE AN END DATE! (so we can reproduce data; a compliance requirement)</li>
+        <li>Link to the file itself</li>
+        <li>Need to decide where to write these files. Currenly writing directly to the data dirctory (so pictures are update immediately). But maybe they need to get somewhere else?  On the other hand, maybe archiving takes care of this?</li>
+        <li>Would be nice to click from a data file to the pictures that use it...</li>
+        <li>Separately - should have a QC deck built in here that 1) has custom QC charts.  2) has all the 'live' pictures</li>
+      </ol>
+
       <hr />
 
       <div id="globalVariableHolder">

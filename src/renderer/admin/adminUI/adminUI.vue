@@ -41,6 +41,7 @@
   import UpdateApplication from './updateApplication/updateApplicationUI.vue'
   import ConfigureApplication from './configuration/configurationUI.vue'
   import GenerateData from './generateData/generateDataUI.vue'
+  import ArchiveData from './archiveData/archiveDataUI.vue'
 
   import FontAwesomeIcon from '@fortawesome/vue-fontawesome'
   import faCog from '@fortawesome/fontawesome-free-solid/faCog'
@@ -63,18 +64,19 @@
       this.tabs.push({name: 'update data', index: 0, isActive: true, hasBeenLoaded:false, childId: "adminUpdateData", uiToLoad: UpdateData});
       this.tabs.push({name: 'update application', index: 1, isActive: false, hasBeenLoaded:false, childId: "adminUpdateApplication", uiToLoad: UpdateApplication});
       this.tabs.push({name: 'manage presentations', index: 2, isActive: false, hasBeenLoaded:false, childId: "adminManagePresentation", uiToLoad: ManagePresentations});
-      this.tabs.push({name: 'configuration', index: 3, isActive: false, hasBeenLoaded:false, childId: "adminConfiguration", uiToLoad: ConfigureApplication});
+      this.tabs.push({name: 'configuration', index: 3, isActive: false, hasBeenLoaded:false, childId: "adminConfiguration", uiToLoad: ConfigureApplication}); // if you move this, update the default tab index that opens for a first time user!
 
       if(this.adminObj.isAdminUser()){
         this.tabs.push({name: 'edit presentation', index: 4, isActive: false, hasBeenLoaded:false, childId: "adminEditPresentation", uiToLoad: EditPresentation});
         this.tabs.push({name: 'generate data', index: 5, isActive: false, hasBeenLoaded:false, childId: "adminGenerateData", uiToLoad: GenerateData});
+        this.tabs.push({name: 'data archive', index: 6, isActive: false, hasBeenLoaded:false, childId: "adminArchiveData", uiToLoad: ArchiveData});
       }
 
       // because the tabs are getting defined above, they are still being written to the DOM when this code runs. Need to show a given tab after the DO loads
       //  https://github.com/vuejs/vue/issues/2918
       setTimeout(() => { // setTimeout to put this into event queue
         if(this.adminObj.firstTimeUser()){
-          this.tabIndex = 4;
+          this.tabIndex = 3;
           this.shown = true;  this.adminObj.isShown(this.shown);
           this.setActive(this.tabs[this.tabIndex]);  
         }

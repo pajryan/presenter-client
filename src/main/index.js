@@ -15,6 +15,7 @@ const appVersion = pj.version;
 
 const appPath = app.getPath('userData'); // This is where ALL data will be stored (user data as well as data driving pictures)
 const appDataStorePath = "/_data";
+const appDataArchivePath = "/_dataArchive";
 const appPresentationPath = "/_presentations";
 const appImagePath = "/_images";
 const appDefaultPresentationFileName = "_defaultPresentation.json";
@@ -88,6 +89,7 @@ app.on('ready', () => {
         appPath: appPath,
         appConfigFileName: appConfigFileName,
         appDataStorePath: appDataStorePath,
+        appDataArchivePath: appDataArchivePath,
         appPresentationPath: appPresentationPath,
         appImagePath: appImagePath,
         appDefaultPresentationFileName: appDefaultPresentationFileName,
