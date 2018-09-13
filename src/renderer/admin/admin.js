@@ -4,11 +4,11 @@ import AdminUI from './adminUI/AdminUI.vue'
 
 const path = require('path');
 const fs = require('fs');
-
-var archiver = require('archiver');
+const unzipper = require('unzipper')
 
 const utils = require ('./../utils.js');
 const msg = require ('./../messages.js');
+
 
 
 export function build(){
@@ -521,53 +521,131 @@ export function build(){
   /*
     DATA ARCHIVE ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   */
-  admin.archiveLocalData = function(){
+  admin.archiveLocalData = function(callback){
     // going to get everythingin the _data directory, create a .zip it, name it dataArchive-yyyy-mm-dd-hh-mm.zip and move to _archive directory
     let now = new Date();
-    let archiveFilename = 'dataArchive_' + now.getFullYear() + '-' + now.getMonth() + '-' + now.getDate() + '-' + now.getHours() + '-' + now.getMinutes() + '.zip'
+    let archiveFilename = 'dataArchive_' + now.getFullYear() + '-' + 
+                                          ((now.getMonth()+1) < 10 ? '0' + (now.getMonth()+1): (now.getMonth()+1)) + '-' + 
+                                          (now.getDate() < 10 ? '0' + now.getDate(): now.getDate()) + '-' + 
+                                          (now.getHours() < 10 ? '0' + now.getHours(): now.getHours()) + '-' + 
+                                          (now.getMinutes() < 10 ? '0' + now.getMinutes(): now.getMinutes()) + '-' + 
+                                          (now.getSeconds() < 10 ? '0' + now.getSeconds(): now.getSeconds()) + '.zip';
     console.log('creating archive file', archiveFilename)
 
-    var output = fs.createWriteStream(path.join(appDataArchivePath, archiveFilename));
-    var archive = archiver('zip', {
-      zlib: { level: 9 } // Sets the compression level.
-    });
-    
-    // listen for all archive data to be written
-    // 'close' event is fired only when a file descriptor is involved
-    output.on('close', function() {
-      console.log(archive.pointer() + ' total bytes');
-      console.log('archiver has been finalized and the output file descriptor has closed.');
-    });
-    
-    // good practice to catch warnings (ie stat failures and other non-blocking errors)
-    archive.on('warning', function(err) {
-      if (err.code === 'ENOENT') {
-        console.error('error creating archive', err)
-      } else {
-        // throw error
-        throw err;
+    utils.zipDirectory(appDataPath, appDataArchivePath, archiveFilename, (err) => {
+      if(err){
+        console.log('error creating archive', err)
+        callback(err)
+      }else{
+        callback();
       }
-    });
+    })
+  }
+
+
+  admin.deployArchive = function(removeAllExistingFiles, archiveFileName, callback){
+    // going to get an existing archive (.zip) and expand it into the _data directory REMOVING everything else in that directory
+    if(removeAllExistingFiles){
+      fs.readdir(appDataPath, (err, files) => {
+        if(err){
+          console.error('error cleaning _data directory', err)
+          callback(err)
+        }
+        for (const file of files) {
+          fs.unlink(path.join(appDataPath, file), err => {
+            if(err){
+              console.error('error deleting file from _data directory', err)
+              callback(err)
+            }
+          });
+        }
+      });
+    }
+
+    //unzip the chosen archive and put the contents in the _data folder
+    try{
+      fs.createReadStream(path.join(appDataArchivePath, archiveFileName)).pipe(unzipper.Extract({ path: appDataPath }));
+      callback();
+    }catch(e){
+      console.error('error unzipping archive', e)
+      callback(e)
+    }
     
-    // good practice to catch this error explicitly
-    archive.on('error', function(err) {
-      throw err;
-    });
-    
-    // pipe archive data to the file
-    archive.pipe(output);
-    archive.directory(appDataPath, false);
-    archive.finalize();
-    console.log('DONE CREATING ARCHIVE')
-
-
-
 
   }
 
-  admin.expandLocalArchive = function(removeAllExistingFiles = true){
-    // going to get an existing archive (.zip) and expand it into the _data directory REMOVING everything else in that directory
 
+  admin.getLocalArchives = function(){
+    // get a list of all the archives on the user's machine (.zip files in _dataArchive directory) 
+    let archives = [];
+    fs.readdirSync(appDataArchivePath).forEach(file => {
+      if(file.indexOf('.zip') !== -1){
+        archives.push(file);
+      }
+    });
+    return archives;
+  }
+
+
+  admin.publishDataArchive = function(localDataArchiveFileName, callback){
+    //make sure we're online and connected to data
+    utils.checkOnlineAndDataConnectionAndApiKey(_state.dataUpdateServiceURL, _state.apiKey, (online, err) => {
+      if(online){
+        // make call to server to get data archives
+        utils.publishDataArchive(_state.dataUpdateServiceURL, _state.apiKey, appDataArchivePath, localDataArchiveFileName, (data, err) => {
+          if(err){
+            callback(null, {error:err});
+          }else{
+            callback({status:200});
+          }
+        });
+      }else{
+        console.error('could not connect to data provider to upload data archive', err)
+        callback(null, {error:err});
+      }
+    })
+  }
+
+  admin.downloadDataArchiveList = function(callback){
+    // will download list all archives. only want archives we dont already have locally, so pass an array of what we have to prevent large, unnecessary downloads
+    let existingArchives = admin.getLocalArchives();
+    
+    //make sure we're online and connected to data
+    utils.checkOnlineAndDataConnectionAndApiKey(_state.dataUpdateServiceURL, _state.apiKey, (online, err) => {
+      if(online){
+        // make call to server to get data archives
+        utils.getDataArchiveList(_state.dataUpdateServiceURL, _state.apiKey, existingArchives, (data, err) => {
+          if(err){
+            callback(null, {error:err});
+          }else{
+            callback({status:200, data: data});
+          }
+        });
+      }else{
+        console.error('could not connect to data provider to download list of data archives', err)
+        callback(null, {error:err});
+      }
+    })
+  }
+
+  admin.downloadOneDataArchive = function(archiveFileName, callback){
+    //make sure we're online and connected to data
+    utils.checkOnlineAndDataConnectionAndApiKey(_state.dataUpdateServiceURL, _state.apiKey, (online, err) => {
+      if(online){
+        // make call to server to get presentations
+        utils.getDataArchive(_state.dataUpdateServiceURL, _state.apiKey, archiveFileName, appDataArchivePath, (data, err) => {
+          if(err){
+            callback(null, {error:err});
+          }else{
+            callback({status:200});
+          }
+        });
+      }else{
+        console.error('could not connect to data provider to download data archive', err)
+        callback(null, {error:err});
+      }
+    })
+    
   }
 
 

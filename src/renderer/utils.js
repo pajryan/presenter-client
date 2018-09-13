@@ -1,7 +1,9 @@
 const http = require('http');
 const fs = require('fs');
+const path = require('path');
 const request = require('request');
 const Stream = require('stream').Transform;
+const archiver = require('archiver');
 
 module.exports = {
 
@@ -215,6 +217,60 @@ module.exports = {
     request.end();
   },
 
+
+
+  publishDataArchive: function(dataUrl, apiKey, archivePath, fileName, callback){
+    let postData = {data:{apiKey:apiKey}};
+    let opts = { host: dataUrl, port:80, path: '/saveDataArchive', method: 'POST', headers: {'Content-Type': 'image/png'}};
+    if(dataUrl.indexOf('localhost') != -1){opts.port = 3000; opts.host="localhost"};
+
+    let fullURL = dataUrl + 'saveDataArchive';
+    let fullArchivePath = path.join(archivePath, fileName)
+    console.log('posting (data archive) to (url) ', fullArchivePath, fullURL)
+
+    var req = request.post(fullURL, function (err, resp, body) {
+      if (err) {
+        console.error('Error publishing data archive', err);
+        callback({status:400, error: err})
+      } else {
+        callback({status:200})
+      }
+    });
+
+    var form = req.form();
+    form.append('file', fs.createReadStream(fullArchivePath));
+    
+  },
+  
+
+
+  getDataArchiveList: function(dataUrl, apiKey, localDataArchiveNames, callback){
+    let postData = {data:{archives: localDataArchiveNames, apiKey: apiKey}};
+    let opts = { host: dataUrl, port:80, path: '/getDataArchiveList', method: 'POST', headers: {'Content-Type': 'application/json'}};
+    if(dataUrl.indexOf('localhost') != -1){opts.port = 3000; opts.host="localhost"};
+    let request = http.request(opts, res => {
+        res.setEncoding('utf8');
+        res.on('data', data => {
+          console.log('got respons', data)
+          let o=JSON.parse(data);
+          if(o.status && o.status === 200){
+            callback(o);
+          }else{
+            console.error('error in getDataArchiveList', data)
+            callback(null, {error: o.error})
+          }
+        });
+    });
+
+    request.on('error', error => {
+      console.error('error making getDataArchiveList call', error);
+      callback(null, {error: error});
+    });
+    request.write(JSON.stringify(postData));
+    request.end();
+  },
+
+
   extractKeyValueFromObject: function(itm, key, returnedValues = []){
     if(typeof itm === 'object'){
       for( let k in itm){
@@ -281,8 +337,61 @@ module.exports = {
       }
     });
     return images;
-  }
+  },
 
+
+
+  zipDirectory: function(dirToZip, zipPath, zipFileName, callback){
+
+    var output = fs.createWriteStream(path.join(zipPath, zipFileName));
+    var archive = archiver('zip', {
+      zlib: { level: 9 } // Sets the compression level.
+    });
+    
+    // listen for all archive data to be written
+    // 'close' event is fired only when a file descriptor is involved
+    output.on('close', function() {
+      console.log('zip file has been created ('+archive.pointer()+' total bytes)', zipPath, zipFileName);
+      callback(null)
+    });
+    
+    // good practice to catch warnings (ie stat failures and other non-blocking errors)
+    archive.on('warning', function(err) {
+      if (err.code === 'ENOENT') {
+        console.error('error creating archive', err)
+        callback(err)
+      } else {
+        callback(err)
+      }
+    });
+    
+    // good practice to catch this error explicitly
+    archive.on('error', function(err) {
+      callback(err)
+    });
+    
+    // pipe archive data to the file
+    archive.pipe(output);
+    archive.directory(dirToZip, false);
+    archive.finalize();
+  },
+
+
+
+
+  getDataArchive: function(dataUrl, apiKey, archiveFile, downloadToPath, callback){
+    let postData = {data:{apiKey: apiKey, fileName: archiveFile}};
+    let opts = { host: dataUrl, port:80, path: '/downloadDataArchive', method: 'POST', headers: {'Content-Type': 'application/json'}};
+    if(dataUrl.indexOf('localhost') != -1){opts.port = 3000; opts.host="localhost"};
+
+    let fullURL = dataUrl + 'downloadDataArchive';
+    try{
+      request.post({ url: fullURL, json: postData}).pipe(fs.createWriteStream(path.join(downloadToPath, archiveFile)));
+      callback({status:200})
+    }catch(err){
+      callback({status:400, error: err})
+    }
+  },
 
 
 
