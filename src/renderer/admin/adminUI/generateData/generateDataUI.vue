@@ -8,12 +8,19 @@
         <li>alert the users (email) that new data is available</li>
       </ol>
 
+      <div v-if="dataConfigValidationErrors.length>0"  class="alert alert-danger">
+        <p> The data source configuration has validation problems:</p>
+        <ul>
+          <li v-for="err in dataConfigValidationErrors" :key="err.index">{{err.property}} ("{{err.instance}}") {{err.message}} </li>
+        </ul>
+      </div>
+
       <ol style="color: red">
         <li>ALL DATA MUST HAVE AN END DATE! (so we can reproduce data; a compliance requirement)</li>
-        <li>Link to the file itself</li>
         <li>Need to decide where to write these files. Currenly writing directly to the data dirctory (so pictures are update immediately). But maybe they need to get somewhere else?  On the other hand, maybe archiving takes care of this?</li>
         <li>Would be nice to click from a data file to the pictures that use it...</li>
         <li>Separately - should have a QC deck built in here that 1) has custom QC charts.  2) has all the 'live' pictures</li>
+        <li>Each entry should have some QC attached to it (need to think about this)</li>
       </ol>
 
       <hr />
@@ -22,7 +29,12 @@
         <h4>Global Variables</h4>
         <div v-for="globalInput in globalInputs" class=""  :key="globalInput.index">
           <label>{{ globalInput.label }}</label>
-          <input :value="globalInput.defaultValue" />
+
+          <!-- can get a type of datetime, string, int, or float -->
+          <input v-if="globalInput.type=='datetime'" type='text' :id="globalInput.referenceId" class="datePicker" />
+          <input v-else-if="globalInput.type=='int'" type='text' :id="globalInput.referenceId" :value="globalInput.defaultValue" />
+          <input v-else-if="globalInput.type=='float'" type='text' :id="globalInput.referenceId" :value="globalInput.defaultValue" />
+          <input v-else type='text' :id="globalInput.referenceId" :value="globalInput.defaultValue" />
         </div>
       </div>
 
@@ -38,12 +50,21 @@
           <button type="button" class="btn btn-primary btn-sm" @click="queryAndWriteOneDataSource(dataSource)" :disabled="dataSource.isRunning">run</button>
           <label>{{ dataSource.name }}</label>
           <!-- messages -->
-          <label :hidden="dataSource.successMsg==null"  class="alert alert-success">{{ dataSource.successMsg }}</label>
+          <label :hidden="dataSource.successMsg==null"  class="alert alert-success"><span v-html="dataSource.successMsg"></span></label>
           <label :hidden="dataSource.errorMsg==null"  class="alert alert-danger">{{ dataSource.errorMsg }}</label>
           <!-- parameters -->
           <div v-for="parameter in dataSource.sqlParameters" class="dataSourceParameter"  :key="parameter.index">
             <label>{{ parameter.label }}</label>
             <input v-model="parameter.value" />
+          </div>
+          <p class="relatedComponentsLink" @click="dataSource.isExpanded = !dataSource.isExpanded">show/hide related components</p>
+          <div v-if="dataSource.isExpanded" class="relatedComponents alert alert-primary">
+            list of components that use this data
+            {{dataSource}}
+            <br /><br />
+
+            {{activePresentationComponents}}
+            <!-- {{activePresentationComponents.filter(c => {dataSource.filenames.find(f => f===c.replace('.json',''))})}} -->
           </div>
           
         </div>
@@ -59,7 +80,15 @@
 <script>
   import Vue from 'vue'
   import dataSourceConfig from './dataSourceConfig.json'
+  import dataSourceConfigSchema from './dataSourceConfigSchema.json'
   import queryRunnerFileWriter from './queryRunnerFileWriter.js'
+  import jquery from 'jquery'
+  let $ = jquery
+  import 'bootstrap-datepicker'
+
+  import path from 'path'
+
+  var validate = require('jsonschema').validate;
 
   export default {
     props: ['adminObj'], 
@@ -70,10 +99,17 @@
         globalInputs: dataSourceConfig.globalInputs,
         dataSources: dataSourceConfig.dataSources,
         runAllQueriesCount: 0,
-        isRunningAllQueries: false
+        isRunningAllQueries: false,
+        dataConfigValidationErrors: [],
+        activePresentationComponents: []
       }
     },
     mounted () {
+      // be sure the dataSourceConfig validates
+      console.log('VALIDATION', validate(dataSourceConfig, dataSourceConfigSchema))
+      this.dataConfigValidationErrors = validate(dataSourceConfig, dataSourceConfigSchema).errors;
+      
+
       this.dataSources.forEach(d => {
         // use Vue.set to add new keys (https://vuejs.org/2016/02/06/common-gotchas/)
         Vue.set(d, 'isRunning', false)
@@ -82,8 +118,23 @@
 
         Vue.set(d, 'successMsg', null)
         Vue.set(d, 'errorMsg', null)
+        Vue.set(d, 'isExpanded', false)
+
       })
+
+      // build the datepickers (https://uxsolutions.github.io/bootstrap-datepicker/)
+      $('.datePicker').datepicker({
+        daysOfWeekHighlighted: '5',  // highlight fridays
+        autoclose: true,
+        todayHighlight: true,
+        todayBtn: "linked"
+      });
+
+      // capture the components used in the active presentation. We'll try to open these up later.
+      this.activePresentationComponents = this.adminObj.getActivePresentationItemOfType('component');
+
     },
+    
 
     methods: {
       /*
@@ -109,11 +160,14 @@
       // probably don't want to actually return all the results... could be huge
       runResult (result, dataSource){ // result is an object of {success:true, results:..., filesWritten:...} or {success:false, err: error}
         dataSource.isRunning = false;
-
+        console.log('datasource', dataSource)
         // we get here even if we've had an error. So check that the error message hasn't already been populated
         if(result.success && dataSource.errorMsg == null){
           dataSource.succeeded = true;
-          dataSource.successMsg = 'received ' + result.result.length + ' record set(s), with a total of ' + result.result.reduce((p,c) => p + c)+ ' records. Wrote ' + result.filesWritten + ' file(s)';
+          dataSource.successMsg = 'received ' + result.result.length + ' record set(s), with a total of ' + result.result.reduce((p,c) => p + c)+ ' records. Wrote ' + result.filesWritten + ' file(s) ';
+          dataSource.filenames.forEach(f => {
+            dataSource.successMsg += ' : <a href="file://'+path.join(this.adminObj.getAppDataPath(), f)+'" target="_blank">'+f+'</a> '
+          })
         }else if(result.error != null){
           dataSource.errorMsg = 'error: ' + result.error
         }
@@ -156,19 +210,33 @@
   .dataSource label{
     font-weight: bold;
     padding-left: 15px;
-    padding-top: 6px;
+    padding-top: 3px;
+    padding-bottom: 5px;
     padding-right: 10px;
   }
 
   .dataSource .alert{
     margin-bottom: 0 !important;
+    font-weight: normal;
   }
 
   .dataSourceParameter label{
-    margin-left: 43px;
+    margin-left: 63px;
     font-weight: normal;
     width: 250px;
 
+  }
+
+
+  .relatedComponentsLink{
+    color: #008edc;
+    cursor: pointer;
+    font-size: 0.8em;
+    text-align: right;
+  }
+
+  .relatedComponents{
+    margin-left: 64px;
   }
   
 </style>

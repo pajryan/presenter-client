@@ -10,7 +10,6 @@ const utils = require ('./../utils.js');
 const msg = require ('./../messages.js');
 
 
-
 export function build(){
   let _rootElem,    // root html element that the entire admin UI will be appended to
       _toc,         // like this admin obj, the toc obj.  Creating a reference here will allow toc functions to run from admin (and vice versa)
@@ -29,7 +28,8 @@ export function build(){
       isShown = false;
 
   let isFirstTimeUser = false;  //if this goes true, the user will be launched directly to admin configuration
-      
+
+
   function admin(){
     let p = document.createElement('p');
     _rootElem.appendChild(p);
@@ -190,6 +190,16 @@ export function build(){
   admin.getActivePresentation = function(){
     let activePresentationId = admin.getActivePresentationId();
     return JSON.parse(fs.readFileSync(path.join(appPresentationPath, activePresentationId+'.json')));
+  }
+
+  admin.getActivePresentationItemOfType = function(type='component'){
+    // can look for 'component', 'mmdText', or 'image
+    let sections = this.getActivePresentation().presentation.sections;
+    let pages = sections.reduce((acc,s) => acc.concat(s.pages),[]);
+    let pageItems = pages.reduce((acc, p) => acc.concat(p.pageItems), []);
+    let pageItemTypes = pageItems.map(pi => pi.type);
+    let chosenPageType = pageItemTypes.filter(pit => pit[type]);
+    return chosenPageType;
   }
 
   admin.setActivePresentation = function(id){

@@ -1,25 +1,75 @@
 {
   "definitions": {
-    "parameter": {
-      "type": "object",
-      "properties": {
-        "label": {
-          "type": "string",
-          "title": "ui label",
-          "default": ""
+    
+    "globalInputParameters": {
+      "type": "array",
+      "items":{
+        "type": "object",
+        "properties":{
+          "referenceId": {
+            "type": "string",
+            "title": "reference ID (used to e.g. convert a field to a datepicker by getElementById(referenceId)...",
+            "default": ""
+          },
+          "label": {
+            "type": "string",
+            "title": "ui label",
+            "default": ""
+          },
+          "type": {
+            "type": "string",
+            "enum": ["datetime", "varchar", "int", "float"],
+            "title": "type",
+            "default": ""
+          },
+          "value": {
+            "title": "default value (special cases: {today})",
+            "default": ""
+          }
         },
-        "type": {
-          "type": "string",
-          "enum": ["datetime", "varchar", "int", "float"],
-          "title": "type",
-          "default": ""
+        "required": [
+          "referenceId",
+          "label",
+          "type"
+        ]
+      }
+    },
+
+
+    "sqlParameters": {
+      "type": "array",
+      "items":{
+        "type": "object",
+        "properties":{
+          "referenceId": {
+            "type": "string",
+            "title": "reference ID (used to e.g. convert a field to a datepicker by getElementById(referenceId)...",
+            "default": ""
+          },
+          "label": {
+            "type": "string",
+            "title": "ui label",
+            "default": ""
+          },
+          "type": {
+            "type": "string",
+            "enum": ["datetime", "varchar", "int", "float"],
+            "title": "type",
+            "default": ""
+          },
+          "value": {
+            "title": "default value (special cases: {today})",
+            "default": ""
+          }
         },
-        "value": {
-          "title": "default value (special cases: {today})",
-          "default": ""
-        }
+        "required": [
+          "label",
+          "type"
+        ]
       }
     }
+
+
   },
   "$schema": "http://json-schema.org/draft-07/schema#",
   "type": "object",
@@ -31,14 +81,7 @@
     "globalInputs": {
       "type": "array",
       "title": "Global Inputs",
-      "items": {
-        "type": "object",
-        "required": [
-          "label",
-          "type"
-        ],
-        "$ref": "#/definitions/parameter"
-      }
+      "$ref": "#/definitions/globalInputParameters"
     },
     "dataSources": {
       "type": "array",
@@ -69,14 +112,7 @@
           "sqlParameters": {
             "type": "array",
             "title": "parameters",
-            "items": {
-              "type": "object",
-              "required": [
-                "label",
-                "type"
-              ],
-              "$ref": "#/definitions/parameter"
-            }
+            "$ref": "#/definitions/sqlParameters"
           }
         }
       }

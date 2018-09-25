@@ -11,9 +11,12 @@
 
 module.exports = function getComponent(componentName){
   let components = {
+    ErrorComponent: require('./_ErrorComponent.vue').default,
+
     // any new components need to be registered here.  the passed name needs to match one of these keys.
     HistoryOfIdeas: require('./HistoryOfIdeas.vue').default,
     TestDataComponent: require('./TestDataComponent.vue').default
+    
   }
 
   // import AdminUI from './adminUI/AdminUI.vue'

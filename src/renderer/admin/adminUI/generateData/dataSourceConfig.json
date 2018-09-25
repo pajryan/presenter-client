@@ -1,6 +1,7 @@
 {
   "globalInputs":[
     {
+      "referenceId": "globalAsOfDate",
       "label": "As of date (inclusive)",
       "type": "datetime",
       "value": "{today}"

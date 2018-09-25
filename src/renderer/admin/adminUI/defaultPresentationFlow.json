@@ -32,7 +32,7 @@
 								"percentWidth": 34,
 								"type": {
 									"component": "component name",
-									"data": "data something"
+									"data": ["data something"]
 								}
 							}
 						]
@@ -43,7 +43,7 @@
 							{
 								"percentWidth": 70,
 								"type": {
-									"component": "component name"
+									"component": ["component name"]
 								}
 							}
 						]

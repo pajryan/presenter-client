@@ -33,6 +33,8 @@ export function build(itm, uiElem, _state){
   console.log('Building Component', itm, _state)
 
   let data = [];
+  let dataOk = false;
+  let errorMsg = 'unknown'
   if(itm.type.data){
     let appDataPath = path.join(_state.appPath, _state.appDataStorePath);
     let dataFiles = itm.type.data.split(',')  // assuming they're comma separated for now
@@ -40,25 +42,39 @@ export function build(itm, uiElem, _state){
       console.log('loading data', filename)
       try{
         data.push( JSON.parse(fs.readFileSync(path.join(appDataPath, filename))) )
+        dataOk = true;
       }catch(err){
-        data.push({error: err, filename: filename})
         console.error('unable to fetch data file ' + filename, err)
+        errorMsg = 'unable to fetch data file ' + filename
       }
       
 
 
     })
+  }else{
+    // no data needed
+    dataOk = true;
   }
 
-
-
-  let componentVue = new Vue({
-    el: uiElem,
-    render: h => h(component, {
-      props: {itm: itm, uiElem: uiElem, data: data}
-      // props: {adminObj: admin} //this.adminObj
+  let componentVue = null;
+  if(dataOk){
+    // loaded the requested component with data etc
+    componentVue = new Vue({
+      el: uiElem,
+      render: h => h(component, {
+        props: {itm: itm, uiElem: uiElem, data: data}
+      })
     })
-  })
+  }else{
+    // error loading the component, say so.
+    component = componentMap('ErrorComponent')
+    componentVue = new Vue({
+      el: uiElem,
+      render: h => h(component, {
+        props: {itm: itm, uiElem: uiElem, data: {errorMsg: errorMsg}}
+      })
+    })
+  }
 
 }
 

@@ -49,6 +49,7 @@ require("./styles/main.less");  // note that this main.less file includes bootst
 require("./styles/print.less"); // used when printing to PDF (also includes bootstrap)
 require("./styles/admin.less");
 require("bootstrap");
+require("./styles/bootstrap-datepicker3.standalone.min.css");
 
 
 
