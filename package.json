@@ -1,5 +1,7 @@
 {
   "name": "presenter",
+  "author": "DCI",
+  "description": "presenter client",
   "version": "1.0.30",
   "license": "MIT",
   "scripts": {

@@ -4,7 +4,8 @@
 let ResizeObserver = require('resize-observer-polyfill');
 let path = require('path');
 let marked = require('marked');
-let componentRunner = require('../components/_componentRunner')
+// let componentRunner = require('../components/_componentRunner')
+let componentRunner = require('../../../components/_componentRunner')
 
 // export function Page(){
 module.exports = class Page {

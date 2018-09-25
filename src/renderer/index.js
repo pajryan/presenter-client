@@ -108,7 +108,7 @@ function appInit(){
 
   // build disclosure block
   let d = document.createElement('div'); d.id="disclosure"; b.appendChild(d);
-  d.innerHTML = fs.readFileSync(path.resolve(__dirname, 'disclosures.html'), 'utf8'); // load the disclosure html
+  d.innerHTML = fs.readFileSync(path.join(__static, 'disclosures.html'), 'utf8'); // load the disclosure html
   let cl = document.createElement('a'); cl.href= '#'; cl.innerHTML = 'accept';  // add a close button (so user can hide disclosure)
   cl.addEventListener('click', e => {document.getElementById('disclosure').style.display='none'})
   d.appendChild(cl)
