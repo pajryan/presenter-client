@@ -216,7 +216,7 @@ export function build(){
   admin.duplicatePresentation = function(id){
     let newPresentation = admin.getPresentationById(id);
     let newPresentationId = utils.getUUID();
-    newPresentation.metadata.title += "(COPY)";
+    newPresentation.metadata.title += " (COPY)";
     newPresentation.metadata.id = newPresentationId;
     newPresentation.metadata.isPublished = false;
     newPresentation.metadata.version = 0;

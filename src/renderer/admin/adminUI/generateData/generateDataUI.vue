@@ -57,14 +57,18 @@
             <label>{{ parameter.label }}</label>
             <input v-model="parameter.value" />
           </div>
+          <!-- components that use this dataSource -->
           <p class="relatedComponentsLink" @click="dataSource.isExpanded = !dataSource.isExpanded">show/hide related components</p>
           <div v-if="dataSource.isExpanded" class="relatedComponents alert alert-primary">
-            list of components that use this data
-            {{dataSource}}
-            <br /><br />
-
-            {{activePresentationComponents}}
-            <!-- {{activePresentationComponents.filter(c => {dataSource.filenames.find(f => f===c.replace('.json',''))})}} -->
+            Components <b>in the active presentation</b> that use this data:
+            <ol v-if="activePresentationComponents.filter(c => c.data.find(f => f===dataSource.name)).length>0">
+              <li v-for="component in activePresentationComponents.filter(c => c.data.find(f => f===dataSource.name))" :key="component.index">
+                {{component.component}}
+              </li>
+            </ol>
+            <ul v-else>
+              <li><i>none found. (but could be in other presentations!)</i></li>
+            </ul>
           </div>
           
         </div>
