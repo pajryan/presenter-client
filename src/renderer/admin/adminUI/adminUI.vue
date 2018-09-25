@@ -109,7 +109,6 @@
         this.tabIndex = tab.index;  //store so when the user returns to admin, they're where they left off
 
         //build the tabs on-demand so we dont use resources that are never used.
-        console.log('tab loadeing', tab)
         if(!tab.hasBeenLoaded){
           tab.hasBeenLoaded = true;
           this.vues[tab.index] = new Vue({

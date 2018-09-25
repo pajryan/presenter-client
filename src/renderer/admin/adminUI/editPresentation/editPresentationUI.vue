@@ -53,10 +53,24 @@
 
 
 
-  //load the json schema for the presentation, along with the current flow
-  const schema = require ('./presentationSchema.json');
+  
+  
   const fs = require('fs');
   const zlib = require('zlib');
+
+  //load the json schema for the presentation.
+  const schema = require ('./presentationSchema.json');
+  //  I want that schema to include enums for the available components and the available data items.
+  //    those enums are defined in the #definitions section of presentationSchema.json
+  //  but, since it's just JSON, i'm overwriting the definition values with the actual available items (overwriting the enum.)
+  //  (I tried using external $ref in the schema, but the library uses ajax, which isn't compatible with the electron package)
+  const dataSourceConfig = require('./../generateData/dataSourceConfig.json');  // this defines what data is available
+  const validDataValues = dataSourceConfig.dataSources.map(d => d.name);        // just expose the name
+  schema.definitions.dataFileValues.enum = validDataValues;                     // update the definition of the schema
+  // now go get an enum of components from the componentMap
+  const components = require('./../../../components/_componentMap.js')();
+  schema.definitions.componentsList.enum = components;
+
 
 
   import SimpleMDE from 'simplemde'
@@ -104,6 +118,7 @@
           schema: schema,
           startval: presenationObj,
           theme: 'bootstrap2',
+          // ajax: true,
           disable_edit_json: true, disable_properties: true, disable_collapse: true
         }
        
@@ -143,6 +158,7 @@
         if(this.validationErrors.length > 0){
           console.error("error validating presentation flow against schema", this.validationErrors);
           console.error("the schema is", schema);
+          console.error("the data is", this.editor.getValue());
         }
         return this.validationErrors.length == 0;
       },
@@ -381,6 +397,15 @@
     left: 60px;
     text-align: center;
   }
+
+  // drop downs used to select a component and the component's data items
+  #presentationEditor tbody td:nth-of-type(2) select[name*="[type][component]"]{
+    width: 300px !important;
+  }
+   #presentationEditor tbody td:nth-of-type(2) select[name*="[type][data]"]{
+    width: 300px !important;
+  }
+
   
 
   // hack to change all the buttons to "icons"
@@ -460,6 +485,10 @@
     margin-left:0%;
   }
 
+  // data-schemapath="root.presentation.sections.0.pages.0.pageItems.2.type.data"
+  #presentationEditor div[data-schemapath*=".type.data"] .table thead{
+    display: none;
+  }
 
 
 

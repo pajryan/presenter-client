@@ -31,8 +31,8 @@
 							{
 								"percentWidth": 34,
 								"type": {
-									"component": "component name",
-									"data": ["data something"]
+									"component": "TestDataComponent",
+									"data": ["DoubleNumber"]
 								}
 							}
 						]
@@ -43,7 +43,8 @@
 							{
 								"percentWidth": 70,
 								"type": {
-									"component": ["component name"]
+									"component": "TestDataComponent",
+									"data": ["DoubleNumber"]
 								}
 							}
 						]

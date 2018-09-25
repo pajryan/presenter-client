@@ -19,8 +19,12 @@ module.exports = function getComponent(componentName){
     
   }
 
-  // import AdminUI from './adminUI/AdminUI.vue'
+  // if nothing was passed, return the available keys as an array. This is used in editPresentationUI.vue to create an enum of valid components
+  if(componentName === undefined){
+    return Object.keys(components);
+  }
 
+  // return the chosen component
   let chosenComponent = components[componentName]
 
   if(!chosenComponent){

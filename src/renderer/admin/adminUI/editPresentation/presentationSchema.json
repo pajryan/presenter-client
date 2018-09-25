@@ -1,4 +1,22 @@
 {
+  "definitions":{
+    "dataFileValues": {
+      "enum": [
+        "dataOne", 
+        "dataTwo", 
+        "This entire enum array will be overwritten in editPresentationUI.vue by the `name` of the `dataSources` items in  of /adminUI/generateData/dataSourceConfig.json"
+      ]
+    },
+    "componentsList": {
+      "enum": [
+        "componentOne",
+        "componentTwo",
+        "This entire enum array will be overwritten in editPresentationUI.vue by the keys in `components` in  of /components/_componentMap.json"
+      ]
+    }
+  },  
+
+
   "type": "object",
   "title": " ",
   "properties": {
@@ -131,10 +149,17 @@
                                 "properties": {
                                   "component":{
                                     "type": "string",
-                                    "title": "component"
+                                    "title": "component",
+                                    "$ref": "#/definitions/componentsList"
                                   },
                                   "data":{
-                                    "type": "string"
+                                    "type": "array",
+                                    "format": "table",
+                                    "title": "data items",
+                                    "items": {
+                                      "type": "string",
+                                      "$ref": "#/definitions/dataFileValues"
+                                    }
                                   }
                                 },
                                 "additionalProperties":false
