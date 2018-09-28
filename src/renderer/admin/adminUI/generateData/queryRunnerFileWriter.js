@@ -5,6 +5,8 @@ const pwd = require('../../../../PASSWORDS.json')
 const path = require('path');
 const fs = require('fs')
 
+const qa = require('./dataQualityControlScripts')
+
 const events = require('events');
 let ee = events.EventEmitter;
 
@@ -39,7 +41,7 @@ module.exports = class QueryRunnerFileWriter {
 
   // iteratively write each file (asynchronous, but doing one at a time.)
   writeAllFiles(currFileIndex = this.filesWritten){
-    let filename = this.dataSource.filenames[currFileIndex];
+    let filename = this.dataSource.resultHandling[currFileIndex].filename;
     this.writeOneFile(this.results[currFileIndex], filename, (err) => {
       if(err){
         this.filesWritten = 0;
@@ -153,7 +155,12 @@ module.exports = class QueryRunnerFileWriter {
         // console.log('result', this.results ) // careful showing the results. Can massively slow the app.
         // write the results to a file
         this.rowsAffected = result.rowsAffected;
-        this.writeAllFiles()
+        this.writeAllFiles();
+
+
+        // NOTE NOTE I'm just adding the qa thing here to see how it'll work.
+        //  If I stick with something like this, it'll have to return something to the UI
+        let qaResult = new qa(this.results, this.dataSource)
       }
       request.on('done', onDone)
 

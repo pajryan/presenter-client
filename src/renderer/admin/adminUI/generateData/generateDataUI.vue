@@ -169,8 +169,9 @@
         if(result.success && dataSource.errorMsg == null){
           dataSource.succeeded = true;
           dataSource.successMsg = 'received ' + result.result.length + ' record set(s), with a total of ' + result.result.reduce((p,c) => p + c)+ ' records. Wrote ' + result.filesWritten + ' file(s) ';
-          dataSource.filenames.forEach(f => {
-            dataSource.successMsg += ' : <a href="file://'+path.join(this.adminObj.getAppDataPath(), f)+'" target="_blank">'+f+'</a> '
+          dataSource.resultHandling.forEach(rh => {
+            let filename = rh.filename;
+            dataSource.successMsg += ' : <a href="file://'+path.join(this.adminObj.getAppDataPath(), filename)+'" target="_blank">'+filename+'</a> '
           })
         }else if(result.error != null){
           dataSource.errorMsg = 'error: ' + result.error

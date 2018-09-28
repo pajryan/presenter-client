@@ -24,6 +24,7 @@ const path = require('path');
 const fs = require('fs')
 
 let componentMap = require('../components/_componentMap');  // this draws in ALL components
+let dataSourceConfig = require('./../admin/adminUI/generateData/dataSourceConfig')
 
 export function build(itm, uiElem, _state){
   // get the right component
@@ -37,19 +38,21 @@ export function build(itm, uiElem, _state){
   let errorMsg = 'unknown'
   if(itm.type.data){
     let appDataPath = path.join(_state.appPath, _state.appDataStorePath);
-    let dataFiles = itm.type.data.split(',')  // assuming they're comma separated for now
-    dataFiles.forEach((filename, i) => {
-      console.log('loading data', filename)
-      try{
-        data.push( JSON.parse(fs.readFileSync(path.join(appDataPath, filename))) )
-        dataOk = true;
-      }catch(err){
-        console.error('unable to fetch data file ' + filename, err)
-        errorMsg = 'unable to fetch data file ' + filename
-      }
-      
-
-
+    let dataFiles = itm.type.data;
+    dataFiles.forEach((dataSourceName, i) => {
+      //get the datasource details for this datasource
+      let dataSource = dataSourceConfig.dataSources.filter(d => d.name === dataSourceName)[0];
+      dataSource.resultHandling.forEach(rh => {
+        // get the data and store, to be passed to the component
+        let filename = rh.filename
+        try{
+          data.push( JSON.parse(fs.readFileSync(path.join(appDataPath, filename))) )
+          dataOk = true;
+        }catch(err){
+          console.error('unable to fetch data file ' + filename, err)
+          errorMsg = 'unable to fetch data file ' + filename
+        }
+      })
     })
   }else{
     // no data needed
@@ -75,6 +78,7 @@ export function build(itm, uiElem, _state){
       })
     })
   }
+
 
 }
 

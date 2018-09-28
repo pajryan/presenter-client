@@ -5,13 +5,12 @@ let ResizeObserver = require('resize-observer-polyfill');
 let path = require('path');
 let marked = require('marked');
 let componentRunner = require('../components/_componentRunner')
+let generateDataBuilder = require('../admin/adminUI/generateData/generateDataForOnePageBuilder')
+
 
 // export function Page(){
 module.exports = class Page {
   // https://googlechrome.github.io/samples/classes-es6/
-
-  
-  
 
   constructor(pageData, parentElem, slideshow, index, imagePath) {
     this.title = pageData.title;
@@ -19,6 +18,7 @@ module.exports = class Page {
     this.slideshow = slideshow;
     this.pageIndex = index;
     this.imagePath = imagePath;
+    this.pageData = pageData;
     this.items = pageData.pageItems;
 
     this.mmdBoxes = [];
@@ -70,6 +70,7 @@ module.exports = class Page {
     let content = document.createElement('div'); content.classList.add("pageContent");
     this.parentElem.appendChild(content);
 
+    // build the actual presentation elements
     this.items.forEach((itm, i) => {
       let block = document.createElement('div');
       block.classList.add("pageBlock");
@@ -78,6 +79,9 @@ module.exports = class Page {
       }
       block.style['flex-basis'] = itm.percentWidth + '%';
       content.appendChild(block);
+
+      //really important. I'm storing off the uiElement. This will allow me to rebuild/reload the component by calling page.buildComponent(itm, itm.uiElem)
+      itm.uiElem = block;
 
       if(itm.type.mmdText){
         this.buildText(itm, block);
@@ -90,6 +94,13 @@ module.exports = class Page {
       }
 
     });
+
+    // add a pane for data updates (an admin function)
+    if(this.slideshow.state().isAdmin){
+      let dataUpdate = document.createElement('div'); dataUpdate.classList.add("pageDataUpdate");
+      this.parentElem.appendChild(dataUpdate)
+      generateDataBuilder.build(this.slideshow.admin(), this.items, this.pageData, dataUpdate.appendChild(document.createElement('div')), this.slideshow.state())  
+    }
   }
 
   navEventUp(page, event) {

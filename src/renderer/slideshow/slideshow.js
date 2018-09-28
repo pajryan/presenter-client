@@ -4,8 +4,6 @@ import faFreeSolid from '@fortawesome/fontawesome-free-solid'
 fontawesome.library.add(faFreeSolid)
 
 import Print from './print'
-// import Page from './page.js'
-
 let Page = require("./page.js");
 
 export function build(){
@@ -61,12 +59,21 @@ export function build(){
     section = activePresentation.sections[sectionIndex];
     slideshowContainer.style.display="flex";  //show the slideshow container
 
+    // add get data icon
+    let getDataIconWrap = document.createElement('a'); getDataIconWrap.href='#'; getDataIconWrap.className = 'getDataIconWrap'; getDataIconWrap.title = 'Get Data';
+    getDataIconWrap.addEventListener('click', e => {console.log('getting data'); slideshowContainer.classList.toggle("getData"); })  // add class to slideshow that will display the data-fetch panels
+    let getDataIcon = document.createElement('i'); getDataIcon.innerHTML = 'database'; getDataIcon.className='fa fa-database getDataIcon';
+    slideshowContainer.appendChild(getDataIconWrap);
+    getDataIconWrap.appendChild(getDataIcon);
+
+    // add print icon
     let printIconWrap = document.createElement('a'); printIconWrap.href='#'; printIconWrap.className = 'printIconWrap'; printIconWrap.title = 'Print';
     printIconWrap.addEventListener('click', e => {console.log('printing'); new Print(slideshow)})  
     let printIcon = document.createElement('i'); printIcon.innerHTML = 'print'; printIcon.className='fa fa-print printIcon';
     slideshowContainer.appendChild(printIconWrap);
     printIconWrap.appendChild(printIcon);
-    
+
+  
     fontawesome.dom.i2svg();  // this converts the <i> tag with the fontawsome class to the svg (remember to style an <svg>, not an <i>)
 
     section.pages.forEach((pageData, idx) => {

@@ -91,12 +91,16 @@
     flex-wrap: nowrap;
   }
 
-  #slideshow .printIconWrap{
+  #slideshow .printIconWrap, #slideshow .getDataIconWrap{
     display: none;
   }
 
   #slideshow.debug .printIconWrap{
     display: block;
+  }
+
+  #app.admin #slideshow.debug .getDataIconWrap{
+    display: block; // only show getDataIcon if user is ADMIN and in Layout mode
   }
 
   #slideshow.debug svg.printIcon{
@@ -107,10 +111,19 @@
     width: 25px;
     cursor: pointer;
   }
-  #slideshow.debug svg.printIcon path{
+  #slideshow.debug svg.getDataIcon{
+    position: fixed;
+    left: 60px;
+    bottom: 20px;
+    height: 25px;
+    width: 25px;
+    cursor: pointer;
+  }
+
+  #slideshow.debug svg.printIcon path, #slideshow.debug svg.getDataIcon path{
     fill: #ccc
   }
-  #slideshow.debug a:hover svg.printIcon path{
+  #slideshow.debug a:hover svg.printIcon path, #slideshow.debug a:hover svg.getDataIcon path{
     fill: #008edc;
   }
 
@@ -239,6 +252,29 @@
   #slideshow.debug .pageWrap .pageContent{
     border-bottom-left-radius: 5px;
     border-bottom-right-radius: 5px;
+  }
+
+  #slideshow .pageWrap .pageDataUpdate{
+    display:none;
+  }
+
+  #slideshow.debug.getData .pageWrap .pageDataUpdate{
+    padding: 10px;
+    display: block;
+    background: pink;
+    height: 200px;
+    position: absolute;
+    width: 200px;
+    top: 50%;
+    width: 48%;
+    margin-top: 15%;
+  }
+
+  .pageDataUpdate{
+    font-size: 0.9em;
+  }
+  .pageDataUpdate ul{
+    padding-left: 16px;
   }
 
 

@@ -1,7 +1,7 @@
 <template>
     <div>
       <p>This number is updated from the data tab in admin</p>
-      <p  class="text-danger">{{this.data[0][0].passedValue}}</p>
+      <p  class="text-danger">{{d.passedValue}}</p>
     </div>
 </template>
 
@@ -9,6 +9,7 @@
 
 <script>
   import Vue from 'vue'
+  // const fileData = require('file://Users/patrickryan/Library/Application%20Support/Electron/_data/DoubleNumber.json')
 
    // using http://animejs.com/documentation/ for animations
 
@@ -18,7 +19,7 @@
     data () {
       return {
         showingStuff: false,
-        msg: 'stuff',
+        d: this.data[0][0]
       }
     },
     mounted () {

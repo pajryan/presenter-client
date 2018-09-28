@@ -31,6 +31,7 @@
     "resize-observer-polyfill": "^1.5.0",
     "simplemde": "^1.11.2",
     "source-map-support": "^0.5.5",
+    "stats-analysis": "^2.0.0",
     "stream": "^0.0.2",
     "unzipper": "^0.9.3"
   },

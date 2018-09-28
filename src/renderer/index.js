@@ -106,6 +106,7 @@ function appInit(){
 
   let b = document.getElementById("app");
 
+
   // build disclosure block
   let d = document.createElement('div'); d.id="disclosure"; b.appendChild(d);
   d.innerHTML = fs.readFileSync(path.join(__static, 'disclosures.html'), 'utf8'); // load the disclosure html
@@ -143,7 +144,10 @@ function appInit(){
   slideshow();
   toc();
 
-
+  // if admin() determined the user is admin, add class to app (e.g. to show getDataIcon)
+  if(_state.isAdmin){
+    b.className = "admin";
+  }
 
 
   //capture shortcut keys to navigate
