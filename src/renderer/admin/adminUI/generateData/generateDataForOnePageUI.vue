@@ -6,9 +6,12 @@
           {{component.component}} ({{component.data.length}} data source(s))
           <ul v-if="component.data.length>0">
             <li v-for="(data, j) in component.data" :key="j">
-              <!-- <a :href="data.pathToData" target="_blank">{{data.dataFile}}.json</a> -->
-              <span v-html="data.linkToData"></span>
-              <!-- <a href="#" @click="showDataFile(data.dataFile)"></a><br /> -->
+              {{data.dataFile}} ({{data.linksToData.length}} data file(s))
+              <ul>
+                <li v-for="(file, f) in data.linksToData" :key="f">
+                  <span v-html="file"></span><br />
+                </li>
+              </ul>
               <generateDataItemUI name="data.dataFile" :componentIndex="i" :adminObj="adminObj" :itemDataSourceConfig="data" :showOtherComponentsThatUseThisData="false" :pageItems="pageItems" :state="state" />
             </li>
           </ul>
@@ -44,16 +47,22 @@
       let pageItems = this.pageData.pageItems;
       let pageItemTypes = pageItems.map(pi => pi.type);
       this.components = pageItemTypes.filter(pit => pit['component']);
+      console.log('COMPONENTS', this.components)
       this.components = this.components.map(c => {
         let o = {
           component: c.component,
           data: []
         }
         c.data.forEach(d => {
+          // get the actual data files associated with the data source
+          let dataSourceInfo = this.dataSourceConfig.filter(dc => dc.name === d)[0];
+          let files = dataSourceInfo.resultHandling.map(d => d.filename);
+          let fileLinks = files.map(f => '<a href="file://'+path.join(this.adminObj.getAppDataPath(), f)+'" target="_blank">'+f+'</a> ')
+
           o.data.push({
             dataFile: d,
             dataConfig: this.dataSourceConfig.filter(dc => dc.name === d)[0],
-            linkToData: '<a href="file://'+path.join(this.adminObj.getAppDataPath(), (d+'.json'))+'" target="_blank">'+d+'</a> '
+            linksToData: fileLinks
           })
         })
         return o;

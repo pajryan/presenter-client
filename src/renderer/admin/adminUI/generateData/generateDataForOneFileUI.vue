@@ -12,6 +12,10 @@
       <label :hidden="dataSource.successMsg==null"  class="alert alert-success"><span v-html="dataSource.successMsg"></span></label>
       <label :hidden="dataSource.errorMsg==null"  class="alert alert-danger">{{ dataSource.errorMsg }}</label>
 
+      <!-- qa component -->
+      <dataQualityControlUI v-if="dataSource.succeeded" :dataSource="dataSource" />
+
+
       <!-- components that use this dataSource -->
       <div v-if="showOtherComponentsThatUseThisData">
         <p class="relatedComponentsLink" @click="dataSource.isExpanded = !dataSource.isExpanded">show/hide related components</p>
@@ -28,8 +32,6 @@
         </div>
       </div>
 
-      <br /><br />
-      {{itemDataSourceConfig}}
     </div>
 </template>
 
@@ -41,9 +43,14 @@
   import path from 'path'
   let dataSourceConfigImport = require('./dataSourceConfig')
   let componentRunner = require('./../../../components/_componentRunner.js')
-  let qa = require('./dataQualityControlScripts')
+  
+  import dataQualityControlUI from './dataQualityControlUI.vue'
 
   export default {
+    components: {
+      dataQualityControlUI
+    },
+
     // componentIndex is the index of the component on the page that this whole section is reponsible for updating. we'll use it when refreshing components
     props: ['componentIndex', 'itemDataSourceConfig', 'showOtherComponentsThatUseThisData', 'adminObj', 'pageItems', 'state'], 
 
@@ -100,6 +107,7 @@
         // Vue overwrites the element (see same in page.js). So give it a child div to work with
         componentRunner.build(itmToRefresh, uiElemToRefresh.appendChild(document.createElement('div')), this.state)
 
+        // pass the datasource to the qa mechanism
         
 
       },

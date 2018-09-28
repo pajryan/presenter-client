@@ -33,12 +33,17 @@
     },
 
     {
-      "name": "TripleNumber",
+      "name": "Triple and Double",
       "isStoredProcedure": false,
-      "sqlString": "select {1}*3 as passedValue",
+      "sqlString": "select {1}*3 as passedValue; select {2}*2 as passedValue",
       "sqlParameters": [
         {
           "label": "Number to triple",
+          "type": "int",
+          "value": 10
+        },
+        {
+          "label": "Number to double",
           "type": "int",
           "value": 10
         }
@@ -51,7 +56,16 @@
             "asOfDateScript": "maxDate(date)",
             "chart": null
           }
+        },
+        {
+          "filename": "DoubleNumberFile.json",
+          "qa": {
+            "scripts": [],
+            "asOfDateScript": "maxDate(date)",
+            "chart": null
+          }
         }
+        
       ]
     },
 

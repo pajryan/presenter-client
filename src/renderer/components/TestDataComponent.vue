@@ -1,7 +1,9 @@
 <template>
     <div>
       <p>This number is updated from the data tab in admin</p>
-      <p  class="text-danger">{{d.passedValue}}</p>
+      <p class="text-danger">d1 {{uiData1}}</p>
+      <p class="text-danger">d2 {{uiData2}}</p>
+      <p class="text-danger">d3 {{uiData3}}</p>
     </div>
 </template>
 
@@ -19,7 +21,9 @@
     data () {
       return {
         showingStuff: false,
-        d: this.data[0][0]
+        uiData1: 'nothing',
+        uiData2: 'nothing',
+        uiData3: 'nothing',
       }
     },
     mounted () {
@@ -28,13 +32,25 @@
       
       // if this is expecting data, make sure we got it.  this.data is an array of data objects (from files)
       //  if there was an error reading in the file, data[n] will be {error: <errorMsg>, filename: <filename>}
-      this.data.forEach(d => {
+      this.data.forEach((d, i) => {
         if(d.error){
           console.error('do something about this!', error)
         }else{
-          console.log('inside component with data', this.data)
+          console.log('inside component with data', d)
+          console.log('data itme ' + i, d[0].passedValue)
+          if(i==0){
+            this.uiData1 = d[0].passedValue
+          }
+          if(i==1){
+            this.uiData2 = d[0].passedValue
+          }
+          if(i==2){
+            this.uiData3 = d[0].passedValue
+          }
+          
         }
       })
+      console.log('set ui data to', this.uiData)
     },
     methods: {
       showStuff(){
