@@ -3,7 +3,7 @@
 
       <!-- parameters -->
       <div v-for="parameter in dataSource.sqlParameters" class="dataSourceParameter"  :key="parameter.index">
-        <label>{{ parameter.label }}</label>
+        <label>{{ parameter.label }}: </label>
         <input v-model="parameter.value" />
       </div>
       <button type="button" class="btn btn-primary btn-sm runOneDataButton" @click="queryAndWriteOneDataSource(dataSource)" :disabled="dataSource.isRunning">run</button>
@@ -13,7 +13,7 @@
       <label :hidden="dataSource.errorMsg==null"  class="alert alert-danger">{{ dataSource.errorMsg }}</label>
 
       <!-- qa component -->
-      <dataQualityControlUI v-if="dataSource.succeeded" :dataSource="dataSource" />
+      <dataQualityControlUI v-if="dataSource.succeeded" :dataSource="dataSource" :adminObj="adminObj" />
 
 
       <!-- components that use this dataSource -->
@@ -40,7 +40,6 @@
 <script>
   import Vue from 'vue'
   import queryRunnerFileWriter from './queryRunnerFileWriter.js'
-  import path from 'path'
   let dataSourceConfigImport = require('./dataSourceConfig')
   let componentRunner = require('./../../../components/_componentRunner.js')
   

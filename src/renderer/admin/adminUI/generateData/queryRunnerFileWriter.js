@@ -5,7 +5,7 @@ const pwd = require('../../../../PASSWORDS.json')
 const path = require('path');
 const fs = require('fs')
 
-const qa = require('./dataQualityControlScripts')
+// const qa = require('./dataQualityControlScripts')
 
 const events = require('events');
 let ee = events.EventEmitter;
@@ -160,7 +160,7 @@ module.exports = class QueryRunnerFileWriter {
 
         // NOTE NOTE I'm just adding the qa thing here to see how it'll work.
         //  If I stick with something like this, it'll have to return something to the UI
-        let qaResult = new qa(this.results, this.dataSource)
+        // let qaResult = new qa(this.results, this.dataSource)
       }
       request.on('done', onDone)
 

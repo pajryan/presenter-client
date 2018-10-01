@@ -52,7 +52,7 @@
         {
           "filename": "TripleNumberFile.json",
           "qa": {
-            "scripts": [],
+            "scripts": ["findMedian('passedValue')"],
             "asOfDateScript": "maxDate(date)",
             "chart": null
           }
