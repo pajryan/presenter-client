@@ -2,9 +2,12 @@
     <div>
       <p>Data QA: </p>
       <ul>
-        <li v-for="(qaMessage, i) in qaMessages" :key="i">
+        <li v-for="(qaMessage, i) in qaMessages" :key="'qamessage='+i">
           {{qaMessage.filename}}:  {{qaMessage.label}}: {{qaMessage.value}}
         </li>
+        <p v-for="(svg, i) in sparkSVGs" :key="'sparkline-'+i" class="sparkHolder">
+          <span v-html="svg"></span>
+        </p>
       </ul>
     </div>
 </template>
@@ -23,7 +26,8 @@
     data () {
       return {
         resultHandling: [],
-        qaMessages: []
+        qaMessages: [],
+        sparkSVGs: []
       }
     },
     mounted () {
@@ -39,16 +43,31 @@
     },
     methods: {
       runOneQA: function(resultHandle){
+        if(!resultHandle.qa){return;}
         // get the file associated with this result
         let data = JSON.parse(fs.readFileSync(path.join(this.adminObj.getAppDataPath(), resultHandle.filename)))
         console.log('data for qa', data)
 
-        // run each script against the data
-        resultHandle.qa.scripts.forEach(s => {
-          let qaResult = new qa(data, s)   // always come back inthe form {label:<label>, value:<value>}
-          qaResult.filename = resultHandle.filename
-          this.qaMessages.push(qaResult)
-        })
+        let qaObj = new qa(data, resultHandle) 
+
+        // run qa scripts against the data
+        if(resultHandle.qa.scripts){
+          let scriptResults = qaObj.runQaFunctions();
+          this.qaMessages = this.qaMessages.concat(scriptResults); // add to the existing array
+        }
+        
+
+        // build sparkline
+        if(resultHandle.qa.sparklineFields){
+          let svgs = qaObj.makeSparklines();
+          console.log('got sparklines:', svgs)
+          this.sparkSVGs = this.sparkSVGs.concat(svgs)
+        }
+
+        // get asof date
+        if(resultHandle.qa.asOfDateScript){
+
+        }
 
         
 
@@ -69,4 +88,11 @@
 </script>
 
 <style scoped lang="less">
+  .sparkHolder /deep/ svg path.line{
+    fill: none;
+    stroke: blue
+  }
+  .sparkHolder /deep/ svg text{
+    fill: blue;
+  }
 </style>

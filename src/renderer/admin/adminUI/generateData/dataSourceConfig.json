@@ -52,9 +52,12 @@
         {
           "filename": "TripleNumberFile.json",
           "qa": {
-            "scripts": ["findMedian('passedValue')"],
+            "scripts": [
+              {"function": "findMedian", "parameters": ["passedValue"]},
+              {"function": "findMedian", "parameters": ["passedValue"]}
+            ],
             "asOfDateScript": "maxDate(date)",
-            "chart": null
+            "sparklineFields": ["passedValue"]
           }
         },
         {
@@ -97,9 +100,12 @@
         {
           "filename": "RiskPremium.json",
           "qa": {
-            "scripts": ["findOutlier('dp', 'marketSpread', 'expectedLossSpread')"],
+            "scripts": [
+              {"function": "findMedian", "parameters": ["dp"]},
+              {"function": "findMedian", "parameters": ["marketSpread"]}
+            ],
             "asOfDateScript": "maxDate(date)",
-            "chart": null
+            "sparklineFields": ["marketSpread","dp"]
           }
         }
       ]

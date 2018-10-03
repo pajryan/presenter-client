@@ -31,7 +31,7 @@ export function build(itm, uiElem, _state){
   let component = componentMap(itm.type.component)
   
 
-  console.log('Building Component', itm, _state)
+  // console.log('Building Component', itm, _state)
 
   let data = [];
   let dataOk = false;

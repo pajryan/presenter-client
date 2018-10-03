@@ -28,8 +28,8 @@
     },
     mounted () {
       window.addEventListener('resize', this.resize); // add an event listener in case you'll need to adjust on resize
-      console.log('in the component',this.itm)
-      console.log('inside component with data', this.data)
+      // console.log('in the component',this.itm)
+      // console.log('inside component with data', this.data)
       
       // if this is expecting data, make sure we got it.  this.data is an array of data objects (from files)
       //  if there was an error reading in the file, data[n] will be {error: <errorMsg>, filename: <filename>}
@@ -49,7 +49,7 @@
           
         }
       })
-      console.log('set ui data to', this.uiData)
+      // console.log('set ui data to', this.uiData)
     },
     methods: {
       showStuff(){

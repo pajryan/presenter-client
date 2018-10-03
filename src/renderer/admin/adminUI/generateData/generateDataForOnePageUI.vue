@@ -47,7 +47,6 @@
       let pageItems = this.pageData.pageItems;
       let pageItemTypes = pageItems.map(pi => pi.type);
       this.components = pageItemTypes.filter(pit => pit['component']);
-      console.log('COMPONENTS', this.components)
       this.components = this.components.map(c => {
         let o = {
           component: c.component,
